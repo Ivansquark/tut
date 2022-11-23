@@ -14,7 +14,8 @@ void screen::init() {
     butLeft = new QPixmap(":/pictures/play_left.png");
     butRight = new QPixmap(":/pictures/play_right.png");
     butCenter = new QPixmap(":/pictures/stop200.png");
-    // labScene->setPixmap(*scene);
+    scene = new QPixmap();
+    labScene->setPixmap(*scene);
     labLeft->setFixedSize(200, 200);
     labCenter->setFixedSize(200, 200);
     labRight->setFixedSize(200, 200);
