@@ -7,4 +7,10 @@
         <file>forward_right.png</file>
         <file>forward_left.png</file>
     </qresource>
+    <qresource prefix="/photo"/>
+    <qresource prefix="/phot"/>
+    <qresource prefix="/">
+        <file>d1.png</file>
+        <file>d2.png</file>
+    </qresource>
 </RCC>
