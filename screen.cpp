@@ -3,7 +3,6 @@
 screen::screen(QWidget* parent) : QDialog(parent) { init(); }
 
 screen::~screen() {
-    delete scene;
     delete pixLeft;
     delete pixRight;
     delete pixCenter;
@@ -16,7 +15,7 @@ screen::~screen() {
 
 void screen::timeoutFPS()
 {
-    if(counterExit >100) close();
+    if(counterExit > 20) exit(0);
     if(w > 200) {
         labScene->setGeometry(w++,0,300,400);
         labScene->setPixmap(*pixD1);
@@ -64,25 +63,25 @@ void screen::timeoutFPS()
 }
 
 void screen::init() {
-    setFixedSize(1024, 768);
+    setFixedSize(600, 1024);
     pixLeft = new QPixmap(":/pictures/play_left.png");
     pixRight = new QPixmap(":/pictures/play_right.png");
     pixCenter = new QPixmap(":/pictures/stop200.png");
     pixLeftStarted = new QPixmap(":/pictures/forward_left.png");
     pixRightStarted = new QPixmap(":/pictures/forward_right.png");
     pixCenterStarted = new QPixmap(":/pictures/pause.png");
-    scene = new QPixmap();
+    scene = new QPixmap(":/d2.png");
     labScene->setPixmap(*scene);
     labScene->setFixedSize(300,400);
-    butLeft->setFixedSize(340, 200);
-    butCenter->setFixedSize(340, 200);
-    butRight->setFixedSize(340, 200);
+    butLeft->setFixedSize(200, 200);
+    butCenter->setFixedSize(200, 200);
+    butRight->setFixedSize(200, 200);
     butLeft->setIcon(*pixLeft);
     butRight->setIcon(*pixRight);
     butCenter->setIcon(*pixCenter);
-    butLeft->setIconSize(QSize(340, 200));
-    butRight->setIconSize(QSize(340, 200));
-    butCenter->setIconSize(QSize(340, 200));
+    butLeft->setIconSize(QSize(200, 200));
+    butRight->setIconSize(QSize(200, 200));
+    butCenter->setIconSize(QSize(200, 200));
     layH->addWidget(butLeft);
     layH->addWidget(butCenter);
     layH->addWidget(butRight);
