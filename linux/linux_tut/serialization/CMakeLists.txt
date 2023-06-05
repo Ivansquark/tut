@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.18)
+project(raw_bin)
+if (UNIX)
+    set(CMAKE_CXX_COMPILER /usr/bin/g++)
+endif (UNIX)
+if (WIN32)
+    set(CMAKE_CXX_COMPILER C:/TDM-GCC-64/bin/g++.exe)
+endif (WIN32)
+#set(SRCS src/main.cpp src/*.cpp src/*.c)
+#set(PROJECT_FILES ${SRCS})
+include_directories(inc/)
+add_definitions(-Wall -g3 -O0)
+file(GLOB_RECURSE SRCS src/*.cpp src/*.c)
+add_executable(raw_bin ${SRCS})
+
+
+find_package( Threads)
+target_link_libraries( raw_bin ${CMAKE_THREAD_LIBS_INIT} )

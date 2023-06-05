@@ -1,0 +1,13 @@
+#! /bin/sh
+
+qemu-arm -g 1234 build/main.elf -c 5 &
+
+gdb-multiarch -q --nh \
+  -ex 'set architecture arm' \
+  -ex 'set sysroot /usr/arm-linux-gnueabihf' \
+  -ex 'file build/main.elf' \
+  -ex 'target remote localhost:1234' \
+  -ex 'break main' \
+  -ex continue \
+  -ex 'layout split'
+;

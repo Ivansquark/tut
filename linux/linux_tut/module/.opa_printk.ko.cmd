@@ -1,0 +1,1 @@
+cmd_/home/debian/embedded/desktop/vim/linux/module/opa_printk.ko := ld -r -m elf_x86_64 --build-id=sha1  -T arch/x86/module.lds -o /home/debian/embedded/desktop/vim/linux/module/opa_printk.ko /home/debian/embedded/desktop/vim/linux/module/opa_printk.o /home/debian/embedded/desktop/vim/linux/module/opa_printk.mod.o;  true

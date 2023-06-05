@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../../inc/threadpool.h
+functional
+-
+future
+-
+iostream
+-
+memory
+-
+mutex
+-
+queue
+-
+thread
+-
+
+/home/debian/embedded/desktop/vim/concurrency/src/main.cpp
+threadpool.h
+/home/debian/embedded/desktop/vim/concurrency/src/threadpool.h
+chrono
+-
+iostream
+-
+mutex
+-
+thread
+-
+
+/home/debian/embedded/desktop/vim/concurrency/src/threadpool.cpp
+threadpool.h
+/home/debian/embedded/desktop/vim/concurrency/src/threadpool.h
+

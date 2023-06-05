@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/debian/embedded/datasheets/LiIon/4v/sch/4v/4v.kicad_sch</source>
+    <date>Пт 10 мар 2023 14:28:36</date>
+    <tool>Eeschema 6.0.11+dfsg-1~bpo11+1</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>4v.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>0.1u</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>24c0a51f-2ec0-4240-9d41-00ab9e2e1348</tstamps>
+    </comp>
+    <comp ref="C2">
+      <value>0.1u</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d1baa9e5-d286-428f-bd6d-f2a17e52aaa6</tstamps>
+    </comp>
+    <comp ref="D1">
+      <value>tp4056</value>
+      <footprint>Library:tp4056</footprint>
+      <libsource lib="New_Library" part="tp4056" description=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>130e4b6e-fe22-4408-bf4e-679644597a0d</tstamps>
+    </comp>
+    <comp ref="D2">
+      <value>fs8205a</value>
+      <footprint>Library:dw01a</footprint>
+      <libsource lib="New_Library" part="fs8205a" description=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>beb7e2a7-d092-4c4d-9a5e-4c99e95b2099</tstamps>
+    </comp>
+    <comp ref="D3">
+      <value>dw01a</value>
+      <footprint>Library:dw01a</footprint>
+      <libsource lib="New_Library" part="dw01a" description=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c3ac9430-ccc6-4fc1-ad54-fb81bbc8cc6c</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>USB_C_Receptacle_PowerOnly_6P</value>
+      <footprint>Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12</footprint>
+      <datasheet>https://www.usb.org/sites/default/files/documents/usb_type-c.zip</datasheet>
+      <libsource lib="Connector" part="USB_C_Receptacle_PowerOnly_6P" description="USB Power-Only 6P Type-C Receptacle connector"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f29983ec-875c-4468-8bbc-3ed6488298c9</tstamps>
+    </comp>
+    <comp ref="J2">
+      <value>Screw_Terminal_01x04</value>
+      <footprint>Connector_PinSocket_2.00mm:PinSocket_1x04_P2.00mm_Vertical</footprint>
+      <libsource lib="Connector" part="Screw_Terminal_01x04" description="Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c415218a-9786-4969-89f0-e350b0447d51</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>1,2k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8b09fd98-bff8-4836-b8bc-4ee16a51cdfb</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>30588559-fe62-4523-b900-bbfce77b2aea</tstamps>
+    </comp>
+    <comp ref="R3">
+      <value>100</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="4v.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>55ce3f54-2429-4da5-a623-120ed354992a</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector" part="Screw_Terminal_01x04">
+      <description>Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>TerminalBlock*:*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Screw_Terminal_01x04</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="USB_C_Receptacle_PowerOnly_6P">
+      <description>USB Power-Only 6P Type-C Receptacle connector</description>
+      <docs>https://www.usb.org/sites/default/files/documents/usb_type-c.zip</docs>
+      <footprints>
+        <fp>USB*C*Receptacle*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">USB_C_Receptacle_PowerOnly_6P</field>
+        <field name="Datasheet">https://www.usb.org/sites/default/files/documents/usb_type-c.zip</field>
+      </fields>
+      <pins>
+        <pin num="A5" name="CC1" type="bidirectional"/>
+        <pin num="A9" name="VBUS" type="passive"/>
+        <pin num="A12" name="GND" type="passive"/>
+        <pin num="B5" name="CC2" type="bidirectional"/>
+        <pin num="B9" name="VBUS" type="passive"/>
+        <pin num="B12" name="GND" type="passive"/>
+        <pin num="S1" name="SHIELD" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R_Small">
+      <description>Resistor, small symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R_Small</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="New_Library" part="dw01a">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">dw01a</field>
+      </fields>
+      <pins>
+        <pin num="1" name="OD" type="input"/>
+        <pin num="2" name="CS" type="input"/>
+        <pin num="3" name="OC" type="input"/>
+        <pin num="4" name="TD" type="input"/>
+        <pin num="5" name="VCC" type="input"/>
+        <pin num="6" name="GND" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="New_Library" part="fs8205a">
+      <fields>
+        <field name="Reference">D?</field>
+        <field name="Value">fs8205a</field>
+      </fields>
+      <pins>
+        <pin num="1" name="S1" type="input"/>
+        <pin num="2" name="D12" type="input"/>
+        <pin num="3" name="S2" type="input"/>
+        <pin num="4" name="G2" type="input"/>
+        <pin num="5" name="D12" type="input"/>
+        <pin num="6" name="G1" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="New_Library" part="tp4056">
+      <fields>
+        <field name="Reference">D?</field>
+        <field name="Value">tp4056</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Temp" type="input"/>
+        <pin num="2" name="prog" type="input"/>
+        <pin num="3" name="GND" type="input"/>
+        <pin num="4" name="VCC" type="input"/>
+        <pin num="5" name="bat" type="input"/>
+        <pin num="6" name="!stdby" type="input"/>
+        <pin num="7" name="!chrg" type="input"/>
+        <pin num="8" name="CE" type="input"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector">
+      <uri>/usr/share/kicad/symbols//Connector.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>/usr/share/kicad/symbols//Device.kicad_sym</uri>
+    </library>
+    <library logical="New_Library">
+      <uri>/home/debian/embedded/datasheets/LiIon/4v/sch/4v/New_Library.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="/B+">
+      <node ref="D1" pin="5" pinfunction="bat" pintype="input"/>
+      <node ref="J2" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="R3" pin="2" pintype="passive"/>
+    </net>
+    <net code="2" name="/B-">
+      <node ref="C2" pin="1" pintype="passive"/>
+      <node ref="D2" pin="3" pinfunction="S2" pintype="input"/>
+      <node ref="D3" pin="6" pinfunction="GND" pintype="input"/>
+      <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
+    </net>
+    <net code="3" name="GND">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="D1" pin="1" pinfunction="Temp" pintype="input"/>
+      <node ref="D1" pin="3" pinfunction="GND" pintype="input"/>
+      <node ref="D1" pin="6" pinfunction="!stdby" pintype="input"/>
+      <node ref="D1" pin="7" pinfunction="!chrg" pintype="input"/>
+      <node ref="D2" pin="1" pinfunction="S1" pintype="input"/>
+      <node ref="J1" pin="A12" pinfunction="GND" pintype="passive"/>
+      <node ref="J1" pin="A5" pinfunction="CC1" pintype="bidirectional"/>
+      <node ref="J1" pin="B12" pinfunction="GND" pintype="passive"/>
+      <node ref="J1" pin="B5" pinfunction="CC2" pintype="bidirectional"/>
+      <node ref="J1" pin="S1" pinfunction="SHIELD" pintype="passive"/>
+      <node ref="J2" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+    </net>
+    <net code="4" name="Net-(C1-Pad2)">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="D1" pin="4" pinfunction="VCC" pintype="input"/>
+      <node ref="D1" pin="8" pinfunction="CE" pintype="input"/>
+      <node ref="J1" pin="A9" pinfunction="VBUS" pintype="passive"/>
+      <node ref="J1" pin="B9" pinfunction="VBUS" pintype="passive"/>
+    </net>
+    <net code="5" name="Net-(C2-Pad2)">
+      <node ref="C2" pin="2" pintype="passive"/>
+      <node ref="D3" pin="5" pinfunction="VCC" pintype="input"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+    </net>
+    <net code="6" name="Net-(D2-Pad4)">
+      <node ref="D2" pin="4" pinfunction="G2" pintype="input"/>
+      <node ref="D3" pin="1" pinfunction="OD" pintype="input"/>
+    </net>
+    <net code="7" name="Net-(D2-Pad6)">
+      <node ref="D2" pin="6" pinfunction="G1" pintype="input"/>
+      <node ref="D3" pin="3" pinfunction="OC" pintype="input"/>
+    </net>
+    <net code="8" name="Net-(R1-Pad2)">
+      <node ref="D1" pin="2" pinfunction="prog" pintype="input"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+    </net>
+    <net code="9" name="Net-(R2-Pad2)">
+      <node ref="D3" pin="2" pinfunction="CS" pintype="input"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+    </net>
+    <net code="10" name="unconnected-(D2-Pad2)">
+      <node ref="D2" pin="2" pinfunction="D12" pintype="input"/>
+    </net>
+    <net code="11" name="unconnected-(D2-Pad5)">
+      <node ref="D2" pin="5" pinfunction="D12" pintype="input"/>
+    </net>
+    <net code="12" name="unconnected-(D3-Pad4)">
+      <node ref="D3" pin="4" pinfunction="TD" pintype="input"/>
+    </net>
+  </nets>
+</export>

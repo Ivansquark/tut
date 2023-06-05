@@ -1,0 +1,1 @@
+qemu-system-arm -kernel kernel8.img -cpu arm1176 -m 256 -M versatilepb -no-reboot -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -hda lite.img 

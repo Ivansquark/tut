@@ -1,0 +1,6 @@
+
+on pi: #gdbserver :55555 main.elf
+on pc: $gdb-multiarch main.elf
+(gdb) directory src
+(gdb) target remote 192.168.0.2:55555
+(gdb) b main
