@@ -1,0 +1,12 @@
+Генерируем файл сертификата
+$ openssl req -new -x509 -days 365 -keyout server.key -out server.pem
+
+На вопрос «Enter PEM pass phrase:» отвечаем паролем, подтверждаем и запоминаем.
+На вопрос «Common Name (eg, YOUR name) []:» отвечаем именем сайта, для которого создаем сертификат.
+Все остальные ответы не особо важны.
+
+После ответов в текущей появятся два новых файла — server.key и server.pem (ключ и сертификат, соответственно).
+
+$ cp server.key server.key.orig
+$ openssl rsa -in server.key.orig -out server.key
+$ rm server.key.orig

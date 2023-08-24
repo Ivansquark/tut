@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "all"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Execute",
+            "command": "./main.exe",
+            "type": "shell",
+            "args": [],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

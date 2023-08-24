@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "c_cpp_properties",
+            "compilerPath": "C:/TDM-GCC-64/bin/g++",
+            "includePath": 
+            [
+                "C:/wxWidgets-3.0.5/include/**",
+                "${workspaceRoot}/inc",
+                "${workspaceRoot}/src"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "cStandard": "c11",
+            "cppStandard": "gnu++17"
+        }
+    ],
+    "version": 4
+}

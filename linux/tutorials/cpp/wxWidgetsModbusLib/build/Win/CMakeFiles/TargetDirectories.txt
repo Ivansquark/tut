@@ -1,0 +1,3 @@
+/home/debian/embedded/desktop/vim/wxWidgetsModbusLib/build/Win/CMakeFiles/rebuild_cache.dir
+/home/debian/embedded/desktop/vim/wxWidgetsModbusLib/build/Win/CMakeFiles/edit_cache.dir
+/home/debian/embedded/desktop/vim/wxWidgetsModbusLib/build/Win/CMakeFiles/wxModbus.dir

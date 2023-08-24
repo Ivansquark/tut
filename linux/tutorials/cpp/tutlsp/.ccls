@@ -1,0 +1,6 @@
+gcc
+%c -std=c11
+%cpp -std=c++17
+%h -x
+%h %hpp --include=Global.h
+-Iinc

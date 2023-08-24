@@ -1,0 +1,4 @@
+#! /bin/sh
+#grep -q -F "add-auto-load-safe-path `pwd`/.gdbini" ~/.gdbinit || echo "add-auto-load-safe-path `pwd`/.gdbinit" >> ~/.gdbinit
+#/usr/bin/openocd "-c" "gdb_port 50000" "-s" "/usr/share/openocd/scripts" "-f" "./lib/stlink.cfg" "-f" "./lib/stm32h7x.cfg"
+gdb-multiarch build/main.elf

@@ -1,0 +1,10 @@
+{
+    "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/",
+    "files.associations": {
+        "config.h": "c",
+        "confbase.h": "c",
+        "modbus.h": "c",
+        "modbus-private.h": "c",
+        "*.tcc": "cpp"
+    }
+}

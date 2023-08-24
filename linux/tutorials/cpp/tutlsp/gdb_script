@@ -1,0 +1,8 @@
+#! /bin/sh
+#grep -q -F "add-auto-load-safe-path `pwd`/.gdbini" ~/.gdbinit || echo "add-auto-load-safe-path `pwd`/.gdbinit" >> ~/.gdbinit
+gdb_fork() {
+    sleep 1
+    gdb build/prog.o
+}
+gdb_fork 
+ls -la 
