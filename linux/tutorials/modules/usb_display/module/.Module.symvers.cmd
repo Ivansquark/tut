@@ -1,0 +1,1 @@
+cmd_/home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/Module.symvers :=  sed 's/ko$$/o/'  /home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/modules.order | scripts/mod/modpost -m     -o /home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/Module.symvers -e -i Module.symvers -T - 

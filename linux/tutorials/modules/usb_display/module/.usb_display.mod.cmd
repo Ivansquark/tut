@@ -1,0 +1,1 @@
+cmd_/home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/usb_display.mod := printf '%s\n'   usb_display.o | awk '!x[$$0]++ { print("/home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/"$$0) }' > /home/debian/embedded/desktop/linux/tut/linux/tutorials/modules/usb_display/module/usb_display.mod
