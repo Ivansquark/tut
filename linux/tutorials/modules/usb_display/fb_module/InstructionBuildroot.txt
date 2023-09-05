@@ -1,0 +1,17 @@
+https://github.com/cirosantilli/linux-kernel-module-cheat/tree/753cbe68ff50bea0982e1791c8a2178a999d8377/buildroot_packages/kernel_modules 
+
+buildroot/: Buildroot 2017.02, ideally as a git submodule
+kernel_module/: external package with some modules, ideally tracked in the git repository
+    Config.in
+    external.mk
+    external.desc
+    Makefile
+    hello.c: hello world module
+    
+
+clear buildroot/lpi4a/buildroot/output/build/kernel_module/
+copy src
+vi ./.config (delete BR2_PACKAGE_KERNEL_MODULE=?)    
+echo 'BR2_PACKAGE_KERNEL_MODULE=y' >> .config
+cd buildroot
+make

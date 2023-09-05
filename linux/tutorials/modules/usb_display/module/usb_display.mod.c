@@ -47,6 +47,7 @@ __used __section("__versions") = {
 	{ 0x8abb0c2b, "kmalloc_caches" },
 	{ 0x7b339a74, "kmalloc_trace" },
 	{ 0xcefb0c9f, "__mutex_init" },
+	{ 0x9ed12e20, "kmalloc_large" },
 	{ 0x9f2015b4, "usb_register_dev" },
 	{ 0xa85023f1, "_dev_err" },
 	{ 0x94a9c4ab, "module_layout" },
