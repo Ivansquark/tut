@@ -245,7 +245,7 @@ static ssize_t usb_display_write(struct file* file, const char __user* user_buf,
         mutex_unlock(&dev->io_mutex);
         return retval;
     }
-    if(writtenCount >= TOTAL_BUFFER_SIZE) {
+    if(writtenCount > TOTAL_BUFFER_SIZE) {
         mutex_unlock(&dev->io_mutex);
         retval = -ENOSPC;
         return retval;
@@ -257,7 +257,7 @@ static ssize_t usb_display_write(struct file* file, const char __user* user_buf,
         return retval;
     }
     retval = usb_bulk_msg(dev->udev, usb_sndbulkpipe(dev->udev, 4),
-                          dev->videobuffer, writtenCount, &usbSent, 1000);
+                          dev->videobuffer, writtenCount, &usbSent, 50000);
     if (!retval) {
         retval = writtenCount;
         ppos += writtenCount;

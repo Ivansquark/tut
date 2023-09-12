@@ -1,3 +1,4 @@
+//--------- add kernel module ------------------------
 https://github.com/cirosantilli/linux-kernel-module-cheat/tree/753cbe68ff50bea0982e1791c8a2178a999d8377/buildroot_packages/kernel_modules 
 
 buildroot/: Buildroot 2017.02, ideally as a git submodule
@@ -6,12 +7,106 @@ kernel_module/: external package with some modules, ideally tracked in the git r
     external.mk
     external.desc
     Makefile
-    hello.c: hello world module
+    usb_fb.c: hello world module
     
+vi kernel_module/Config.in
+config BR2_PACKAGE_KERNEL_MODULES
+	bool "kernel_modules"
+	depends on BR2_LINUX_KERNEL
+	help
+		See README.adoc
 
+vi kernel_module/external.desc:
+name: KERNEL_MODULES
+
+vi kernel_module/external.mk:
+################################################################################
+#
+# kernel_modules
+#
+################################################################################
+
+KERNEL_MODULES_VERSION = 1.0
+KERNEL_MODULES_SITE = $(BR2_EXTERNAL_KERNEL_MODULES_PATH)
+KERNEL_MODULES_SITE_METHOD = local
+
+$(eval $(kernel-module))
+$(eval $(generic-package))
+    
+vi kernel_module/Makefile:
+obj-m += $(addsuffix .o, $(notdir $(basename $(filter-out %.mod.c, $(wildcard $(BR2_EXTERNAL_KERNEL_MODULES_PATH)/*.c)))))
+ccflags-y := -DDEBUG -g -std=gnu99 -Werror -Wno-declaration-after-statement -Wframe-larger-than=1000000000
+
+.PHONY: all clean
+
+CFLAGS_MODULE=-fno-pic
+
+all:
+	$(MAKE) -C -fno-pic '/lib/modules/$(shell uname -r)/build' M='$(PWD)' modules
+
+clean:
+	$(MAKE) -C '$(LINUX_DIR)' M='$(PWD)' clean
+    
+    
 clear buildroot/lpi4a/buildroot/output/build/kernel_module/
-copy src
-vi ./.config (delete BR2_PACKAGE_KERNEL_MODULE=?)    
-echo 'BR2_PACKAGE_KERNEL_MODULE=y' >> .config
+copy all above files to buildroot/lpi4a/buildroot/output/build/kernel_module/
 cd buildroot
+vi .config (delete BR2_PACKAGE_KERNEL_MODULE=?)    
+echo 'BR2_PACKAGE_KERNEL_MODULE=y' >> .config
 make
+
+// ----------------- add package to build ---------------
+cd package
+mkdir mednafen   (copy sorces to this folder)
+
+in package/Config.in  add:
+menu "Misc"
+    source "package/mednafen/Config.in"
+endmenu
+
+vi package/mednafen/Config.in :
+config BR2_PACKAGE_MEDNAFEN
+    bool "mednafen"
+    help
+        Hello world package.
+
+vi package/mednafen/mednafen.mk :        
+################################################################################
+#
+# mednafen
+#
+################################################################################
+
+MEDNAFEN_VERSION = 1.0
+MEDNAFEN_SITE = ./package/mednafen
+MEDNAFEN_SITE_METHOD = local
+MEDNAFEN_AUTORECONF = YES
+
+#define MEDNAFEN_BUILD_CMDS
+#    $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)
+#endef
+
+#define MEDNAFEN_INSTALL_TARGET_CMDS
+#    $(INSTALL) -D -m 0755 $(@D)/mednafen $(TARGET_DIR)/usr/bin
+#endef
+
+MEDNAFEN_CONF_OPTS = \
+	--enable-nes
+SDL_VIDEODRIVER=directfb
+$(eval $(autotools-package))
+
+
+
+//---------------- in linux ---------------------
+vi /etc/inittab add:
+tty0::respawn:/bin/sh
+# and script to start mednafen
+
+/etc/directfbrc:
+system=fbdev
+fbdev=/dev/fb0
+mode=320x240
+scaled=320x240
+depth=16
+pixelformat=RGB16
+
