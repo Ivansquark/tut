@@ -99,7 +99,7 @@ $(eval $(autotools-package))
 
 //---------------- in linux ---------------------
 vi /etc/inittab add:
-tty0::respawn:/bin/sh
+tty0::respawn:/bin/login -f root
 # and script to start mednafen
 
 /etc/directfbrc:
@@ -109,4 +109,17 @@ mode=320x240
 scaled=320x240
 depth=16
 pixelformat=RGB16
+
+//--------------- autostart script ----------------
+#! /bin/sh
+cd /root
+USER=root
+SHLVL=1
+HOME=/root
+PS1=#
+LOGNAME=root
+TERM=vt100
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+SHELL=/bin/sh
+EDITOR=/bin/vi
 

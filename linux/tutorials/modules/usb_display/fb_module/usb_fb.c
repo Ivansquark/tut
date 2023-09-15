@@ -24,8 +24,8 @@
 
 #define DRIVER_AUTHOR "squark"
 #define DRIVER_DESC "USB 320x240 16bit display module frame buffer driver"
-#define DEVICE_VENDOR_ID 0x046D  // 0x1a86
-#define DEVICE_PRODUCT_ID 0xC52B // 0xdead
+#define DEVICE_VENDOR_ID 0x1a86
+#define DEVICE_PRODUCT_ID 0xdead
 
 //#define TOTAL_BUFFER_SIZE 64 * 100
 #define DISP_MINOR_BASE 1
