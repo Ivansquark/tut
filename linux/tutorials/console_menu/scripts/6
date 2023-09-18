@@ -1,0 +1,3 @@
+#6 - six
+#! /bin/sh
+echo "script 6"

@@ -7,7 +7,7 @@ g++
 #%h c++-header
 %h %hpp --include=Base.h
 -Iinc/
-#-I/usr/include/
+-I/usr/include/
 #-I/usr/include/c++/12/
 #-I/usr/include/c++/12/bits/
 #-I/usr/include/x86_64-linux-gnu/c++/12/bits/

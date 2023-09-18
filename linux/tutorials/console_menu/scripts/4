@@ -1,0 +1,3 @@
+#4 - forth
+#! /bin/sh
+echo "script 4"
