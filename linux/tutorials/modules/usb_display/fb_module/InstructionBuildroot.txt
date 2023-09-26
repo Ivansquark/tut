@@ -56,6 +56,14 @@ echo 'BR2_PACKAGE_KERNEL_MODULE=y' >> .config
 make
 
 // ----------------- add package to build ---------------
+vi package/Config.in:
+menu "Misc"
+    source "package/mednafen/Config.in"
+    source "package/consolemenu/Config.in"
+    source "package/scumvm/Config.in"
+endmenu
+
+
 cd package
 mkdir mednafen   (copy sorces to this folder)
 
@@ -157,3 +165,26 @@ target_link_options(${PROJECT}
     LINKER:-Map=a.map
 )
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+
+insmod /lib/modules/6.1.0-rc3/extra/usb_fb.ko
+allwinner/sun20i-d1-lichee-rv-dock
+
+
+////////////////// DTC  //////////////////////////////////////
+/dts-v1/;
+
+/home/debian/embedded/linux/buildroot/lpi4a/buildroot/output/host/bin/riscv64-buildroot-linux-gnu-gcc -nostdinc -I include -I arch  -undef -x assembler-with-cpp /home/debian/embedded/linux/buildroot/lpi4a/buildroot/output/build/linux-ff6b136/arch/riscv/boot/dts/sunxi/sun20.dtsi sun20.dts.preprocessed -I
+
+/home/debian/embedded/linux/buildroot/lpi4a/buildroot/output/host/bin/dtc -I dts -O dtb -p 0x1000 sun20.dts.preprocessed -o sun20.dtb
+
+
+/////////////////////////////////////////////////////////////
+ALSA usb 
+vi /etc/asound.conf
+defaults.pcm.card 1
+defaults.ctl.card 1
+
+/////////////////////// mednafen ////////////////////////////
+sound.device sexyal-literal-default
+sound.driver alsa

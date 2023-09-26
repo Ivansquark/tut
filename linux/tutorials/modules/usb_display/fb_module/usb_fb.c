@@ -82,7 +82,7 @@ static struct fb_var_screeninfo var_info = {
 
 static struct fb_deferred_io display_defio = {
     /* delay between mkwrite and deferred handler */
-    .delay = HZ / 24,
+    .delay = HZ / 30,
     /* callback */
     .deferred_io = &display_update,
 };
