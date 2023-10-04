@@ -33,7 +33,7 @@ void Fileops::init() {
         ++fileCount;
     }
 
-    std::cout << "files num C++ = " << fileCount << std::endl;
+    //std::cout << "files num C++ = " << fileCount << std::endl;
 
     strList->push_back("LAST");
 }

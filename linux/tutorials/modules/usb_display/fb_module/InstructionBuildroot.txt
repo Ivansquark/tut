@@ -188,3 +188,8 @@ defaults.ctl.card 1
 /////////////////////// mednafen ////////////////////////////
 sound.device sexyal-literal-default
 sound.driver alsa
+amixer set 'Speaker' 10%-
+
+
+//------------- quiet on boot in serial console-------------
+append quiet console...

@@ -1,0 +1,3 @@
+#aaa - aaa
+#! /bin/sh
+echo "script aaa"

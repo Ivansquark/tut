@@ -1,0 +1,3 @@
+#01 - 01
+#! /bin/sh
+echo "script 01"
