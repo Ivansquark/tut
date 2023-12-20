@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en-US" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<link rel="pingback" href="https://blog.andreiavram.ro/xmlrpc.php">
+	<!--[if lt IE 9]>
+	<script src="https://blog.andreiavram.ro/wp-content/themes/twentyfifteen/js/html5.js?ver=3.7.0"></script>
+	<![endif]-->
+	<script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>
+<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<!-- This site is optimized with the Yoast SEO plugin v21.5 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>GoogleTest parameterized tests with JSON input - Andrei Avram</title>
+	<meta name="description" content="This is a full setup of parameterized tests (table-driven tests) with the GoogleTest framework. It includes using JSON test input from a file. If you&#039;d … Continue reading GoogleTest parameterized tests with JSON input" />
+	<link rel="canonical" href="https://blog.andreiavram.ro/gtest-parameterized-tests-json/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="GoogleTest parameterized tests with JSON input - Andrei Avram" />
+	<meta property="og:description" content="This is a full setup of parameterized tests (table-driven tests) with the GoogleTest framework. It includes using JSON test input from a file. If you&#039;d … Continue reading GoogleTest parameterized tests with JSON input" />
+	<meta property="og:url" content="https://blog.andreiavram.ro/gtest-parameterized-tests-json/" />
+	<meta property="og:site_name" content="Andrei Avram" />
+	<meta property="article:published_time" content="2022-06-01T04:00:14+00:00" />
+	<meta property="article:modified_time" content="2023-04-06T15:16:55+00:00" />
+	<meta name="author" content="Andrei" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:label1" content="Written by" />
+	<meta name="twitter:data1" content="Andrei" />
+	<meta name="twitter:label2" content="Est. reading time" />
+	<meta name="twitter:data2" content="6 minutes" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/#article","isPartOf":{"@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/"},"author":{"name":"Andrei","@id":"https://blog.andreiavram.ro/#/schema/person/5ccd557856502ca093438572d8d7ad3f"},"headline":"GoogleTest parameterized tests with JSON input","datePublished":"2022-06-01T04:00:14+00:00","dateModified":"2023-04-06T15:16:55+00:00","mainEntityOfPage":{"@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/"},"wordCount":1457,"commentCount":0,"publisher":{"@id":"https://blog.andreiavram.ro/#/schema/person/5ccd557856502ca093438572d8d7ad3f"},"keywords":["c++","testing"],"inLanguage":"en-US","potentialAction":[{"@type":"CommentAction","name":"Comment","target":["https://blog.andreiavram.ro/gtest-parameterized-tests-json/#respond"]}]},{"@type":"WebPage","@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/","url":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/","name":"GoogleTest parameterized tests with JSON input - Andrei Avram","isPartOf":{"@id":"https://blog.andreiavram.ro/#website"},"datePublished":"2022-06-01T04:00:14+00:00","dateModified":"2023-04-06T15:16:55+00:00","description":"This is a full setup of parameterized tests (table-driven tests) with the GoogleTest framework. It includes using JSON test input from a file. If you'd … Continue reading GoogleTest parameterized tests with JSON input","breadcrumb":{"@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://blog.andreiavram.ro/gtest-parameterized-tests-json/"]}]},{"@type":"BreadcrumbList","@id":"https://blog.andreiavram.ro/gtest-parameterized-tests-json/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://blog.andreiavram.ro/"},{"@type":"ListItem","position":2,"name":"GoogleTest parameterized tests with JSON input"}]},{"@type":"WebSite","@id":"https://blog.andreiavram.ro/#website","url":"https://blog.andreiavram.ro/","name":"Andrei Avram","description":"Software Engineer","publisher":{"@id":"https://blog.andreiavram.ro/#/schema/person/5ccd557856502ca093438572d8d7ad3f"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://blog.andreiavram.ro/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":["Person","Organization"],"@id":"https://blog.andreiavram.ro/#/schema/person/5ccd557856502ca093438572d8d7ad3f","name":"Andrei","image":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://blog.andreiavram.ro/#/schema/person/image/","url":"https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428.jpeg","contentUrl":"https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428.jpeg","width":500,"height":500,"caption":"Andrei"},"logo":{"@id":"https://blog.andreiavram.ro/#/schema/person/image/"},"sameAs":["https://www.andreiavram.ro/","https://www.linkedin.com/in/andreiavrammsd/"],"url":"https://blog.andreiavram.ro/author/msd/"}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//www.googletagmanager.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Andrei Avram &raquo; Feed" href="https://blog.andreiavram.ro/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Andrei Avram &raquo; Comments Feed" href="https://blog.andreiavram.ro/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Andrei Avram &raquo; GoogleTest parameterized tests with JSON input Comments Feed" href="https://blog.andreiavram.ro/gtest-parameterized-tests-json/feed/" />
+<link rel='stylesheet' id='css-0-css' href='https://blog.andreiavram.ro/wp-content/mmr/b75b2172-1680952428.min.css' media='all' />
+<link rel='stylesheet' id='twentyfifteen-fonts-css' href='https://fonts.googleapis.com/css?family=Noto+Sans%3A400italic%2C700italic%2C400%2C700%7CNoto+Serif%3A400italic%2C700italic%2C400%2C700%7CInconsolata%3A400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' media='all' />
+<link rel='stylesheet' id='css-1-css' href='https://blog.andreiavram.ro/wp-content/mmr/af1316cc-1621022330.min.css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentyfifteen-ie-css' href='https://blog.andreiavram.ro/wp-content/themes/twentyfifteen/css/ie.css' media='all' />
+<![endif]-->
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='twentyfifteen-ie7-css' href='https://blog.andreiavram.ro/wp-content/themes/twentyfifteen/css/ie7.css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='css-2-css' href='https://blog.andreiavram.ro/wp-content/mmr/62550812-1696741962.min.css' media='all' />
+<script src='https://blog.andreiavram.ro/wp-content/mmr/5dcf100b-1680952426.min.js' id='js-3-js'></script>
+
+<!-- Google Analytics snippet added by Site Kit -->
+<script src='https://www.googletagmanager.com/gtag/js?id=UA-77379987-4' id='google_gtagjs-js' async></script>
+<script id='google_gtagjs-js-after'>
+window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
+gtag('set', 'linker', {"domains":["blog.andreiavram.ro"]} );
+gtag("js", new Date());
+gtag("set", "developer_id.dZTNiMT", true);
+gtag("config", "UA-77379987-4", {"anonymize_ip":true});
+gtag("config", "G-BJCMPKPX7P");
+</script>
+
+<!-- End Google Analytics snippet added by Site Kit -->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://blog.andreiavram.ro/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://blog.andreiavram.ro/wp-includes/wlwmanifest.xml" />
+
+<link rel='shortlink' href='https://blog.andreiavram.ro/?p=2013' />
+<meta name="generator" content="Site Kit by Google 1.113.0" />
+<!-- Google AdSense snippet added by Site Kit -->
+<meta name="google-adsense-platform-account" content="ca-host-pub-2644536267352236">
+<meta name="google-adsense-platform-domain" content="sitekit.withgoogle.com">
+<!-- End Google AdSense snippet added by Site Kit -->
+<style>.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style><link rel="icon" href="https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428-150x150.jpeg" sizes="32x32" />
+<link rel="icon" href="https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428-300x300.jpeg" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428-300x300.jpeg" />
+<meta name="msapplication-TileImage" content="https://blog.andreiavram.ro/wp-content/uploads/2021/02/1536685644428-300x300.jpeg" />
+
+</head>
+
+<body class="post-template-default single single-post postid-2013 single-format-standard wp-embed-responsive cookies-not-set">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-dark-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0 0.49803921568627" /><feFuncG type="table" tableValues="0 0.49803921568627" /><feFuncB type="table" tableValues="0 0.49803921568627" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0 1" /><feFuncG type="table" tableValues="0 1" /><feFuncB type="table" tableValues="0 1" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-purple-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0.54901960784314 0.98823529411765" /><feFuncG type="table" tableValues="0 1" /><feFuncB type="table" tableValues="0.71764705882353 0.25490196078431" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-blue-red"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0 1" /><feFuncG type="table" tableValues="0 0.27843137254902" /><feFuncB type="table" tableValues="0.5921568627451 0.27843137254902" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-midnight"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0 0" /><feFuncG type="table" tableValues="0 0.64705882352941" /><feFuncB type="table" tableValues="0 1" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-magenta-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0.78039215686275 1" /><feFuncG type="table" tableValues="0 0.94901960784314" /><feFuncB type="table" tableValues="0.35294117647059 0.47058823529412" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-purple-green"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0.65098039215686 0.40392156862745" /><feFuncG type="table" tableValues="0 1" /><feFuncB type="table" tableValues="0.44705882352941 0.4" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;" ><defs><filter id="wp-duotone-blue-orange"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 " /><feComponentTransfer color-interpolation-filters="sRGB" ><feFuncR type="table" tableValues="0.098039215686275 1" /><feFuncG type="table" tableValues="0 0.66274509803922" /><feFuncB type="table" tableValues="0.84705882352941 0.41960784313725" /><feFuncA type="table" tableValues="1 1" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" /></filter></defs></svg><div id="page" class="hfeed site">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+	<div id="sidebar" class="sidebar">
+		<header id="masthead" class="site-header" role="banner">
+			<div class="site-branding">
+										<p class="site-title"><a href="https://blog.andreiavram.ro/" rel="home">Andrei Avram</a></p>
+												<p class="site-description">Software Engineer</p>
+										<button class="secondary-toggle">Menu and widgets</button>
+			</div><!-- .site-branding -->
+		</header><!-- .site-header -->
+
+			<div id="secondary" class="secondary">
+
+					<nav id="site-navigation" class="main-navigation" role="navigation">
+				<div class="menu-pages-container"><ul id="menu-pages" class="nav-menu"><li id="menu-item-53" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-53"><a href="https://blog.andreiavram.ro/about/">About</a></li>
+<li id="menu-item-1305" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1305"><a href="https://github.com/andreiavrammsd">GitHub</a></li>
+<li id="menu-item-1306" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1306"><a href="https://www.linkedin.com/in/andreiavrammsd">LinkedIn</a></li>
+<li id="menu-item-84" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-84"><a href="https://cv.andreiavram.ro/">CV</a></li>
+</ul></div>			</nav><!-- .main-navigation -->
+
+
+					<div id="widget-area" class="widget-area" role="complementary">
+				<aside id="search-2" class="widget widget_search"><form role="search" method="get" class="search-form" action="https://blog.andreiavram.ro/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s" />
+				</label>
+				<input type="submit" class="search-submit screen-reader-text" value="Search" />
+			</form></aside><aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><a href="https://www.digitalocean.com/?refcode=71a079f0b08e&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg" alt="DigitalOcean Referral Badge" /></a></div></aside>
+		<aside id="recent-posts-2" class="widget widget_recent_entries">
+		<h2 class="widget-title">Recent Posts</h2><nav aria-label="Recent Posts">
+		<ul>
+											<li>
+					<a href="https://blog.andreiavram.ro/runtime-polymorphism-without-dynamic-memory-allocation-cpp-part-2/">Runtime polymorphism without dynamic memory allocation (part 2)</a>
+									</li>
+											<li>
+					<a href="https://blog.andreiavram.ro/runtime-polymorphism-without-dynamic-memory-allocation-cpp/">Runtime polymorphism without dynamic memory allocation</a>
+									</li>
+											<li>
+					<a href="https://blog.andreiavram.ro/cpp-multiple-variadic-templates/">C++ multiple template parameter packs</a>
+									</li>
+											<li>
+					<a href="https://blog.andreiavram.ro/call-multiple-functions-input-cpp/">Calling multiple functions for an input</a>
+									</li>
+											<li>
+					<a href="https://blog.andreiavram.ro/compile-time-recursion-cpp17/">Compile-time recursion in C++17</a>
+									</li>
+					</ul>
+
+		</nav></aside><aside id="recent-comments-2" class="widget widget_recent_comments"><h2 class="widget-title">Recent Comments</h2><nav aria-label="Recent Comments"><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link"><a href="https://www.andreiavram.ro/" class="url" rel="ugc external nofollow">Andrei</a></span> on <a href="https://blog.andreiavram.ro/cpp-tasks-compile-time-polymorphism/#comment-5034">Executing tasks based on static polymorphism</a></li><li class="recentcomments"><span class="comment-author-link">Dmitrii A</span> on <a href="https://blog.andreiavram.ro/cpp-tasks-compile-time-polymorphism/#comment-5031">Executing tasks based on static polymorphism</a></li><li class="recentcomments"><span class="comment-author-link">Andrei</span> on <a href="https://blog.andreiavram.ro/comparing-zero-asm/#comment-4502">Comparing to zero</a></li><li class="recentcomments"><span class="comment-author-link">Ion Fitil</span> on <a href="https://blog.andreiavram.ro/comparing-zero-asm/#comment-4493">Comparing to zero</a></li><li class="recentcomments"><span class="comment-author-link">Andrei</span> on <a href="https://blog.andreiavram.ro/real-benefits-solid-principles/#comment-2948">Real benefits of SOLID principles</a></li></ul></nav></aside><aside id="custom_html-3" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-3121740045045299"
+     data-ad-slot="4695685412"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+</div></aside><aside id="archives-2" class="widget widget_archive"><h2 class="widget-title">Archives</h2><nav aria-label="Archives">
+			<ul>
+					<li><a href='https://blog.andreiavram.ro/2023/08/'>August 2023</a></li>
+	<li><a href='https://blog.andreiavram.ro/2023/07/'>July 2023</a></li>
+	<li><a href='https://blog.andreiavram.ro/2023/04/'>April 2023</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/12/'>December 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/11/'>November 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/06/'>June 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/05/'>May 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/04/'>April 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/03/'>March 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2022/01/'>January 2022</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/12/'>December 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/11/'>November 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/10/'>October 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/09/'>September 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/08/'>August 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/07/'>July 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/06/'>June 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/05/'>May 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/04/'>April 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/03/'>March 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/02/'>February 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2021/01/'>January 2021</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/12/'>December 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/11/'>November 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/10/'>October 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/09/'>September 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/08/'>August 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/07/'>July 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/06/'>June 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/05/'>May 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/04/'>April 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/03/'>March 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2020/01/'>January 2020</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/11/'>November 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/08/'>August 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/06/'>June 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/05/'>May 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/04/'>April 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/03/'>March 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/02/'>February 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2019/01/'>January 2019</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/12/'>December 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/11/'>November 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/10/'>October 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/09/'>September 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/08/'>August 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/07/'>July 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/06/'>June 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/05/'>May 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/04/'>April 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/03/'>March 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/02/'>February 2018</a></li>
+	<li><a href='https://blog.andreiavram.ro/2018/01/'>January 2018</a></li>
+			</ul>
+
+			</nav></aside>			</div><!-- .widget-area -->
+
+	</div><!-- .secondary -->
+
+	</div><!-- .sidebar -->
+
+	<div id="content" class="site-content">
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+
+<article id="post-2013" class="post-2013 post type-post status-publish format-standard hentry category-uncategorized tag-cpp tag-testing">
+
+	<header class="entry-header">
+		<h1 class="entry-title">GoogleTest parameterized tests with JSON input</h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>This is a full setup of <strong>parameterized tests</strong> (<strong>table-driven tests</strong>) with the <a href="https://github.com/google/googletest" target="_blank" rel="noopener">GoogleTest</a> framework. It includes using <strong>JSON</strong> test input from a file. If you&#8217;d like to skip the &#8220;story&#8221; and get to the code, you can <a href="https://blog.andreiavram.ro/wp-content/uploads/2022/04/parameterized.zip"><strong>download the CMake example project</strong></a>.</p>
+<p>I assume you know what <a href="https://martinfowler.com/bliki/UnitTest.html" target="_blank" rel="noopener">unit</a> <a href="https://www.google.com/search?q=unit+testing" target="_blank" rel="noopener">testing</a> is and that tests are as important as the production code (or more important sometimes).</p>
+<p>There are several ways to organize tests and their data (provided input and expected output). I&#8217;m testing the very simple sum function of a calculator because my focus here is on the tests, not on the tested code. Everything can be applied in more advanced contexts.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+// calculator.hpp
+
+#ifndef CALCULATOR
+#define CALCULATOR
+
+namespace calculator {
+
+inline int sum(int a, int b) { return a + b; }
+
+}  // namespace calculator
+
+#endif  // CALCULATOR</pre>
+<h2>Simple tests</h2>
+<p>The simplest test would call the function with some arguments and verify the result. I can create multiple similar tests for specific cases (eg. overflow). It&#8217;s the form I&#8217;m trying to use as often as possible. I like stupidly simple tests that are extremely easy to understand.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+#include &lt;gtest/gtest.h&gt;
+
+#include &quot;calculator.hpp&quot;
+
+TEST(CalculatorSimpleTest, Sum)
+{
+    const auto actual = calculator::sum(1, 2);
+    const auto expected = 3;
+    EXPECT_EQ(actual, expected);
+}
+</pre>
+<h2>Table-driven tests</h2>
+<p>It&#8217;s a method I typically use when multiple simple tests (as above) would repeat. I can easily add multiple test cases in a configurable way; rather than thinking about the test code, I&#8217;m focusing on the test scenarios.</p>
+<p>I always encourage <strong>scenario-based tests</strong>. <em>What</em> is more important than <em>how</em>. I construct the tests starting with the scenarios I want to cover (basic ones, edge cases), not thinking about lines of code to be covered. Although very important, the coverage should be a result, not a scope. The most important thing is for the source code to work as I promised to the user through the public interface.</p>
+<p>If there are special scenarios that I want to be clearly stated by the tests, I add simple tests focused on particular cases besides the table-driven ones that cover the base cases.</p>
+<p>The table is a container where each element is a test case.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+#include &lt;gtest/gtest.h&gt;
+
+#include &lt;vector&gt;
+
+#include &quot;calculator.hpp&quot;
+
+TEST(CalculatorTableDrivenTest, Sum)
+{
+    struct Test {
+        int a;
+        int b;
+        int sum;
+    };
+
+    const std::vector&lt;Test&gt; tests{{
+        {1, 2, 3},
+        {4, 5, 9},
+    }};
+
+    for (const auto& test : tests) {
+        const auto actual = calculator::sum(test.a, test.b);
+        const auto expected = test.sum;
+        EXPECT_EQ(actual, expected);
+    }
+}
+
+</pre>
+<p>In case of failure, I can provide details to identify faster what case failed. It&#8217;s more useful when I have many test cases. I can print the case number or I can add a description.<span id="more-2013"></span></p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+for (const auto& test : tests) {
+    const auto actual = calculator::sum(test.a, test.b);
+    const auto expected = test.sum;
+
+    static std::size_t test_case = 0;
+    EXPECT_EQ(actual, expected) &lt;&lt; &quot;test case: &quot; &lt;&lt; ++test_case;
+}
+
+// or
+
+for (std::size_t i = 0; i &lt; tests.size(); ++i) {
+    const auto& test = tests[i];
+    const auto actual = calculator::sum(test.a, test.b);
+    const auto expected = test.sum;
+    EXPECT_EQ(actual, expected) &lt;&lt; &quot;test case: &quot; &lt;&lt; i;
+}
+
+// or
+
+struct Test {
+    std::string description;
+    int a;
+    int b;
+    int sum;
+};
+
+const std::vector&lt;Test&gt; tests{{
+    {&quot;basic&quot;, 1, 2, 3},
+    {&quot;larger numbers&quot;, 4, 5, 9},
+}};
+
+for (const auto& test : tests) {
+    const auto actual = calculator::sum(test.a, test.b);
+    const auto expected = test.sum;
+    EXPECT_EQ(actual, expected) &lt;&lt; test.description;
+}
+</pre>
+<div>If there are too many elements in the table and it clutters the test, I usually extract it into a header file to isolate it.</div>
+<h2>Parameterized tests</h2>
+<p>Parameterized tests are actually a declarative form of table-driven tests. I still have a &#8220;table&#8221; of cases to test my code with. And these cases can come from multiple sources.</p>
+<p>In GoogleTest, the base for these tests is the <code>TestWithParam</code> class template. The template parameter is my <code>Test</code> struct. In the actual test, I can use the <code>GetParam()</code> method to get an instance of the <code>Test</code> struct.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+#include &lt;gtest/gtest.h&gt;
+
+#include &quot;calculator.hpp&quot;
+
+namespace {
+
+struct Test {
+    int a;
+    int b;
+    int sum;
+};
+
+class CalculatorParameterizedTest : public testing::TestWithParam&lt;Test&gt; {
+};
+
+TEST_P(CalculatorParameterizedTest, Sum)
+{
+    const auto actual = calculator::sum(GetParam().a, GetParam().b);
+    const auto expected = GetParam().sum;
+    EXPECT_EQ(actual, expected);
+}
+</pre>
+<p>Now I have to tell my <code>CalculatorParameterizedTest</code> class where to get the test parameter from. I need to instantiate my test suite and pass a list of test parameters. And I have multiple ways to do this.</p>
+<h4>List of parameters</h4>
+<p>The most basic way is to pass a list of <code>Test</code> objects when I instantiate the test suite. The suite needs a prefix, the test class name, and the list of parameters.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+INSTANTIATE_TEST_SUITE_P(InlineValues, CalculatorParameterizedTest, testing::Values(
+    Test{1, 2, 3},
+    Test{4, 5, 9}
+));
+</pre>
+<h4>Container of parameters</h4>
+<p>If the list is too big, I can extract it into a container (that can come from a header file).</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+namespace {
+
+std::vector&lt;Test&gt; GetTests()
+{
+    return {
+        {1, 2, 3},
+        {4, 5, 9},
+    };
+}
+
+}
+
+INSTANTIATE_TEST_SUITE_P(Container, CalculatorParameterizedTest, testing::ValuesIn(GetTests()));
+</pre>
+<h4>Parameters from JSON file</h4>
+<p>Another option is to extract the test data into a text file. As such, it is totally decoupled from the C++ code. It can be any format I wish.</p>
+<p>If I choose this method, anyone can generate the data without C++ knowledge (mostly if a different team generates test cases to cover all possible scenarios based on requirements).</p>
+<p>When the data changes, I don&#8217;t need to compile the tests again because they will read the file on each execution.</p>
+<p>As an example, I chose the JSON format and the <a href="https://github.com/nlohmann/json" target="_blank" rel="noopener">nlohmann/json</a> JSON parser library.</p>
+<p>My file looks like this (an array of objects that match the <code>Test</code> struct):</p>
+<pre>[
+  {
+    "a": 1,
+    "b": 2,
+    "sum": 3
+  },
+  {
+    "a": 4,
+    "b": 5,
+    "sum": 92
+  }
+]
+</pre>
+<p>The full source code will be more helpful. Now I just point out that I need a parser function to parse the JSON content into objects of <code>Test</code> type and a function to read the file.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+namespace {
+
+inline void from_json(const nlohmann::json& j, Test& test)
+{
+    test.a = j.at(&quot;a&quot;);
+    test.b = j.at(&quot;b&quot;);
+    ttest.sum = j.at(&quot;sum&quot;);
+}
+
+std::vector&lt;Test&gt; GetTests(const std::string& path)
+{
+    std::ifstream input(path);
+    nlohmann::json j;
+    input &gt;&gt; j;
+    return j;
+}
+
+}
+
+INSTANTIATE_TEST_SUITE_P(Json, CalculatorParameterizedTest, testing::ValuesIn(GetTests(&quot;input.json&quot;)));
+</pre>
+<p><strong>Input file location</strong></p>
+<p>The tests run in the build directory. But the input file is not there. It&#8217;s usually somewhere in the tests directory. And when the test using the file is executed, it will not find the input file.</p>
+<p>When I add a test in CMake, I can specify the working directory. I can set the current source directory, where the test and the input files live: add_test(NAME &#8230; <strong>WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})</strong>.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+add_executable(calculator calculator_test.cpp)
+target_link_libraries(calculator gtest gtest_main)
+add_test(NAME calculator COMMAND calculator WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+</pre>
+<h4>User-friendly error messages</h4>
+<p>By default, when a test fails, the framework prints the current parameter. But for a parameter like I have, a struct, it does not know how it can be printed. So you&#8217;ll get the byte content, which is not very useful.</p>
+<pre>[ FAILED ] Json/CalculatorParameterizedTest.Sum/1, where GetParam() = 12-byte object &lt;04-00 00-00 19-00 00-00 09-00 00-00&gt; (0 ms)</pre>
+<p>To customize the error message, I place a function with the signature <code>std::string PrintToString(const Test&)</code> inside the namespace of the <code>Test</code> struct. It will be looked up for and used.</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+std::string PrintToString(const Test& test)
+{
+    std::stringstream ss;
+    ss &lt;&lt; &quot;&gt; &quot; &lt;&lt; test.a &lt;&lt; &quot; + &quot; &lt;&lt; test.b &lt;&lt; &quot; = &quot; &lt;&lt; test.sum;
+    return ss.str();
+}
+</pre>
+<p>Now the message is:</p>
+<pre>[  FAILED  ] Json/CalculatorParameterizedTest.Sum/1, where GetParam() = &gt; 4 + 25 = 9 (0 ms)</pre>
+<h2>Comparison: table-driven vs. parameterized tests</h2>
+<p>I can&#8217;t say which of the table-driven or parameterized approaches I prefer. I would even say they are kind of the same. For both, the input can be inline, in a header file, in a text format. A difference is that the parameterized version is declarative, while for the table-driven I &#8220;orchestrate the scenario runner&#8221;.</p>
+<p>The choice that I see is between declaring the test</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+INSTANTIATE_TEST_SUITE_P(Json, CalculatorParameterizedTest, ...);
+</pre>
+<p>and writing a loop</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+for (const auto& test : tests)
+</pre>
+<p>Any method will do as long as the tests are correct and easy to maintain.</p>
+<h2>References</h2>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li><a href="https://google.github.io/googletest/reference/testing.html" target="_blank" rel="noopener">https://google.github.io/googletest/reference/testing.html</a></li>
+<li><a href="https://google.github.io/googletest/advanced.html#value-parameterized-tests" target="_blank" rel="noopener">https://google.github.io/googletest/advanced.html#value-parameterized-tests</a></li>
+<li>Set working directory for CLion: <a href="https://youtrack.jetbrains.com/issue/CPP-22389" target="_blank" rel="noopener">https://youtrack.jetbrains.com/issue/CPP-22389</a></li>
+</ul>
+</li>
+</ul>
+	</div><!-- .entry-content -->
+
+
+	<footer class="entry-footer">
+		<span class="posted-on"><span class="screen-reader-text">Posted on </span><a href="https://blog.andreiavram.ro/gtest-parameterized-tests-json/" rel="bookmark"><time class="entry-date published" datetime="2022-06-01T07:00:14+03:00">June 1, 2022</time><time class="updated" datetime="2023-04-06T18:16:55+03:00">April 6, 2023</time></a></span><span class="byline"><span class="author vcard"><span class="screen-reader-text">Author </span><a class="url fn n" href="https://blog.andreiavram.ro/author/msd/">Andrei</a></span></span><span class="tags-links"><span class="screen-reader-text">Tags </span><a href="https://blog.andreiavram.ro/tag/cpp/" rel="tag">c++</a>, <a href="https://blog.andreiavram.ro/tag/testing/" rel="tag">testing</a></span>			</footer><!-- .entry-footer -->
+
+</article><!-- #post-2013 -->
+
+<div id="comments" class="comments-area">
+
+
+
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/gtest-parameterized-tests-json/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://blog.andreiavram.ro/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="email" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="url" value="" size="30" maxlength="200" autocomplete="url" /></p>
+<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes" /> <label for="wp-comment-cookies-consent">Save my name, email, and website in this browser for the next time I comment.</label></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='2013' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="4d5104fb1f" /></p><p style="display: none !important;"><label>&#916;<textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100"></textarea></label><input type="hidden" id="ak_js_1" name="ak_js" value="203"/><script>document.getElementById( "ak_js_1" ).setAttribute( "value", ( new Date() ).getTime() );</script></p></form>	</div><!-- #respond -->
+	<p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed</a>.</p>
+</div><!-- .comments-area -->
+
+	<nav class="navigation post-navigation" aria-label="Posts">
+		<h2 class="screen-reader-text">Post navigation</h2>
+		<div class="nav-links"><div class="nav-previous"><a href="https://blog.andreiavram.ro/cpp-compilation-time-validation/" rel="prev"><span class="meta-nav" aria-hidden="true">Previous</span> <span class="screen-reader-text">Previous post:</span> <span class="post-title">Compile-time validation</span></a></div><div class="nav-next"><a href="https://blog.andreiavram.ro/compile-time-recursion-cpp17/" rel="next"><span class="meta-nav" aria-hidden="true">Next</span> <span class="screen-reader-text">Next post:</span> <span class="post-title">Compile-time recursion in C++17</span></a></div></div>
+	</nav>
+		</main><!-- .site-main -->
+	</div><!-- .content-area -->
+
+
+	</div><!-- .site-content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+
+
+<!-- Footer -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-3121740045045299"
+     data-ad-slot="1588098355"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+
+
+
+		<div class="site-info">
+									<a href="https://wordpress.org/" class="imprint">
+				Proudly powered by WordPress			</a>
+		</div><!-- .site-info -->
+	</footer><!-- .site-footer -->
+
+</div><!-- .site -->
+
+<script src='https://blog.andreiavram.ro/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js' id='syntaxhighlighter-core-js'></script>
+<script src='https://blog.andreiavram.ro/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://blog.andreiavram.ro/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://blog.andreiavram.ro/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<script src='https://blog.andreiavram.ro/wp-content/mmr/0bb60d9f-1618599001.min.js' id='js-4-js'></script>
+<script id='js-5-js-extra'>
+var screenReaderText = {"expand":"<span class=\"screen-reader-text\">expand child menu<\/span>","collapse":"<span class=\"screen-reader-text\">collapse child menu<\/span>"};
+</script>
+<script src='https://blog.andreiavram.ro/wp-content/mmr/729808e1-1618599001.min.js' id='js-5-js'></script>
+<script id='js-6-js-before'>
+var cnArgs = {"ajaxUrl":"https:\/\/blog.andreiavram.ro\/wp-admin\/admin-ajax.php","nonce":"08222f32e1","hideEffect":"fade","position":"bottom","onScroll":true,"onScrollOffset":100,"onClick":true,"cookieName":"cookie_notice_accepted","cookieTime":31536000,"cookieTimeRejected":2592000,"globalCookie":false,"redirection":false,"cache":true,"revokeCookies":false,"revokeCookiesOpt":"automatic"};
+</script>
+<script src='https://blog.andreiavram.ro/wp-content/mmr/249c0e8d-1696741963.min.js' id='js-6-js'></script>
+
+		<!-- Cookie Notice plugin v2.4.11 by Hu-manity.co https://hu-manity.co/ -->
+		<div id="cookie-notice" role="dialog" class="cookie-notice-hidden cookie-revoke-hidden cn-position-bottom" aria-label="Cookie Notice" style="background-color: rgba(50,50,58,1);"><div class="cookie-notice-container" style="color: #fff"><span id="cn-notice-text" class="cn-text-container">We use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that you are happy with it.</span><span id="cn-notice-buttons" class="cn-buttons-container"><a href="#" id="cn-accept-cookie" data-cookie-set="accept" class="cn-set-cookie cn-button cn-button-custom button" aria-label="Ok">Ok</a></span><span id="cn-close-notice" data-cookie-set="accept" class="cn-close-icon" title="No"></span></div>
+
+		</div>
+		<!-- / Cookie Notice plugin -->
+
+</body>
+</html>
+
+<!-- Dynamic page generated in 0.235 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-12-20 16:18:46 -->
+
+<!-- super cache -->

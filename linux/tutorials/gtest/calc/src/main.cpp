@@ -2,8 +2,8 @@
 #include <fstream>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <vector>
 #include <stdlib.h>
+#include <vector>
 // https://blog.andreiavram.ro/gtest-parameterized-tests-json/
 using namespace std;
 /*
@@ -76,30 +76,51 @@ namespace {
 std::vector<Test> GetTests(const std::string& path) {
     std::ifstream input(path);
     vector<Test> t;
-    char ch;
     Test temp;
-    enum Count {
-        FIRST,
-        SECOND,
-        THIRD
-    };
-    Count curCount = Count::FIRST;
-    while (input >> noskipws >> ch) {
-        if (curCount == Count::FIRST) {
-            curCount = Count::SECOND;
-            temp.a = ch - 0x30;
-            std::cout << temp.a << std::endl;
-        } else if (curCount == Count::SECOND) {
-            curCount = Count::THIRD;
-            temp.b = ch - 0x30;
-            std::cout << temp.b << std::endl;
-        } else {
-            curCount = Count::FIRST;
-            temp.sum = ch - 0x30;
-            std::cout << temp.sum << std::endl;
-            t.push_back(temp);
+    std::string line;
+    std::string tt = "";
+    std::vector<string> vStr;
+    while (std::getline(input, line)) {
+        vStr.clear();
+        size_t count = 0;
+        for (auto&& i : line) {
+            count++;
+            if ((i != ' ')) {
+                tt += i;
+                if (count >= line.size()) {
+                    vStr.push_back(tt);
+                    tt.clear();
+                }
+            } else {
+                vStr.push_back(tt);
+                tt.clear();
+            }
         }
+        temp.a = std::stoi(vStr[0]);
+        temp.b = std::stoi(vStr[1]);
+        temp.sum = std::stoi(vStr[2]);
+
+        t.push_back(temp);
     }
+    /*
+        while (input >> noskipws >> ch) {
+            if (curCount == Count::FIRST) {
+                curCount = Count::SECOND;
+                temp.a = ch - 0x30;
+                std::cout << temp.a << std::endl;
+            } else if (curCount == Count::SECOND) {
+                curCount = Count::THIRD;
+                temp.b = ch - 0x30;
+                std::cout << temp.b << std::endl;
+            } else {
+                curCount = Count::FIRST;
+                temp.sum = ch - 0x30;
+                std::cout << temp.sum << std::endl;
+                t.push_back(temp);
+            }
+        }
+    */
+
     return t;
 }
 } // namespace
