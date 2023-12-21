@@ -1,19 +1,15 @@
-#include <unistd.h>
 #include "stdio.h"
+#include <iostream>
+#include <unistd.h>
 
-#include "main.h"
+#include "sum.h"
+#include "print.h"
 
-
-int main(int argc, char** argv) {
-    write(1, "opa\n",4);
-    write(2, "error\n", 6);
-    write(1, "dev1\n", 4);
-    char* str = "\x31 \x32";
-    printf("\n%s\n", str);
-    printf("\nsum=%d",sum(5,6));
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
+    write(1, "opa\n", 4);
+    print(1, 2, "opa");
+    print(sum(1, 2, 3));
     return 0;
 }
 
-int sum(int x, int y) {
-    return x + y;
-}
+int sum(int x, int y) { return x + y; }
