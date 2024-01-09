@@ -7,6 +7,7 @@
 #include "sfinae.h"
 #include "vect.h"
 #include "leetcode.h"
+#include "init_list.h"
 
 #include <iostream>
 #include <list>
@@ -21,9 +22,17 @@ const int& g(const int& a) {
 }
 
 int main() {
-    std::vector<int> vvv{34, 3};
-    Solution sol;
-    std::cout << sol.largestNumber(vvv) << std::endl;
+    InitList l1{};
+    InitList l21{0};
+    InitList l2{{}};
+    InitList l12({});
+    InitList l3{{{}}};
+    //InitList l4{{{{}}}};
+    
+
+    //std::vector<int> vvv{34, 3};
+    //Solution sol;
+    //std::cout << sol.largestNumber(vvv) << std::endl;
 
     //constexpr_test();
     return 0;

@@ -1,6 +1,6 @@
 import pytcp
 
-tcp = pytcp.Tcp("192.168.0.106", 44444)
+tcp = pytcp.Tcp("192.168.1.200", 55555)
 
 while True:
     x = tcp.read();
