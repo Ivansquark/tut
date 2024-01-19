@@ -2,10 +2,14 @@ import socket
 import os
 
 class Tcp(object):
+    Client = False
     def __init__(self, IP, PORT, client = False):
         self.IP = IP
         self.PORT = PORT
-        self.tcpSock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM);
+        self.tcpSock = socket.socket(family=socket.AF_INET,
+                                     type=socket.SOCK_STREAM);
+        self.tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.Client = client
         if(client == True):            
             self.tcpSock.connect((IP, PORT))
         else:
@@ -27,7 +31,10 @@ class Tcp(object):
         self.tcpSock.sendall(data)
     def read(self):
         while True:
-            data = self.conn.recv(1024)
+            if self.Client:
+                data = self.tcpSock.recv(1024)
+            else:
+                data = self.conn.recv(1024)
             if not data:
                 break
             else:
