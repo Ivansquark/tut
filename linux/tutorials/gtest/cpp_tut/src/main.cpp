@@ -1,7 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "move.h"
+//#include "move.h"
+#include "forward.h"
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -33,15 +33,18 @@ class MyF {
 
 TEST(TestGroupName, test_move) {
     // Arrange
+    int x = 0;
     MyF my(1);
-    const MyF my0 = MyF((MyF(my))); // no optimization in this case
-    // const MyF my0 = MyF(move(MyF(my))); // no optimization in this case
-    MyF my1 = move(my);
-    MyF my2 = move(my0);
-    my1 = move(my2);
+    MyF my_lvalue_but_type_deduction_is_rvalue = forward<MyF>(my);
+    MyF my_lvalue_ref = forward<MyF&>(my);
+    MyF my_rvaalue_ref = forward<MyF&&>(my);
+    //MyF my2 = MyF(forward<int&&>(x+1));
+    my = forward<MyF>(my);
+    my = forward<MyF&>(my);
+    my = forward<MyF&&>(my);
     // Act
     // Assert
-    // EXPECT_EQ(my.getI(), 1);
+    EXPECT_EQ(my.getI(), 1);
 }
 
 #endif //FORWARD
