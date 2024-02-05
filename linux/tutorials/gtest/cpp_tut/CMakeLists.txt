@@ -17,6 +17,7 @@ add_definitions("-Wall -Wextra -Wpedantic -g3 -O0 -fno-elide-constructors
 file(GLOB_RECURSE SRCS src/*.cpp src/*.c)
 
 add_compile_options(-fsanitize=address,undefined)
+#-fsanitize=undefined,thread
 add_link_options(-fsanitize=address,undefined)
 
 add_executable(${PROJECT}.out ${SRCS})

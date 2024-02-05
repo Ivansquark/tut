@@ -18,6 +18,14 @@ template <typename T>
 struct is_lvalue_reference<T&> : true_type {};
 template <typename T>
 struct is_lvalue_reference<T&&> : false_type {};
+
+template <typename T>
+struct is_rvalue_reference : false_type {};
+template <typename T>
+struct is_rvalue_reference<T&> : false_type {};
+template <typename T>
+struct is_rvalue_reference<T&&> : true_type {};
+
 // struct false_type {
 //     static constexpr bool value = false;
 //     constexpr operator bool() noexcept { return value; }
@@ -59,5 +67,10 @@ T&& forward(remove_reference_t<T>&& t) noexcept {
                   "Can not forward an rvalue as an lvalue");
     return static_cast<T&&>(t);
 }
+//------------------------ is_same --------------------------------------------
+template <typename T, typename U>
+struct is_same : false_type{};
+template <typename T>
+struct is_same<T, T> : true_type {}; //specialization
 
 #endif // SFINAE_H

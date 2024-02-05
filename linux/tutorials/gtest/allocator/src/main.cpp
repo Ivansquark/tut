@@ -27,6 +27,7 @@ TEST(allocs, shortalloc) {
     //    // EXPECT_EQ(memuse(), initial);
     //}
     SmallString str("opa",a);
+    SmallString sm(std::move(str),a);
     SmallString str1("askoaoskdpasdokaposdkpkaosdkaposdkpadsodapdkspoask"
             "la;sdalsdkasdklads;k;alsdkl;l;adskapdkoadksppokasoapsdkpad",a);
     std::cout << &str << std::endl;

@@ -7,6 +7,7 @@
 template <size_t N, size_t alignment = alignof(long int)>
 class arena {
     alignas(alignment) char buf_[N];
+    //alignas(alignment) char* buf_;
     char* ptr_;
 
   private:
@@ -26,8 +27,25 @@ class arena {
     arena() noexcept : ptr_(buf_) { print("arena()"); }
     arena(const arena&) = delete;
     arena& operator=(const arena&) = delete;
-    arena(arena&&) = delete;
-    arena& operator=(arena&&) = delete;
+    // arena(arena&&) = delete;
+    arena(arena&&) { print("arena&&"); };
+    arena& operator=(arena&& other) {        
+        
+        //print("other.ptr_ = ", (int*)other.ptr_, "other.buf_",
+        //      (int*)other.buf_);
+        //print("this.ptr_ = ", (int*)ptr_, "this.buf_", (int*)buf_);
+        //size_t size = other.ptr_ - other.buf_;
+        buf_ = other.buf_;
+        ptr_ = other.ptr_;
+        //print("size = ", size);
+        //other.deallocate(other.ptr_, other.ptr_ - other.buf_);
+        //other.ptr_ = nullptr;
+        //allocate(size);
+
+        print("arena&&");
+        return *this;
+    };
+    // arena& operator=(arena&&) = delete;
 
     char* allocate(size_t n) noexcept {
         auto const aligned_n = align_up(n); // size of current allocation
@@ -36,22 +54,26 @@ class arena {
             char* r = ptr_;
             ptr_ += aligned_n;
             std::cout << "allocate on stack" << std::endl;
+            print("allocated = ", aligned_n, "bytes");
             return r;
         } else {
             // TODO: set here check about heap
             std::cout << "allocate on heap" << std::endl;
+            print("allocated = ", aligned_n, "bytes");
             return static_cast<char*>(::operator new(n));
         }
     }
     void deallocate(char* p, size_t n) noexcept {
         if (!pointer_in_buffer(p)) {
-            ::operator delete(p);
             std::cout << "deallocate from heap" << std::endl;
+            print("deallocated = ", n, "bytes");
+            ::operator delete(p);
         }
         n = align_up(n);
         if (p + n == ptr_) {
             p = ptr_;
             std::cout << "deallocate from stack" << std::endl;
+            print("deallocated = ", n, "bytes");
         }
     }
 };
@@ -69,23 +91,30 @@ class stack_alloc {
 
   public:
     stack_alloc() = default;
-    //stack_alloc() { print("stack_alloc()"); }
-    // stack_alloc(const stack_alloc&) = default;
+    // stack_alloc() { print("stack_alloc()"); }
+    //  stack_alloc(const stack_alloc&) = default;
     stack_alloc(const stack_alloc&) {
         // not do here anything
         print("stack_alloc(const stack_alloc&)");
     }
     // stack_alloc(const stack_alloc&) = delete;
-    //stack_alloc& operator=(const stack_alloc&) {
+    // stack_alloc& operator=(const stack_alloc&) {
     //    print("op= (stack_alloc&)");
     //}
     stack_alloc& operator=(const stack_alloc&) = delete;
-    stack_alloc(stack_alloc&&) = delete;
-    stack_alloc& operator=(stack_alloc&&) = delete;
-    //stack_alloc(stack_alloc&&) { print("stack_alloc(stack_alloc&&)"); }
-    //stack_alloc& operator=(stack_alloc&&) {
-    //    print("op= (stack_alloc&&)");
-    //}
+    // stack_alloc(stack_alloc&&) = delete;
+    // stack_alloc& operator=(stack_alloc&&) = delete;
+    stack_alloc(stack_alloc&& other) {
+        print("stack_alloc(stack_alloc&&)");
+        // std::swap(a_, other.a_);
+        //  memcpy(&a_, &other.a_, sizeof(a_));
+        //  other.a_.deallocate();
+        //  other.a_.deallocate(reinterpret_cast<char*>(p), n * sizeof(T));
+        a_ = std::move(other.a_);
+    }
+    // stack_alloc& operator=(stack_alloc&&) {
+    //     print("op= (stack_alloc&&)");
+    // }
 
     // const arena_type& get_arena() const { return &a_; }
     // arena_type& get_arena() { return &a_; }
@@ -103,7 +132,6 @@ class stack_alloc {
     T* allocate(size_t n) {
         // char* res = a_.template allocate<alignof(T)>(n * sizeof(T));
         char* res = a_.allocate(n * sizeof(T));
-        print("allocated = ", n * sizeof(T), "bytes");
         return reinterpret_cast<T*>(res);
     }
 
