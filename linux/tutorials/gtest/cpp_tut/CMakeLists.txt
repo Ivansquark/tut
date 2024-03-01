@@ -12,7 +12,7 @@ endif (WIN32)
 #set(SRCS src/main.cpp src/*.cpp src/*.c)
 #set(PROJECT_FILES ${SRCS})
 include_directories(inc/)
-add_definitions("-Wall -Wextra -Wpedantic -g3 -O0 -fno-elide-constructors
+add_definitions(" -Wall -Wextra -Wpedantic -g3 -O0 -fno-elide-constructors
 -std=c++23")
 file(GLOB_RECURSE SRCS src/*.cpp src/*.c)
 
