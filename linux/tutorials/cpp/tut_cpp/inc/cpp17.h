@@ -90,7 +90,7 @@ void cpp17_test() {
     // from char
     float val;
     std::from_chars((char*)arr.data(), (char*)(arr.data() + 3), val);
-    print1(val + 5, std::size(arr));
+        print1(val + 5, std::size(arr));
 }
 
 #endif // CPP17_H

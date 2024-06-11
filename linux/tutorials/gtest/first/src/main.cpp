@@ -74,11 +74,11 @@ TEST(TwoNum, test_template) {
     // Assert
     ASSERT_EQ(value, "3") << "value != true sum, value = " << value;
 }
-std::ifstream inputValuesFromFile("input.txt");
-INSTANTIATE_TEST_CASE_P(FromFileStream,
-                        TwoNum<int>,
-                        ValuesIn(std::istream_iterator<int>(inputValuesFromFile),
-                                 std::istream_iterator<int>()));
+//std::ifstream inputValuesFromFile("input.txt");
+//INSTANTIATE_TEST_CASE_P(FromFileStream,
+//                        TwoNum<int>,
+//                        ValuesIn(std::istream_iterator<int>(inputValuesFromFile),
+//                                 std::istream_iterator<int>()));
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     //::testing::InitGoogleMock(&argc, argv);

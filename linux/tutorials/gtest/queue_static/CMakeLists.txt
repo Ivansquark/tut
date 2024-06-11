@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.18)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PROJECT a)
 project(${PROJECT})
 if (UNIX)
@@ -13,12 +12,13 @@ endif (WIN32)
 #set(SRCS src/main.cpp src/*.cpp src/*.c)
 #set(PROJECT_FILES ${SRCS})
 include_directories(inc/)
-add_definitions("-Wall -Wextra -Wpedantic -g3 -O0 -fno-elide-constructors
+add_definitions(" -Wall -Wextra -Wpedantic -g3 -O0 -fno-elide-constructors
 -std=c++23")
 file(GLOB_RECURSE SRCS src/*.cpp src/*.c)
 
-add_compile_options(-fsanitize=address,undefined)
-add_link_options(-fsanitize=address,undefined)
+add_compile_options(-fsanitize=undefined)
+#-fsanitize=undefined,thread
+add_link_options(-fsanitize=undefined)
 
 add_executable(${PROJECT}.out ${SRCS})
 
@@ -31,5 +31,12 @@ target_link_options(a.out
     LINKER:-Map=a.map
 )
 
-#find_package( Threads)
-#target_link_libraries( raw_bin ${CMAKE_THREAD_LIBS_INIT} )
+find_package(Threads REQUIRED)
+if(THREADS_HAVE_PTHREAD_ARG)
+  target_compile_options(${PROJECT}.out PUBLIC "-pthread")
+endif()
+if(CMAKE_THREAD_LIBS_INIT)
+  target_link_libraries(${PROJECT}.out "${CMAKE_THREAD_LIBS_INIT}")
+endif()
+target_link_libraries (${PROJECT}.out gmock gtest)
+add_test(tests tests)

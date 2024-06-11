@@ -1,14 +1,13 @@
-#g++
 clang
-%h %cpp -std=c++20
+%h %cpp -std=c++17
 #%c -std=c20
 #%cpp -std=c++17
 #%h x
 #%h c++-header
 %h %hpp --include=Base.h
 -Iinc/
--I/usr/include/
-#-I/usr/include/c++/13/
+#-I/usr/include/
+#-I/usr/include/c++/12/
 #-I/usr/include/c++/12/bits/
 #-I/usr/include/x86_64-linux-gnu/c++/12/bits/
 -fsanitize=leak

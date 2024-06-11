@@ -1,13 +1,13 @@
 #include "allocate.h"
 #include "concepts.h"
 #include "constexpr.h"
+#include "init_list.h"
+#include "leetcode.h"
 #include "meta.h"
 #include "my_string.h"
 #include "rvalue.h"
 #include "sfinae.h"
 #include "vect.h"
-#include "leetcode.h"
-#include "init_list.h"
 
 #include <iostream>
 #include <list>
@@ -21,31 +21,33 @@ const int& g(const int& a) {
     return a;
 }
 
+void checkSfinae() noexcept;
 int main() {
     InitList l1{};
     InitList l21{0};
     InitList l2{{}};
     InitList l12({});
     InitList l3{{{}}};
-    //InitList l4{{{{}}}};
-    
+    // InitList l4{{{{}}}};
 
-    //std::vector<int> vvv{34, 3};
-    //Solution sol;
-    //std::cout << sol.largestNumber(vvv) << std::endl;
-
-    //constexpr_test();
+    std::vector<int> vvv{24, 3};
+    Solution sol;
+    std::cout << sol.largestNumber(vvv) << std::endl;
+    std::clog << sol.largestNumber(vvv) << std::endl;
+    checkSfinae();
+    // constexpr_test();
+    //
     return 0;
 }
 
 void vector_check() {
-
-
     Vector<int> v;
     v.reserve(10);
     v.push_back(5);
     v.push_back(6);
-    for (auto it = v.begin(); it != v.end(); ++it) { std::cout << *it; }
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it;
+    }
     // void (Vector<int>::*ptr)(const int&) = &Vector<int>::push_back;
     // std::cout << "ptr to method: " << (void*&)ptr << std::endl;
     // printf("%p\n", ptr);
@@ -80,7 +82,9 @@ void rvalue_check() {
     print('a', "opa", 'o', z);
     const int a = 5;
     std::cout << g(a) << std::endl;
-    if constexpr (1) { std::cout << "const" << std::endl; }
+    if constexpr (1) {
+        std::cout << "const" << std::endl;
+    }
     std::cout << "\nrval:\n";
     foo_uref(1);
     static_assert(is_same_v<decltype(rref), int&&>);
@@ -108,7 +112,7 @@ void opa(const T& t) {
 }
 void opa(...) { print("opa()...", "opa"); }
 
-void checkSfinae() {
+void checkSfinae() noexcept {
     Vector<int> v(1, 1);
     sfoo(std::move(v));
     sfoo(1);
@@ -118,4 +122,5 @@ void checkSfinae() {
     std::cout << has_method_size_v<std::list<int>> << std::endl;
     opa(v);
     opa(l);
+    //throw("opa");
 }

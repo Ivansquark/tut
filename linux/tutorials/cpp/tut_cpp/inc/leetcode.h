@@ -16,12 +16,14 @@ class Solution {
             fillArr(arrX, x);
             fillArr(arrY, y);
             bool isXbiggerY = !IsXbiggerY();
-            memset(arrX, 0, 10);
-            memset(arrY, 0, 10);
+            memset(arrX, 0, 10 * sizeof(int));
+            memset(arrY, 0, 10 * sizeof(int));
             return isXbiggerY;
         });
         std::string s;
-        for (auto i : nums) { s += (std::to_string(i)); }
+        for (auto i : nums) {
+            s += (std::to_string(i));
+        }
         return s;
     }
 
