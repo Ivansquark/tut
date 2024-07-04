@@ -37,6 +37,8 @@ int main() {
     checkSfinae();
     // constexpr_test();
     //
+    std::cout << "sizeof(int) = " << sizeof(int) << std::endl;
+
     return 0;
 }
 
