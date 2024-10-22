@@ -9,12 +9,12 @@ struct Tree {
     };
     Node* top;
     Tree(int v) : top(new Node(v)) {
-        //top->left = new Node(1);
-        //top->right = new Node(1);
-        //top->right->right = new Node(3);
-        //top->right->left = new Node(3);
-        //top->left->right = new Node(3);
-        //top->left->left = new Node(3);
+        // top->left = new Node(1);
+        // top->right = new Node(1);
+        // top->right->right = new Node(3);
+        // top->right->left = new Node(3);
+        // top->left->right = new Node(3);
+        // top->left->left = new Node(3);
     }
     ~Tree() { freemem(top); }
     void freemem(Node* curr) {
@@ -53,32 +53,20 @@ struct Tree {
     void printPost() { postOrderPrint(top); }
     void inOrderPrint(Node* curr) {
         if (!curr) return;
-        if (curr->left) {
-            inOrderPrint(curr->left);
-        }
+        inOrderPrint(curr->left);
         Print::print(curr->val);
-        if (curr->right) {
-            inOrderPrint(curr->right);
-        }
+        inOrderPrint(curr->right);
     }
     void preOrderPrint(Node* curr) {
         if (!curr) return;
         Print::print(curr->val);
-        if (curr->left) {
-            preOrderPrint(curr->left);
-        }
-        if (curr->right) {
-            preOrderPrint(curr->right);
-        }
+        preOrderPrint(curr->left);
+        preOrderPrint(curr->right);
     }
     void postOrderPrint(Node* curr) {
         if (!curr) return;
-        if (curr->left) {
-            postOrderPrint(curr->left);
-        }
-        if (curr->right) {
-            postOrderPrint(curr->right);
-        }
+        postOrderPrint(curr->left);
+        postOrderPrint(curr->right);
         Print::print(curr->val);
     }
     void it_inOrderPrint(Node* curr) {

@@ -19,6 +19,33 @@ void swap(int* l, int* r) {
 }
 
 void moveZero(int* arr, int len) {
+    /* 2 ptr p0 - find 0, p1-find1 swap
+     * [1,3,5,0,0]
+     * [1,0,0,3,0]
+     *  1 | | | | 
+     *  0 | | | |
+     *
+     *  1 | | | |
+     *  | 0 | | |
+     *
+     *  | | | 1 |
+     *  | 0 | | |
+     *
+     * [0,0,0,0,0]
+     * [1,1,1,1,1]
+     */
+    if (!len || len == 1) return;
+    int p0 = 0;
+    for(int p1 = 0; p1 < len; p1++) {
+        if(arr[p1]) {
+            if(!arr[p0]) {
+                swap(&arr[p0], &arr[p1]);
+            }
+            p0++;
+        }
+    }
+
+#if 0
     int j = 0;
     for (int i = 0; i < len; ++i) {
         // find first not_zero
@@ -30,21 +57,6 @@ void moveZero(int* arr, int len) {
         }
     }
 
-#if 0
-    // two pointers first find 0 second find !0 swap
-    int zeroIdx = 0;
-    int non_zeroIdx = 0;
-    while (zeroIdx < len) {
-        if (!arr[zeroIdx]) {
-            // find non_zero
-            non_zeroIdx = zeroIdx;
-            while (non_zeroIdx < len - 1 && !arr[non_zeroIdx]) {
-                non_zeroIdx++;
-            }
-            std::swap(arr[non_zeroIdx], arr[zeroIdx]);
-        }
-        zeroIdx++;
-    }
 #endif
 
 #if 0

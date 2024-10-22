@@ -8,7 +8,7 @@ using namespace Print;
 int main() {
     int arr1[] = {1, 1, 3, 2, 1, 4, 1, 3, 2};
     //int arr2[] = {1, 1, 3, 2, 1, 4, 1, 3, 2};
-    int arr2[] = {1};
+    int arr2[] = {3,2};
     // int arr[] = {1, 1, 1};
     for (auto&& i : arr1) {
         print(i);

@@ -6,7 +6,8 @@
 using namespace Print;
 
 int main() {
-    int arr[] = {0, 0, 3, 4, 0, 8, 0};
+    //int arr[] = {0, 0, 3, 4, 0, 8, 0};
+    int arr[] = {1, 0, 0, 0, 1};
     for (auto&& i : arr) {
         print(i);
     }

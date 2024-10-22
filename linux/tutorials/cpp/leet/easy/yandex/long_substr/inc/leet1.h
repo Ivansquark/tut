@@ -12,6 +12,11 @@
 #include <unordered_map>
 
 using namespace std;
+// find max substr with non repeated symbols < k (repeated not count)
+// const char* arr = "eceeeaaab";
+// "ecceeeb"; check all symbols
+//  ++++++- 
+//   +++++-
 
 int substrMax(const char* arr, int len, int k) {
     // intuitive
@@ -33,7 +38,7 @@ int substrMax(const char* arr, int len, int k) {
                 if (count >= k) {
                     // new search
                     // clear hash
-                    memset(countChar, 0, 255);
+                    memset(countChar + 'A' - 1, 0, 255 - 'A');
                     break;
                 }
                 temp++;

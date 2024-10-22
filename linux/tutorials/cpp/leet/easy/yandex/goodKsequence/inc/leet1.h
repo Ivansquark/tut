@@ -15,6 +15,17 @@
 using namespace std;
 
 size_t longestGoodSubarray(const vector<int64_t> v, uint32_t k) {
+    // [1,2,3,5,6,8,9]
+    //  l
+    //  r
+    //
+    // [1,2,3,5,6,8,9]
+    //  l | |
+    //  | | r
+    // [1,2,3,5,6,8,9]
+    //  | | | l | |
+    //  | | | r | |
+    //
     // two pointers right finds no repeats left;
     size_t len = v.size();
     if (!len) return 0;
@@ -27,18 +38,18 @@ size_t longestGoodSubarray(const vector<int64_t> v, uint32_t k) {
         if (!m[v[i]]) {
             // go next
             r++;
-            // check k 
-            if ((r - l - 1) >= k) return k;
+            // check k
         } else {
             if (max < r - l) max = r - l;
             l = r;
-            //new check
+            // new check
             m.clear();
             i = r;
             // go next
             r++;
         }
         m[v[i]]++;
+        if ((r - l - 1) >= k) return k;
     }
     if (max < r - l) max = r - l;
     return max;

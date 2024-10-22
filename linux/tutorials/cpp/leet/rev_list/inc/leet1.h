@@ -74,6 +74,20 @@ void printList(const Node* top) {
     Print::print(tmp->val);
 }
 
+Node* reverse(Node** head) {
+    if (!*head || !(*head)->next) return *head;
+    Node* next = nullptr;
+    Node* curr = *head;
+    Node* prev = nullptr;
+    while (curr) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    *head = prev;
+    return prev;
+}
 Node* reverse_list(Node** top) {
     if (!*top || !(*top)->next) return *top;
     Node* next = NULL;
@@ -90,8 +104,8 @@ Node* reverse_list(Node** top) {
 }
 
 Node* reverse_list_recursive(Node** top) {
-    if (!*top ) return NULL;
-    if(!(*top)->next) return *top;
+    if (!*top) return NULL;
+    if (!(*top)->next) return *top;
     Node* tmp = reverse_list_recursive(&(*top)->next);
     //(*top)->next->next = *top;
     //(*top)->next = NULL;

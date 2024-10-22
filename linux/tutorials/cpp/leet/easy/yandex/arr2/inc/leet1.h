@@ -32,6 +32,7 @@ int maxOnesLenIfDel1Element(int* arr, int len) {
             while ((i - l > 0) && arr[i - l - 1]) {
                 l++;
             }
+            // right
             r = 0;
             while ((i + r + 1 < len) && arr[i + r + 1]) {
                 r++;

@@ -13,6 +13,6 @@ int main() {
     //const char* arr = "eceeeaaabbbbbbb";
     print(arr);
     print("\n");
-    print(substrMax(arr, strlen(arr), 4));
+    print(substrMax(arr, strlen(arr), 2));
     return 0;
 }
