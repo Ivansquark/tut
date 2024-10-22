@@ -22,6 +22,7 @@ const int& g(const int& a) {
 }
 
 void checkSfinae() noexcept;
+void forward_check();
 int main() {
     InitList l1{};
     InitList l21{0};
@@ -39,6 +40,7 @@ int main() {
     //
     std::cout << "sizeof(int) = " << sizeof(int) << std::endl;
 
+    forward_check();
     return 0;
 }
 

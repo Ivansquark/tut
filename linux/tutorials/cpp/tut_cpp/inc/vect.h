@@ -51,43 +51,22 @@ class Vector {
         AllocTraits::deallocate(alloc, begin_, size());
     }
     void push_back(const T&& t) noexcept {
-        if (size() < full_size() - 1) {
-            // end_ = new (end_) T(t);
-            AllocTraits::construct(alloc, end_, std::move(t));
-            ++end_;
-        } else {
-            // expand cap => resize
-            resize(full_size() + 2 * CAP);
-            // end_ = new (end_) T(t);
-            AllocTraits::construct(alloc, end_, std::move(t));
-            ++end_;
-        }
+        emplace_back(std::move(t));
     }
     void push_back(const T& t) noexcept {
         emplace_back(t);
-        // if (size() < full_size() - 1) {
-        //    // end_ = new (end_) T(t);
-        //    AllocTraits::construct(alloc, end_, t);
-        //    ++end_;
-        //} else {
-        //    // expand cap => resize
-        //    resize(full_size() + 2 * CAP);
-        //    // end_ = new (end_) T(t);
-        //    AllocTraits::construct(alloc, end_, t);
-        //    ++end_;
-        //}
     }
-    template <typename... Args>
+    template <typename&&... Args>
     void emplace_back(const Args&... args) noexcept {
         if (size() < full_size() - 1) {
             // end_ = new (end_) T(args...);
-            AllocTraits::construct(alloc, end_, args...);
+            AllocTraits::construct(alloc, end_, std::forward<Args>(args)...);
             ++end_;
         } else {
             // expand cap => resize
             resize(full_size() + 2 * CAP);
             // end_ = new (end_) T(args...);
-            AllocTraits::construct(alloc, end_, args...);
+            AllocTraits::construct(alloc, end_, std::forward<Args>(args)...);
             ++end_;
         }
     }
@@ -156,9 +135,18 @@ class Vector {
         iterator(const iterator& other) { this = other; }
         const iterator& operator=(const iterator& other) { this = other; }
         T& operator++() { return vect[++index]; }
-        T& operator++(int) { return vect[index++]; }
+        T operator++(int) {
+            auto tmp = vect[index];
+            ++index;
+            return tmp;
+
+        }
         T& operator--() { return vect[--index]; }
-        T& operator--(int) { return vect[index--]; }
+        T operator--(int) {
+            auto tmp = vect[index];
+            --index;
+            return tmp;
+        }
         T& operator*() { return vect[index]; }
         bool operator==(const iterator& it) { return index == it.index; }
         bool operator!=(const iterator& it) { return index != it.index; }

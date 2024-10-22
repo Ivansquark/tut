@@ -1,0 +1,11 @@
+[
+
+    {
+        "command": "clang++",
+        "arguments": ["-std=c++17", "-Wall", "-Iinc/", "${file}"],
+        "directory": "${fileDirname}",
+        "file": "${file}",
+        "output": "${fileBasenameNoExtension}"
+    }
+
+]

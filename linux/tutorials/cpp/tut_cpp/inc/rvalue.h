@@ -113,7 +113,7 @@ const int&& crref = 3; // paramType==const int&,   T==const int
 // foo_uref
 // int val = 1;            // paramType==int&, T==int&
 // const int cval = 1;     // paramType==const int&, T==const int&
-// int& lref = val;        // paramType==int&, T==int
+// int& lref = val;        // paramType==int&, T==&int
 // const int& clref = 1;   // paramType==const int&, T==const int&
 // int&& rref = 1;         // paramType==int&&, T==int
 // const int&& crref = 1;  // paramType==const int&&, T==const int
@@ -140,7 +140,7 @@ struct remove_reference<T&&> {
 
 template <typename T>
 using remove_reference_t = typename remove_reference<T>::type;
-// throgh typedef
+// through typedef
 // template <typename T>
 // struct remove_reference_t {
 //    typedef typename remove_reference<T>::type type;
