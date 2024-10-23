@@ -14,7 +14,7 @@
 using namespace std;
 
 vector<int> sortedSquares(vector<int>&& nums) {
-    /*
+    /*  O(n)
      * two pointers (max squares are left or right cause sorted)
      * set max(arr[l]^2, arr[r]^2) to right position
      * decrese index (increase l or decrease r)

@@ -18,11 +18,30 @@ void swap(int* l, int* r) {
     *l = tmp;
 }
 
+void moveZeroStatic(int** arr, int* len) {
+    // static replace arr pointers
+    Print::print("arr = ", arr);
+    if (!len) return;
+    static int a[10000] = {0};
+    int count = 0;
+    for (int i = 0; i < *len; i++) {
+        if (*(*arr + i) != 0) {
+            a[count++] = *(*arr + i);
+        }
+    }
+    int* pa = (int*)a;
+    *arr = pa;
+
+    for (int i = 0; i < *len; ++i) {
+        Print::print(*(*arr + i));
+    }
+    // Print::print(*arr);
+    Print::print("a = ", a);
+}
 void moveZero(int* arr, int len) {
     /* 2 ptr p0 - find 0, p1-find1 swap
-     * [1,3,5,0,0]
      * [1,0,0,3,0]
-     *  1 | | | | 
+     *  1 | | | |
      *  0 | | | |
      *
      *  1 | | | |
@@ -36,10 +55,10 @@ void moveZero(int* arr, int len) {
      */
     if (!len || len == 1) return;
     int p0 = 0;
-    for(int p1 = 0; p1 < len; p1++) {
-        if(arr[p1]) {
-            if(!arr[p0]) {
-                swap(&arr[p0], &arr[p1]);
+    for (int p1 = 0; p1 < len; p1++) {
+        if (arr[p1]) {
+            if (!arr[p0]) {
+                std::swap(arr[p0], arr[p1]);
             }
             p0++;
         }
@@ -62,8 +81,8 @@ void moveZero(int* arr, int len) {
 #if 0
     if (!len) return;
     assert(len < 1000);
-    int a[1000] = {0};
-    //int* a = (int*)calloc(len, sizeof(int));
+    // memset(a, 0, sizeof(a));
+    int* a = (int*)calloc(len, sizeof(int));
     int count = 0;
     for (int i = 0; i < len; i++) {
         if (arr[i] != 0) {
@@ -71,22 +90,25 @@ void moveZero(int* arr, int len) {
         }
     }
     memcpy(arr, a, sizeof(int) * len);
+    // for(unsigned long long i = 0; i < 1000000000*3*5; ++i) {
+    //     __asm("nop");
+    // }
+    //  free(a);
 #endif
-    // free(a);
-    //  for (int i = 0; i < len; ++i) {
-    //      if (!arr[i]) {
-    //          int* tArr = (int*)malloc(len * sizeof(int));
-    //          // copy first elements
-    //          memcpy(tArr, arr, i * sizeof(int));
-    //          // copy last elements
-    //          memcpy(tArr + i, arr + i + 1, (len - 1 - i)*sizeof(int));
-    //          //copy zero
-    //          tArr[len - 1] = 0;
-    //          // reverse copy
-    //          memcpy(arr, tArr, len*sizeof(int));
-    //          free(tArr);
-    //      }
-    //  }
+    //   for (int i = 0; i < len; ++i) {
+    //       if (!arr[i]) {
+    //           int* tArr = (int*)malloc(len * sizeof(int));
+    //           // copy first elements
+    //           memcpy(tArr, arr, i * sizeof(int));
+    //           // copy last elements
+    //           memcpy(tArr + i, arr + i + 1, (len - 1 - i)*sizeof(int));
+    //           //copy zero
+    //           tArr[len - 1] = 0;
+    //           // reverse copy
+    //           memcpy(arr, tArr, len*sizeof(int));
+    //           free(tArr);
+    //       }
+    //   }
 }
 
 #endif // LEET1_H

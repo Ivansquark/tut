@@ -33,12 +33,6 @@ struct Queue {
         }
         *ret = v[0];
         vector<int> tmp(v.begin() + 1, v.end());
-        //tmp.reserve(v.size());
-        //for(size_t i = 1; i < v.size(); ++i) {
-        //    tmp.push_back(v[i]);
-        //}
-        v.clear();
-        v.reserve(N);
         v = std::move(tmp);
         return 1;
     }

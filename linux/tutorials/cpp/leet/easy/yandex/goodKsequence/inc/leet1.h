@@ -34,22 +34,19 @@ size_t longestGoodSubarray(const vector<int64_t> v, uint32_t k) {
     size_t r = 0;
     size_t max = 0;
     unordered_map<int, int> m;
-    for (size_t i = 0; i < len; ++i) {
-        if (!m[v[i]]) {
-            // go next
-            r++;
-            // check k
-        } else {
+    while (r < len) {
+        if (m[v[r]]) {
+            //set max
             if (max < r - l) max = r - l;
-            l = r;
             // new check
             m.clear();
-            i = r;
-            // go next
-            r++;
+            // new left pos
+            l = r;
         }
-        m[v[i]]++;
-        if ((r - l - 1) >= k) return k;
+        m[v[r]]++;
+        r++;
+        // check k
+        if ((r - l) >= k) return k;
     }
     if (max < r - l) max = r - l;
     return max;

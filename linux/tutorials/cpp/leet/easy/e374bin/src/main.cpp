@@ -12,7 +12,7 @@ using namespace Print;
  */
 
 int guessNumber(int n){
-	
+	return 0;
 }
 
 
@@ -29,15 +29,14 @@ int main() {
 int search(int* arr, int size, int val) {
     int l = 0;
     int r = size;
-    int med = 0;
     while (l < r) {
-        med = (l + r) / 2;
-        if (val < arr[med]) {
-            r = r - 1;
-        } else if (val > arr[med]) {
-            l = l + 1;
+        int mid = (l + r) / 2;
+        if (val < arr[mid]) {
+            r = mid - 1;
+        } else if (val > arr[mid]) {
+            l = mid + 1;
         } else {
-            return med;
+            return mid;
         }
     }
     return -1;

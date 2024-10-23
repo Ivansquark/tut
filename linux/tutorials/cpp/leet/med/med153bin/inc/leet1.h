@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string>
 #include <string_view>
+#include <limits.h>
 
 using namespace std;
 
@@ -15,7 +16,8 @@ int findMin(int* nums, int numsSize) {
     // else => right sorted set min => go left
     int l = 0;
     int r = numsSize - 1;
-    int min = 0x7FFFFFFF;
+    int min = INT_MIN;
+    //int min = 0x7FFFFFFF;
     int mid = 0;
     while (l <= r) {
         mid = (l + r) / 2;

@@ -39,7 +39,7 @@ int maxOnesLenIfDel1Element(int* arr, int len) {
             }
             if (max < l + r) max = l + r;
         }
-        i += r;
+        i += r; //goto right
     }
     return max;
 
