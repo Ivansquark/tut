@@ -1,7 +1,6 @@
 .PHONY: all clean
 
-PROJ := sem
-PROJ1 := sem1
+PROJ := pipe
 
 GCC_PATH = /usr/bin/
 CC = $(GCC_PATH)gcc
@@ -15,7 +14,6 @@ LD = $(GCC_PATH)ld
 INC = inc/
 LIB = lib/
 BLD = build/
-BLD1 = build1/
 SRC = src/
 inc = -I$(INC)
 
@@ -27,25 +25,17 @@ CXXSRC = $(wildcard $(SRC)*.cpp)
 CXXOBJ := $(addprefix $(BLD),$(CXXSRC:.cpp=.o))
 DEPS_CXX = $(CXXOBJ:.o=.d)
 
-CSRC = $(SRC)sem.c
+CSRC = $(wildcard $(SRC)*.c)
 COBJ := $(addprefix $(BLD),$(CSRC:.c=.o))
 DEPS_C = $(COBJ:.o=.d)
-
-CSRC1 = $(SRC)sem1.c
-COBJ1 := $(addprefix $(BLD1),$(CSRC1:.c=.o))
-DEPS_C1 = $(COBJ1:.o=.d)
 	
-all:	$(BLD)${PROJ}.dis $(BLD)${PROJ}.elf $(BLD1)${PROJ1}.dis $(BLD1)${PROJ1}.elf
+all:	$(BLD)${PROJ}.dis $(BLD)${PROJ}.elf
 
 $(BLD)${PROJ}.dis: $(BLD)${PROJ}.elf
 	$(OBJD) -D $< -M intel > $(BLD)${PROJ}.dis
 
-$(BLD1)${PROJ1}.dis: $(BLD1)${PROJ1}.elf
-	$(OBJD) -D $< -M intel > $(BLD)${PROJ1}.dis
 #------------------------------------  LINKER ---------------------------------
 $(BLD)${PROJ}.elf: $(COBJ) $(CXXOBJ)
-	$(CC) $^ -o  $@ $(LFLAGS)
-$(BLD1)${PROJ1}.elf: $(COBJ1) $(CXXOBJ)
 	$(CC) $^ -o  $@ $(LFLAGS)
 #    $@ — target name
 #    $< — first dependancy name
@@ -64,12 +54,6 @@ $(COBJ) : $(BLD)%.o : %.c
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@ $(inc)
 $(DEPS_C) : $(BLD)%.d : %.c
-	mkdir -p $(@D)
-	$(CC) -E $(CFLAGS) $< -MM -MT $(@:.d=.o) $(inc)  > $@
-$(COBJ1) : $(BLD1)%.o : %.c 
-	mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@ $(inc)
-$(DEPS_C1) : $(BLD1)%.d : %.c
 	mkdir -p $(@D)
 	$(CC) -E $(CFLAGS) $< -MM -MT $(@:.d=.o) $(inc)  > $@
 $(CXXOBJ) : $(BLD)%.o : %.cpp

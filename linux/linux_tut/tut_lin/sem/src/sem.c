@@ -8,8 +8,8 @@
 #define SHMEM_SIZE 4096
 #define SH_MESSAGE "Hello World!\n"
 
-#define SEM_KEY 2007
-#define SHM_KEY 2007
+#define SEM_KEY 2000
+#define SHM_KEY 2000
 
 union semnum {
     int val;
@@ -32,7 +32,7 @@ int main() {
         return 1;
     }
 
-    sem_id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL);
+    sem_id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL | 0600);
 
     if (sem_id == -1) {
         fprintf(stderr, "error: semget()\n");
@@ -42,7 +42,7 @@ int main() {
     sem_vals[0] = 1;
     sem_arg.array = sem_vals;
 
-    if(semctl(sem_id, 0, SETALL, sem_arg) == -1) {
+    if (semctl(sem_id, 0, SETALL, sem_arg) == -1) {
         fprintf(stderr, "error: semctl()\n");
         return 1;
     }
@@ -64,8 +64,17 @@ int main() {
     strcpy(shm_buf, SH_MESSAGE);
 
     printf("ID: %d\n", shm_id);
-    printf("Press <Enter> to exit...");
-    fgetc(stdin);
+
+    sb[0].sem_num = 0;
+    sb[0].sem_flg = SEM_UNDO;
+
+    sb[0].sem_op = -1;
+    semop(sem_id, sb, 1);
+
+    sb[0].sem_op = -1;
+    semop(sem_id, sb, 1);
+
+    semctl(sem_id, 1, IPC_RMID, sem_arg);
 
     shmdt(shm_buf);
     shmctl(shm_id, IPC_RMID, NULL);
