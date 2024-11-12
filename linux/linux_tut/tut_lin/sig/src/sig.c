@@ -9,11 +9,11 @@
 #include <unistd.h>
 #include <wait.h>
 
-int ret = 0;
+sig_atomic_t ret = 0;
 
 void sig_handler() {
-    printf("get sig \r\n");
-    ret = 1;
+    printf((char*)"get sig \r\n");
+    // ret = 1;
 }
 void sig_handler1() { printf("get sig 1\r\n"); }
 
@@ -22,6 +22,9 @@ int main(int argc, char** argv) {
     time_t now = time(NULL);
     int child_counter = 0, parent_counter = 0;
     int childpid = 0;
+    struct sigaction act;
+    sigset_t wait_set;
+    int sig;
     if (argc < 2) {
         fprintf(stderr, "low arguments in %s\r\n", argv[0]);
         return 1;
@@ -37,7 +40,7 @@ int main(int argc, char** argv) {
         fprintf(stdout, "Child num = %d\r\n", childpid);
         fprintf(stdout, "Child parent num = %d\r\n", getppid());
         fprintf(stdout, "Child counter = %d\r\n", child_counter);
-        struct sigaction act;
+        memset(&act, 0, sizeof(act));
         sigemptyset(&act.sa_mask);
         act.sa_handler = &sig_handler;
         act.sa_flags = NULL;
@@ -53,15 +56,35 @@ int main(int argc, char** argv) {
     }
     //--------- WAIT -------------------------------------------
     // int childpid = wait(&exit_status);
+    sigemptyset(&wait_set);
+    sigaddset(&wait_set, SIGINT);
+    sigaddset(&wait_set, SIGTERM);
+    sigprocmask(SIG_BLOCK, &wait_set, NULL);
+    int run = 1;
+    while (run) {
+        sigwait(&wait_set, &sig);
+        switch (sig) {
+        case SIGINT:
+            printf("SIGINT\n");
+            break;
+        case SIGTERM:
+            printf("SIGTERM\n");
+            run = 0;
+            break;
+        default:
+            break;
+        }
+    }
+
     while (time(NULL) < now + 2) parent_counter++;
     fprintf(stdout, "Parent num = %d\r\n", getpid());
     fprintf(stdout, "Parent counter = %d\r\n", parent_counter);
     sleep(2);
-    struct sigaction act1;
-    sigemptyset(&act1.sa_mask);
-    act1.sa_handler = &sig_handler1;
-    act1.sa_flags = NULL;
-    if (sigaction(SIGINT, &act1, NULL) == -1) {
+    memset(&act, 0, sizeof(act));
+    sigemptyset(&act.sa_mask);
+    act.sa_handler = &sig_handler1;
+    act.sa_flags = NULL;
+    if (sigaction(SIGINT, &act, NULL) == -1) {
         printf("NULL SIGACTION 1");
         fflush(stdout);
         return 1;
