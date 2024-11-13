@@ -1,7 +1,29 @@
-%c -std=c11
-%cpp -std=c++17
-%h -x
-%h c++-header
-%h %hpp --include=Base.h
--Iinc/
--I/usr/include/
+clang
+%c -std=c23
+%cpp -std=c++23
+%h %hpp --include=Global.h
+-Iinc
+-isystem/usr/include/x86_64-linux-gnu/c++/13/
+-isystem/usr/include/x86_64-linux-gnu/
+-isystem/usr/include/c++/13/
+-isystem/usr/include/
+-isystem/usr/include/bits
+-Wall
+-Wextra
+-Wwrite-strings
+-Wshadow
+-Wbad-function-cast
+-Wformat-security
+-Wtype-limits
+-Wunused-but-set-parameter
+-Wlogical-op
+-Wpointer-arith
+-Wignored-qualifiers
+-Wformat-signedness
+-Wduplicated-cond
+-Wno-volatile
+-fsanitize=leak
+-fsanitize=address
+-fsanitize=undefined
+#-isystem/usr/include/x86_64-linux-gnu/bits
+#-isystem/usr/include/x86_64-linux-gnu/bits/types

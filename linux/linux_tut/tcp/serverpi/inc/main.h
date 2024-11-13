@@ -3,4 +3,4 @@
 
 void* sum(void* arg);
 
-#endif //MAIN_H
+#endif // MAIN_H
