@@ -5,39 +5,61 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int main(int argc, char** argv) {
-    printf("argc = %d\n", argc);
-    int pf[2];
-    int pid1;
-    if (argc < 1) {
-        fprintf(stderr, "Too few arguments\n");
-        return 1;
-    }
-    if (pipe(pf) == -1) {
-        fprintf(stderr, "pipe() error\n");
-        return 1;
-    }
-    // out first to next in
-    for (int i = 0; i < argc - 1; ++i) {
-        printf("i = %d\n", i);
-        if (!(pid1 = fork())) {
-            if (i > 0) {
-                dup2(pf[1], 1); // stdout
-                close(pf[0]);
-            }
-            if (i < argc + 1) {
-                dup2(pf[0], 0); // stdin
-                close(pf[1]);
-            }
-            execlp(argv[i + 1], argv[i + 1], NULL);
-            fprintf(stderr, "exec() [1] error\n");
-            return 1;
-        }
+#define MAX_ARGC 3
 
-        close(pf[1]);
-        close(pf[0]);
-        waitpid(pid1, NULL, 0);
+int main(int argc, char** argv) {
+    size_t i, n;
+    int prev_pipe, pfds[2];
+
+    n = argc - 1;
+    printf("num args = %lu\n", n);
+    prev_pipe = STDIN_FILENO;
+
+    for (i = 0; i < n - 1; i++) {
+        // create pipes
+        pipe(pfds);
+
+        if (!fork()) {
+            // Redirect previous pipe to stdin
+            if (prev_pipe != STDIN_FILENO) {
+                dup2(prev_pipe, STDIN_FILENO);
+                close(prev_pipe);
+            }
+
+            // Redirect stdout to current pipe
+            dup2(pfds[1], STDOUT_FILENO);
+            close(pfds[1]);
+
+            // Start command
+            // execvp(commands[i][0], commands[i]);
+            execlp(argv[i + 1], argv[i + 1], NULL);
+
+            perror("execvp failed");
+            exit(1);
+        }
+        // parent
+
+        // Close read end of previous pipe (not needed in the parent)
+        close(prev_pipe);
+
+        // Close write end of current pipe (not needed in the parent)
+        close(pfds[1]);
+
+        // Save read end of current pipe to use in next iteration
+        prev_pipe = pfds[0];
     }
+
+    // Get stdin from last pipe
+    if (prev_pipe != STDIN_FILENO) {
+        dup2(prev_pipe, STDIN_FILENO);
+        close(prev_pipe);
+    }
+
+    // Start last command
+    // execvp(commands[i][0], commands[i]);
+    execlp(argv[i + 1], argv[i + 1], NULL);
+
+    perror("execvp failed");
 
     return 0;
 }
