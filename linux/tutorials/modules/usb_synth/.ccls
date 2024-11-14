@@ -4,4 +4,4 @@
 %h c++-header
 %h %hpp --include=Base.h
 -I/usr/include/
--I/usr/lib/modules/5.18.0-0.deb11.4-amd64/source/include/
+-I/usr/src/linux-headers-6.8.0-48/include
