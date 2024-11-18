@@ -8,12 +8,12 @@
 #include <unistd.h>
 #include <wait.h>
 
-int main(int argc, char** argv) {
+int main(int argc, [[maybe_unused]] char** argv) {
+    [[maybe_unused]] extern char** environ;
     if (argc < 2) {
         fprintf(stderr, "low arguments\r\n");
         return 1;
     }
-    extern char** environ;
     pid_t res;
     int exit_status;
     res = fork();
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
         fprintf(stdout, "Child num = %d\r\n", getpid());
         fprintf(stdout, "Child parent num = %d\r\n", getppid());
         fprintf(stdout, "Child counter = %d\r\n", child_counter);
-        //execlp(argv[1], "ls", "-l", "-a", NULL);
-        execlp ("sleep", "sleep", "30", NULL);
+        // execlp(argv[1], "ls", "-l", "-a", NULL);
+        execlp("sleep", "sleep", "30", NULL);
 #if 0
         const char* arg[] = {
             "ls",
@@ -41,13 +41,14 @@ int main(int argc, char** argv) {
 #endif
     }
     //--------- WAIT -------------------------------------------
-    int childpid = wait(&exit_status);
+    // int childpid = wait(&exit_status);
+    int childpid = waitpid(res, &exit_status, 0);
     if (WIFEXITED(exit_status)) {
         printf("Process with PID=%d "
                "has exited with code=%d\n",
                childpid, WEXITSTATUS(exit_status));
-    }
-    if (WIFSIGNALED(exit_status)) {
+    } else if (WIFSIGNALED(exit_status) == SIGSEGV) {
+        // childpid = WSTOPSIG(exit_status);
         printf("Process with PID=%d "
                "has exited with signal.\n",
                childpid);

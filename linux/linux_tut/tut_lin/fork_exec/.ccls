@@ -11,7 +11,7 @@ clang
 -Wextra
 -Wwrite-strings
 -Wshadow
--Wdeclaration-after-statement
+#-Wdeclaration-after-statement
 -Wbad-function-cast
 -Wformat-security
 -Wtype-limits
