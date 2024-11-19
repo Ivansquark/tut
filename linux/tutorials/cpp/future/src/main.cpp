@@ -5,6 +5,7 @@
 #include <bits/move.h>
 #include <chrono>
 #include <condition_variable>
+#include <functional>
 #include <future>
 #include <iostream>
 #include <memory>
@@ -13,7 +14,6 @@
 #include <thread>
 #include <unistd.h>
 #include <utility>
-#include <functional>
 
 void threadFunction1();
 void threadFunction2();
@@ -21,7 +21,7 @@ void threadFunction2();
 std::condition_variable cv;
 std::mutex mut;
 
-bool task(const std::string &str) {
+bool task(const std::string& str) {
     std::cout << str << std::endl;
     if (str == "exit") {
         return true;
@@ -29,52 +29,58 @@ bool task(const std::string &str) {
         return false;
 }
 
-void initPromise(std::promise<const std::string&>& pr, const std::string& str) {    
-        std::cout << "Promise " << str << std::endl;
-        if(str == "opa") {
-            pr.set_value(str);
-        } else {
-            std::string str1 = "wrong";
-            const_cast<std::string&>(str) = str1;            
-            pr.set_value(str);
-        }
+void initPromise(std::promise<const std::string&>& pr, const std::string& str) {
+    std::cout << "Promise " << str << std::endl;
+    if (str == "opa") {
+        pr.set_value(str);
+    } else {
+        std::string str1 = "wrong";
+        const_cast<std::string&>(str) = str1;
+        pr.set_value(str);
+    }
 }
 
 class Print {
-    public:
-        void print(int x) { std::cout << "print - " << x << std::endl; }
+  public:
+    void print(int x) { std::cout << "print - " << x << std::endl; }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     int data = 5;
     std::unique_ptr<Print> up = std::make_unique<Print>();
-    //auto upl = [up = std::move(up)](){up->print(data);};
-    auto uplb = std::bind( [&](int data){up->print(data);}, std::move(data));
+    // auto upl = [up = std::move(up)](){up->print(data);};
+    auto uplb = std::bind([&](int data) { up->print(data); }, std::move(data));
 
     uplb();
     int a = 5;
-    auto aa = [&](){std::cout << "a=" << a << std::endl;};
+    auto aa = [&]() { std::cout << "a=" << a << std::endl; };
     aa();
     // Tcp::instance();
     std::string aaa = "aaa";
 
-    auto asyncLaunch = std::async(std::launch::async, [&](const std::string& s){
-        std::cout << "Async Launch " << aaa << s << " ID: "<< std::this_thread::get_id() << std::endl;
-            }, "async");
-    auto asyncDeffered = std::async(std::launch::deferred, [&](const std::string& s){
-        std::cout << "Async Launch " << aaa << s << " ID: "<< std::this_thread::get_id() << std::endl;
-            }, "deffered");
-    
-    std::cout << "Main ID: "<< std::this_thread::get_id() << std::endl;
+    auto asyncLaunch = std::async(
+        std::launch::async,
+        [&](const std::string& s) {
+            std::cout << "Async Launch " << aaa << s
+                      << " ID: " << std::this_thread::get_id() << std::endl;
+        },
+        "async");
+    auto asyncDeffered = std::async(
+        std::launch::deferred,
+        [&](const std::string& s) {
+            std::cout << "Async Launch " << aaa << s
+                      << " ID: " << std::this_thread::get_id() << std::endl;
+        },
+        "deffered");
+
+    std::cout << "Main ID: " << std::this_thread::get_id() << std::endl;
     asyncLaunch.get();
-    auto aDefFunc = [&](){
-        asyncDeffered.get();
-    };
+    auto aDefFunc = [&]() { asyncDeffered.get(); };
     std::thread sDef(aDefFunc);
     sDef.detach();
 
-    //std::thread thr1(threadFunction1);
-    //std::thread thr2(threadFunction2);
+    // std::thread thr1(threadFunction1);
+    // std::thread thr2(threadFunction2);
     std::promise<const std::string&> p;
     std::future<const std::string&> futt = p.get_future();
     // if parameters sets to thread by reference => must use std::ref
@@ -85,23 +91,23 @@ int main(int argc, char **argv) {
     std::cout << futt.get();
     while (1) {
         std::cin >> aaa;
-        std::function<bool(const std::string &)> func = task;
-        std::packaged_task<bool(const std::string &)> pTask(func);
-          std::future<bool> fut = pTask.get_future();
+        std::function<bool(const std::string&)> func = task;
+        std::packaged_task<bool(const std::string&)> pTask(func);
+        std::future<bool> fut = pTask.get_future();
         // packeged task must only move
         std::thread thrFuture(std::move(pTask), aaa.data());
-        if (fut.get())
-            _exit(0);
+        if (fut.get()) _exit(0);
         thrFuture.join();
     }
 
-    //thr1.join();
-    //thr2.join();
+    // thr1.join();
+    // thr2.join();
     return 0;
 }
 
 void threadFunction1() {
-    std::cout << "new c++ thread ID: " << std::this_thread::get_id() << std::endl;
+    std::cout << "new c++ thread ID: " << std::this_thread::get_id()
+              << std::endl;
     while (1) {
         sleep(2);
         std::cout << "Thread 1 start and sleep" << std::endl;
@@ -117,7 +123,8 @@ void threadFunction1() {
 }
 
 void threadFunction2() {
-    std::cout << "threadFunction2 ID: " << std::this_thread::get_id() << std::endl;
+    std::cout << "threadFunction2 ID: " << std::this_thread::get_id()
+              << std::endl;
     while (1) {
         sleep(1);
         std::cout << "Thread2 start and wait for notify_one" << std::endl;

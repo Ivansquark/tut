@@ -13,7 +13,8 @@
 #include <thread>
 //! brief main class that implements basic thread pool;
 
-template <typename T> class ThreadsafeQueue {
+template <typename T>
+class ThreadsafeQueue {
     std::queue<T, std::deque<T>> queue_;
     mutable std::mutex mutex_;
 
@@ -21,9 +22,9 @@ template <typename T> class ThreadsafeQueue {
     // and pop().
   public:
     ThreadsafeQueue() = default;
-    ThreadsafeQueue(const ThreadsafeQueue<T> &) = delete;
-    ThreadsafeQueue &operator=(const ThreadsafeQueue<T> &) = delete;
-    ThreadsafeQueue(ThreadsafeQueue<T> &&other) {
+    ThreadsafeQueue(const ThreadsafeQueue<T>&) = delete;
+    ThreadsafeQueue& operator=(const ThreadsafeQueue<T>&) = delete;
+    ThreadsafeQueue(ThreadsafeQueue<T>&& other) {
         std::lock_guard<std::mutex> lock(mutex_);
         queue_ = std::move(other.queue_);
     }
@@ -41,14 +42,14 @@ template <typename T> class ThreadsafeQueue {
     std::optional<T> pop() {
         std::lock_guard<std::mutex> lock(mutex_);
         if (queue_.empty()) {
-            //return {};
+            // return {};
             return nullptr;
         }
         T tmp = queue_.front();
         queue_.pop();
         return tmp;
     }
-    void push(const T &item) {
+    void push(const T& item) {
         std::lock_guard<std::mutex> lock(mutex_);
         // queue_.push(item);
         queue_.emplace(item);
@@ -79,7 +80,8 @@ class Pool {
                             task = std::move(*que.pop());
                             currentQueueSize--;
                         }
-                        // std::cout << "Queu_size: " << currentQueueSize << std::endl;
+                        // std::cout << "Queu_size: " << currentQueueSize <<
+                        // std::endl;
                         if (currentQueueSize <= 0) {
                             currentQueueSize = 0;
                             zeroQueue = true;
@@ -96,18 +98,22 @@ class Pool {
                     if (maxThreads) {
                         // threads > maxThreadNumber
                         if (zeroQueue) {
-                            maxThreads = false; // all tasks are done => wait for new tasks
+                            maxThreads = false; // all tasks are done => wait
+                                                // for new tasks
                         } else {
                             // TODO: find max threads to wake up
                             mut.lock();
                             int threadsToWakeUp =
                                 ((int)currentQueueSize > maxThreads)
                                     ? ((int)currentWaitThreadsNumber)
-                                    : (((int)currentWaitThreadsNumber > (maxThreads - (int)currentQueueSize))
-                                           ? (maxThreads - (int)currentQueueSize)
+                                    : (((int)currentWaitThreadsNumber >
+                                        (maxThreads - (int)currentQueueSize))
+                                           ? (maxThreads -
+                                              (int)currentQueueSize)
                                            : ((int)currentWaitThreadsNumber));
 
-                            // std::cout << " thread notify" << threadsToWakeUp << std::endl;
+                            // std::cout << " thread notify" << threadsToWakeUp
+                            // << std::endl;
                             mut.unlock();
                             for (int i = 0; i <= threadsToWakeUp; i++) {
                                 g_notified.store(true);
@@ -127,26 +133,29 @@ class Pool {
         cv.notify_all();
     }
     // Add task (any function) to queue
-    template <typename T, typename... Args> decltype(auto) addTask(T &func, Args &&...args) {
+    template <typename T, typename... Args>
+    decltype(auto) addTask(T& func, Args&&... args) {
         using RetType = decltype(func(args...)); // get return type of function
 
-        //std::cout << "Add Task: " << std::this_thread::get_id() << std::endl;
-        // bind to function address function with any parameters
-        // on stack
-        // std::function<void()> f = std::bind(std::forward<T>(func), std::forward<Args>(args)...);
-        // que.push(f);
+        // std::cout << "Add Task: " << std::this_thread::get_id() << std::endl;
+        //  bind to function address function with any parameters
+        //  on stack
+        //  std::function<void()> f = std::bind(std::forward<T>(func),
+        //  std::forward<Args>(args)...); que.push(f);
         //
         //
-        // in heap
-        // std::shared_ptr<std::function<void()>> task =
-        //    std::make_shared<std::function<void()>>(std::bind(std::forward<T>(func), std::forward<Args>(args)...));
+        //  in heap
+        //  std::shared_ptr<std::function<void()>> task =
+        //     std::make_shared<std::function<void()>>(std::bind(std::forward<T>(func),
+        //     std::forward<Args>(args)...));
 
         //    shared_ptr wrapper cause packaged_task cannot be copied
-        std::shared_ptr<std::packaged_task<RetType()>> task = std::make_shared<std::packaged_task<RetType()>>(
-            std::bind(std::forward<T>(func), std::forward<Args>(args)...));
+        std::shared_ptr<std::packaged_task<RetType()>> task =
+            std::make_shared<std::packaged_task<RetType()>>(
+                std::bind(std::forward<T>(func), std::forward<Args>(args)...));
         std::future<RetType> future = task->get_future();
         std::lock_guard<std::mutex> t(mut);
-        que.push([task = task](){
+        que.push([task = task]() {
             (*task)(); // dereference and call
         });
         currentQueueSize++;
@@ -154,7 +163,7 @@ class Pool {
         if (currentQueueSize < (currentWaitThreadsNumber)) {
             g_notified.store(true);
             cv.notify_one();
-            //std::cout << "first notify" << std::endl;
+            // std::cout << "first notify" << std::endl;
         } else {
             maxThreads = true;
         }
