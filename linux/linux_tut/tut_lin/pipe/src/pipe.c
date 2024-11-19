@@ -16,15 +16,17 @@ int main(int argc, char** argv) {
         fprintf(stderr, "pipe() error\n");
         return 1;
     }
-    if ((pid1 = fork()) == 0) {
-        dup2(pf[1], 1); //stdout
+    if (!(pid1 = fork())) {
+        dup2(pf[1], STDOUT_FILENO); //stdout
         close(pf[0]);
+        close(pf[1]);
         execlp("ls", "ls", "-la", NULL);
         fprintf(stderr, "exec() [1] error\n");
         return 1;
     }
-    if ((pid2 = fork()) == 0) {
-        dup2(pf[0], 0); // stdin
+    if (!(pid2 = fork())) {
+        dup2(pf[0], STDIN_FILENO); // stdin
+        close(pf[0]);
         close(pf[1]);
         //execlp("grep", "grep", argv[1], NULL);
         execlp("tail", "tail", argv[1], NULL);

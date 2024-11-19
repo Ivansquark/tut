@@ -47,7 +47,7 @@ int main(int argc, [[maybe_unused]] char** argv) {
         printf("Process with PID=%d "
                "has exited with code=%d\n",
                childpid, WEXITSTATUS(exit_status));
-    } else if (WIFSIGNALED(exit_status) == SIGSEGV) {
+    } else if (WIFSIGNALED(exit_status)) {
         // childpid = WSTOPSIG(exit_status);
         printf("Process with PID=%d "
                "has exited with signal.\n",

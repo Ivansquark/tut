@@ -5,17 +5,15 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define MAX_ARGC 3
-
 int main(int argc, char** argv) {
     size_t i, n;
     int prev_pipe, pfds[2];
 
-    n = argc - 1;
+    n = argc;
     printf("num args = %lu\n", n);
     prev_pipe = STDIN_FILENO;
 
-    for (i = 0; i < n - 1; i++) {
+    for (i = 1; i < n - 1; i++) {
         // create pipes
         pipe(pfds);
 
@@ -32,7 +30,7 @@ int main(int argc, char** argv) {
 
             // Start command
             // execvp(commands[i][0], commands[i]);
-            execlp(argv[i + 1], argv[i + 1], NULL);
+            execlp(argv[i], argv[i], NULL);
 
             perror("execvp failed");
             exit(1);
@@ -57,7 +55,7 @@ int main(int argc, char** argv) {
 
     // Start last command
     // execvp(commands[i][0], commands[i]);
-    execlp(argv[i + 1], argv[i + 1], NULL);
+    execlp(argv[i], argv[i], NULL);
 
     perror("execvp failed");
 
