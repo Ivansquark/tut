@@ -39,9 +39,11 @@ void* tcp_client(void* args) {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in saddr_in;
     saddr_in.sin_family = AF_INET;
-    saddr_in.sin_port = htons(port);
+    //saddr_in.sin_port = htons(port);
+    saddr_in.sin_port = htons(80);
     uint32_t ip = 0;
     inet_pton(AF_INET, "192.168.1.200", &ip);
+    //inet_pton(AF_INET, "127.0.0.1", &ip);
     printf("ip = %u\n", ip);
     saddr_in.sin_addr.s_addr = ip; // htonl(ip);
     // saddr_out.sin_addr.s_addr = inet_addr("192.168.1.200");
@@ -53,16 +55,17 @@ void* tcp_client(void* args) {
     //}
     int fd_conn = connect(sockfd, (struct sockaddr*)&saddr_in,
                           sizeof(struct sockaddr_in));
-    if (!fd_conn) {
+    if (fd_conn) {
         perror("No connection\n");
         exit(EXIT_FAILURE);
     }
     while (1) {
         int sz = strlen(buf_w);
         if (sz) {
-            write(fd_conn, buf_w, sz);
+            printf("write client\n%s\n", buf_w);
+            write(sockfd, buf_w, sz);
             memset(buf_w, 0, sizeof(buf_w));
-        }
+        }   
     }
 
     fprintf(stderr, "client_close\n");
