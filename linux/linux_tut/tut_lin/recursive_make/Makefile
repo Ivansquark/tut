@@ -18,7 +18,7 @@ SRC = src/
 inc = -I$(INC) -Ireadver/inc/ -Itoup/inc/ -Isharedt/inc/
 
 OPTIMIZATION := 0
-CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fPIC
+CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fPIE
 #LFLAGS := -fPIE -lsharedt -Lsharedt/build/ -Wl,-rpath,shared/build/
 LFLAGS := -fPIE -lsharedt -Lbuild/ -Wl,-rpath,build/
 #___________________ OBJECTS & DEPENDENCIES ____________________________

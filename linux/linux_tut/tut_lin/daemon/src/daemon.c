@@ -11,7 +11,6 @@
 #define SHMEM_SIZE 4096
 
 int main() {
-    // start free, read stdout check awk free mem, increase mem
     int fd = 0;
     int shm_id = 0;
     shm_id = shmget(0x123456, SHMEM_SIZE, IPC_RMID | 0600);

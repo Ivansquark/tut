@@ -19,7 +19,7 @@ inc = -I$(INC)
 
 OPTIMIZATION := 0
 CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fno-pic
-LFLAGS := -fno-pie
+LFLAGS := -fno-pic
 #___________________ OBJECTS & DEPENDENCIES ____________________________
 CXXSRC = $(wildcard $(SRC)*.cpp)
 CXXOBJ := $(addprefix $(BLD),$(CXXSRC:.cpp=.o))

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <toup.h>
+#include <unistd.h>
+
 int main(void) {
     char* str = (char*)malloc(STR_SIZE * sizeof(char));
     if (str == NULL) {
@@ -18,6 +20,7 @@ int main(void) {
     printf("%s\n", str);
     print(str);
     free(str);
-    
+    pause();
+
     return 0;
 }
