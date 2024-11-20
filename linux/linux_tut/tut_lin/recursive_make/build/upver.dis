@@ -1,8 +1,8 @@
 
-build/src/upver.o:     формат файла elf64-x86-64
+build/src/upver.o:     file format elf64-x86-64
 
 
-Дизассемблирование раздела .text:
+Disassembly of section .text:
 
 0000000000000000 <main>:
    0:	f3 0f 1e fa          	endbr64
@@ -58,7 +58,7 @@ build/src/upver.o:     формат файла elf64-x86-64
   cc:	c9                   	leave
   cd:	c3                   	ret
 
-Дизассемблирование раздела .rodata:
+Disassembly of section .rodata:
 
 0000000000000000 <.rodata>:
    0:	43 61                	rex.XB (bad)
@@ -81,7 +81,7 @@ build/src/upver.o:     формат файла elf64-x86-64
   1b:	6c                   	ins    BYTE PTR es:[rdi],dx
   1c:	65 64 0a 00          	gs or  al,BYTE PTR fs:[rax]
 
-Дизассемблирование раздела .debug_info:
+Disassembly of section .debug_info:
 
 0000000000000000 <.debug_info>:
    0:	08 03                	or     BYTE PTR [rbx],al
@@ -385,11 +385,11 @@ build/src/upver.o:     формат файла elf64-x86-64
  2fd:	74 72                	je     371 <main+0x371>
  2ff:	00 01                	add    BYTE PTR [rcx],al
  301:	07                   	(bad)
- 302:	09 8c 00 00 00 02 91 	or     DWORD PTR [rax+rax*1-0x6efe0000],ecx
+ 302:	0b 8c 00 00 00 02 91 	or     ecx,DWORD PTR [rax+rax*1-0x6efe0000]
  309:	68                   	.byte 0x68
 	...
 
-Дизассемблирование раздела .debug_abbrev:
+Disassembly of section .debug_abbrev:
 
 0000000000000000 <.debug_abbrev>:
    0:	01 0d 00 03 0e 3a    	add    DWORD PTR [rip+0x3a0e0300],ecx        # 3a0e0306 <main+0x3a0e0306>
@@ -530,7 +530,7 @@ build/src/upver.o:     формат файла elf64-x86-64
  132:	00 00                	add    BYTE PTR [rax],al
 	...
 
-Дизассемблирование раздела .debug_aranges:
+Disassembly of section .debug_aranges:
 
 0000000000000000 <.debug_aranges>:
    0:	2c 00                	sub    al,0x0
@@ -543,7 +543,7 @@ build/src/upver.o:     формат файла elf64-x86-64
   18:	ce                   	(bad)
 	...
 
-Дизассемблирование раздела .debug_line:
+Disassembly of section .debug_line:
 
 0000000000000000 <.debug_line>:
    0:	bf 00 00 00 05       	mov    edi,0x5000000
@@ -597,22 +597,22 @@ build/src/upver.o:     формат файла elf64-x86-64
   8b:	00 00                	add    BYTE PTR [rax],al
   8d:	00 00                	add    BYTE PTR [rax],al
   8f:	00 17                	add    BYTE PTR [rdi],dl
-  91:	05 17 bb 05 06       	add    eax,0x605bb17
+  91:	05 18 bb 05 08       	add    eax,0x805bb18
   96:	d7                   	xlat   BYTE PTR ds:[rbx]
-  97:	05 05 75 05 0c       	add    eax,0xc057505
+  97:	05 09 75 05 10       	add    eax,0x10057509
   9c:	02 26                	add    ah,BYTE PTR [rsi]
-  9e:	13 05 07 76 05 06    	adc    eax,DWORD PTR [rip+0x6057607]        # 60576ab <main+0x60576ab>
+  9e:	13 05 09 76 05 08    	adc    eax,DWORD PTR [rip+0x8057609]        # 80576ad <main+0x80576ad>
   a4:	00 02                	add    BYTE PTR [rdx],al
   a6:	04 01                	add    al,0x1
-  a8:	ba 05 05 4b 05       	mov    edx,0x54b0505
-  ad:	0c 02                	or     al,0x2
-  af:	26 13 05 03 76 bb bb 	es adc eax,DWORD PTR [rip+0xffffffffbbbb7603]        # ffffffffbbbb76b9 <main+0xffffffffbbbb76b9>
-  b6:	bb bb 05 0a bb       	mov    ebx,0xbb0a05bb
+  a8:	ba 05 09 4b 05       	mov    edx,0x54b0905
+  ad:	10 02                	adc    BYTE PTR [rdx],al
+  af:	26 13 05 05 76 bb bb 	es adc eax,DWORD PTR [rip+0xffffffffbbbb7605]        # ffffffffbbbb76bb <main+0xffffffffbbbb76bb>
+  b6:	bb bb 05 0c bc       	mov    ebx,0xbc0c05bb
   bb:	05 01 59 02 02       	add    eax,0x2025901
   c0:	00 01                	add    BYTE PTR [rcx],al
   c2:	01                   	.byte 0x1
 
-Дизассемблирование раздела .debug_str:
+Disassembly of section .debug_str:
 
 0000000000000000 <.debug_str>:
    0:	5f                   	pop    rdi
@@ -922,157 +922,165 @@ build/src/upver.o:     формат файла elf64-x86-64
  2e2:	75 66                	jne    34a <main+0x34a>
 	...
 
-Дизассемблирование раздела .debug_line_str:
+Disassembly of section .debug_line_str:
 
 0000000000000000 <.debug_line_str>:
    0:	2f                   	(bad)
    1:	68 6f 6d 65 2f       	push   0x2f656d6f
-   6:	6f                   	outs   dx,DWORD PTR ds:[rsi]
-   7:	70 61                	jo     6a <.debug_line_str+0x6a>
+   6:	6d                   	ins    DWORD PTR es:[rdi],dx
+   7:	72 74                	jb     7d <.debug_line_str+0x7d>
    9:	2f                   	(bad)
-   a:	64 65 73 6b          	fs gs jae 79 <.debug_line_str+0x79>
-   e:	74 6f                	je     7f <.debug_line_str+0x7f>
-  10:	70 2f                	jo     41 <.debug_line_str+0x41>
-  12:	74 75                	je     89 <.debug_line_str+0x89>
-  14:	74 2f                	je     45 <.debug_line_str+0x45>
-  16:	6c                   	ins    BYTE PTR es:[rdi],dx
-  17:	69 6e 75 78 2f 6c 69 	imul   ebp,DWORD PTR [rsi+0x75],0x696c2f78
-  1e:	6e                   	outs   dx,BYTE PTR ds:[rsi]
-  1f:	75 78                	jne    99 <.debug_line_str+0x99>
-  21:	5f                   	pop    rdi
-  22:	74 75                	je     99 <.debug_line_str+0x99>
-  24:	74 2f                	je     55 <.debug_line_str+0x55>
-  26:	74 75                	je     9d <.debug_line_str+0x9d>
-  28:	74 5f                	je     89 <.debug_line_str+0x89>
-  2a:	6c                   	ins    BYTE PTR es:[rdi],dx
-  2b:	69 6e 2f 72 65 63 75 	imul   ebp,DWORD PTR [rsi+0x2f],0x75636572
-  32:	72 73                	jb     a7 <.debug_line_str+0xa7>
-  34:	69 76 65 5f 6d 61 6b 	imul   esi,DWORD PTR [rsi+0x65],0x6b616d5f
-  3b:	65 00 73 72          	add    BYTE PTR gs:[rbx+0x72],dh
-  3f:	63 2f                	movsxd ebp,DWORD PTR [rdi]
-  41:	75 70                	jne    b3 <.debug_line_str+0xb3>
-  43:	76 65                	jbe    aa <.debug_line_str+0xaa>
-  45:	72 2e                	jb     75 <.debug_line_str+0x75>
-  47:	63 00                	movsxd eax,DWORD PTR [rax]
-  49:	2f                   	(bad)
-  4a:	68 6f 6d 65 2f       	push   0x2f656d6f
-  4f:	6f                   	outs   dx,DWORD PTR ds:[rsi]
-  50:	70 61                	jo     b3 <.debug_line_str+0xb3>
-  52:	2f                   	(bad)
-  53:	64 65 73 6b          	fs gs jae c2 <.debug_line_str+0xc2>
-  57:	74 6f                	je     c8 <.debug_line_str+0xc8>
-  59:	70 2f                	jo     8a <.debug_line_str+0x8a>
-  5b:	74 75                	je     d2 <.debug_line_str+0xd2>
-  5d:	74 2f                	je     8e <.debug_line_str+0x8e>
-  5f:	6c                   	ins    BYTE PTR es:[rdi],dx
-  60:	69 6e 75 78 2f 6c 69 	imul   ebp,DWORD PTR [rsi+0x75],0x696c2f78
-  67:	6e                   	outs   dx,BYTE PTR ds:[rsi]
-  68:	75 78                	jne    e2 <.debug_line_str+0xe2>
-  6a:	5f                   	pop    rdi
-  6b:	74 75                	je     e2 <.debug_line_str+0xe2>
-  6d:	74 2f                	je     9e <.debug_line_str+0x9e>
-  6f:	74 75                	je     e6 <.debug_line_str+0xe6>
-  71:	74 5f                	je     d2 <.debug_line_str+0xd2>
+   a:	65 6d                	gs ins DWORD PTR es:[rdi],dx
+   c:	62 65 64 64 65       	(bad)
+  11:	64 2f                	fs (bad)
+  13:	64 65 73 6b          	fs gs jae 82 <.debug_line_str+0x82>
+  17:	74 6f                	je     88 <.debug_line_str+0x88>
+  19:	70 2f                	jo     4a <.debug_line_str+0x4a>
+  1b:	6c                   	ins    BYTE PTR es:[rdi],dx
+  1c:	69 6e 75 78 2f 74 75 	imul   ebp,DWORD PTR [rsi+0x75],0x75742f78
+  23:	74 2f                	je     54 <.debug_line_str+0x54>
+  25:	6c                   	ins    BYTE PTR es:[rdi],dx
+  26:	69 6e 75 78 2f 6c 69 	imul   ebp,DWORD PTR [rsi+0x75],0x696c2f78
+  2d:	6e                   	outs   dx,BYTE PTR ds:[rsi]
+  2e:	75 78                	jne    a8 <.debug_line_str+0xa8>
+  30:	5f                   	pop    rdi
+  31:	74 75                	je     a8 <.debug_line_str+0xa8>
+  33:	74 2f                	je     64 <.debug_line_str+0x64>
+  35:	74 75                	je     ac <.debug_line_str+0xac>
+  37:	74 5f                	je     98 <.debug_line_str+0x98>
+  39:	6c                   	ins    BYTE PTR es:[rdi],dx
+  3a:	69 6e 2f 72 65 63 75 	imul   ebp,DWORD PTR [rsi+0x2f],0x75636572
+  41:	72 73                	jb     b6 <.debug_line_str+0xb6>
+  43:	69 76 65 5f 6d 61 6b 	imul   esi,DWORD PTR [rsi+0x65],0x6b616d5f
+  4a:	65 00 73 72          	add    BYTE PTR gs:[rbx+0x72],dh
+  4e:	63 2f                	movsxd ebp,DWORD PTR [rdi]
+  50:	75 70                	jne    c2 <.debug_line_str+0xc2>
+  52:	76 65                	jbe    b9 <.debug_line_str+0xb9>
+  54:	72 2e                	jb     84 <.debug_line_str+0x84>
+  56:	63 00                	movsxd eax,DWORD PTR [rax]
+  58:	2f                   	(bad)
+  59:	68 6f 6d 65 2f       	push   0x2f656d6f
+  5e:	6d                   	ins    DWORD PTR es:[rdi],dx
+  5f:	72 74                	jb     d5 <.debug_line_str+0xd5>
+  61:	2f                   	(bad)
+  62:	65 6d                	gs ins DWORD PTR es:[rdi],dx
+  64:	62 65 64 64 65       	(bad)
+  69:	64 2f                	fs (bad)
+  6b:	64 65 73 6b          	fs gs jae da <.debug_line_str+0xda>
+  6f:	74 6f                	je     e0 <.debug_line_str+0xe0>
+  71:	70 2f                	jo     a2 <.debug_line_str+0xa2>
   73:	6c                   	ins    BYTE PTR es:[rdi],dx
-  74:	69 6e 2f 72 65 63 75 	imul   ebp,DWORD PTR [rsi+0x2f],0x75636572
-  7b:	72 73                	jb     f0 <.debug_line_str+0xf0>
-  7d:	69 76 65 5f 6d 61 6b 	imul   esi,DWORD PTR [rsi+0x65],0x6b616d5f
-  84:	65 00 73 72          	add    BYTE PTR gs:[rbx+0x72],dh
-  88:	63 00                	movsxd eax,DWORD PTR [rax]
-  8a:	2f                   	(bad)
-  8b:	75 73                	jne    100 <.debug_line_str+0x100>
-  8d:	72 2f                	jb     be <.debug_line_str+0xbe>
-  8f:	6c                   	ins    BYTE PTR es:[rdi],dx
-  90:	69 62 2f 67 63 63 2f 	imul   esp,DWORD PTR [rdx+0x2f],0x2f636367
-  97:	78 38                	js     d1 <.debug_line_str+0xd1>
-  99:	36 5f                	ss pop rdi
-  9b:	36 34 2d             	ss xor al,0x2d
-  9e:	6c                   	ins    BYTE PTR es:[rdi],dx
-  9f:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
-  a6:	75 2f                	jne    d7 <.debug_line_str+0xd7>
-  a8:	31 33                	xor    DWORD PTR [rbx],esi
-  aa:	2f                   	(bad)
-  ab:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
-  b2:	00 2f                	add    BYTE PTR [rdi],ch
-  b4:	75 73                	jne    129 <.debug_line_str+0x129>
-  b6:	72 2f                	jb     e7 <.debug_line_str+0xe7>
-  b8:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
-  bf:	2f                   	(bad)
-  c0:	78 38                	js     fa <.debug_line_str+0xfa>
-  c2:	36 5f                	ss pop rdi
-  c4:	36 34 2d             	ss xor al,0x2d
-  c7:	6c                   	ins    BYTE PTR es:[rdi],dx
-  c8:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
-  cf:	75 2f                	jne    100 <.debug_line_str+0x100>
-  d1:	62 69 74 73 00       	(bad)
-  d6:	2f                   	(bad)
-  d7:	75 73                	jne    14c <.debug_line_str+0x14c>
-  d9:	72 2f                	jb     10a <.debug_line_str+0x10a>
-  db:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
-  e2:	2f                   	(bad)
-  e3:	78 38                	js     11d <.debug_line_str+0x11d>
-  e5:	36 5f                	ss pop rdi
-  e7:	36 34 2d             	ss xor al,0x2d
-  ea:	6c                   	ins    BYTE PTR es:[rdi],dx
-  eb:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
-  f2:	75 2f                	jne    123 <.debug_line_str+0x123>
-  f4:	62 69 74 73 2f       	(bad)
-  f9:	74 79                	je     174 <.debug_line_str+0x174>
-  fb:	70 65                	jo     162 <.debug_line_str+0x162>
-  fd:	73 00                	jae    ff <.debug_line_str+0xff>
-  ff:	2f                   	(bad)
- 100:	75 73                	jne    175 <.debug_line_str+0x175>
- 102:	72 2f                	jb     133 <.debug_line_str+0x133>
- 104:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
- 10b:	00 73 68             	add    BYTE PTR [rbx+0x68],dh
- 10e:	61                   	(bad)
- 10f:	72 65                	jb     176 <.debug_line_str+0x176>
- 111:	64 74 2f             	fs je  143 <.debug_line_str+0x143>
- 114:	69 6e 63 00 74 6f 75 	imul   ebp,DWORD PTR [rsi+0x63],0x756f7400
- 11b:	70 2f                	jo     14c <.debug_line_str+0x14c>
- 11d:	69 6e 63 00 72 65 61 	imul   ebp,DWORD PTR [rsi+0x63],0x61657200
- 124:	64 76 65             	fs jbe 18c <.debug_line_str+0x18c>
- 127:	72 2f                	jb     158 <.debug_line_str+0x158>
- 129:	69 6e 63 00 75 70 76 	imul   ebp,DWORD PTR [rsi+0x63],0x76707500
- 130:	65 72 2e             	gs jb  161 <.debug_line_str+0x161>
- 133:	63 00                	movsxd eax,DWORD PTR [rax]
- 135:	75 70                	jne    1a7 <main+0x1a7>
- 137:	76 65                	jbe    19e <main+0x19e>
- 139:	72 2e                	jb     169 <.debug_line_str+0x169>
- 13b:	63 00                	movsxd eax,DWORD PTR [rax]
- 13d:	73 74                	jae    1b3 <main+0x1b3>
- 13f:	64 64 65 66 2e 68 00 	fs fs gs cs pushw 0x7400
- 146:	74 
- 147:	79 70                	jns    1b9 <main+0x1b9>
- 149:	65 73 2e             	gs jae 17a <.debug_line_str+0x17a>
- 14c:	68 00 73 74 72       	push   0x72747300
- 151:	75 63                	jne    1b6 <main+0x1b6>
- 153:	74 5f                	je     1b4 <main+0x1b4>
- 155:	46                   	rex.RX
- 156:	49                   	rex.WB
- 157:	4c                   	rex.WR
- 158:	45                   	rex.RB
- 159:	2e 68 00 46 49 4c    	cs push 0x4c494600
- 15f:	45                   	rex.RB
- 160:	2e 68 00 73 74 64    	cs push 0x64747300
- 166:	6c                   	ins    BYTE PTR es:[rdi],dx
- 167:	69 62 2e 68 00 73 68 	imul   esp,DWORD PTR [rdx+0x2e],0x68730068
- 16e:	61                   	(bad)
- 16f:	72 65                	jb     1d6 <main+0x1d6>
- 171:	64 74 2e             	fs je  1a2 <main+0x1a2>
- 174:	68 00 74 6f 75       	push   0x756f7400
- 179:	70 2e                	jo     1a9 <main+0x1a9>
- 17b:	68 00 72 65 61       	push   0x61657200
- 180:	64 76 65             	fs jbe 1e8 <main+0x1e8>
- 183:	72 2e                	jb     1b3 <main+0x1b3>
- 185:	68 00 73 74 64       	push   0x64747300
- 18a:	69                   	.byte 0x69
- 18b:	6f                   	outs   dx,DWORD PTR ds:[rsi]
- 18c:	2e                   	cs
- 18d:	68                   	.byte 0x68
+  74:	69 6e 75 78 2f 74 75 	imul   ebp,DWORD PTR [rsi+0x75],0x75742f78
+  7b:	74 2f                	je     ac <.debug_line_str+0xac>
+  7d:	6c                   	ins    BYTE PTR es:[rdi],dx
+  7e:	69 6e 75 78 2f 6c 69 	imul   ebp,DWORD PTR [rsi+0x75],0x696c2f78
+  85:	6e                   	outs   dx,BYTE PTR ds:[rsi]
+  86:	75 78                	jne    100 <.debug_line_str+0x100>
+  88:	5f                   	pop    rdi
+  89:	74 75                	je     100 <.debug_line_str+0x100>
+  8b:	74 2f                	je     bc <.debug_line_str+0xbc>
+  8d:	74 75                	je     104 <.debug_line_str+0x104>
+  8f:	74 5f                	je     f0 <.debug_line_str+0xf0>
+  91:	6c                   	ins    BYTE PTR es:[rdi],dx
+  92:	69 6e 2f 72 65 63 75 	imul   ebp,DWORD PTR [rsi+0x2f],0x75636572
+  99:	72 73                	jb     10e <.debug_line_str+0x10e>
+  9b:	69 76 65 5f 6d 61 6b 	imul   esi,DWORD PTR [rsi+0x65],0x6b616d5f
+  a2:	65 00 73 72          	add    BYTE PTR gs:[rbx+0x72],dh
+  a6:	63 00                	movsxd eax,DWORD PTR [rax]
+  a8:	2f                   	(bad)
+  a9:	75 73                	jne    11e <.debug_line_str+0x11e>
+  ab:	72 2f                	jb     dc <.debug_line_str+0xdc>
+  ad:	6c                   	ins    BYTE PTR es:[rdi],dx
+  ae:	69 62 2f 67 63 63 2f 	imul   esp,DWORD PTR [rdx+0x2f],0x2f636367
+  b5:	78 38                	js     ef <.debug_line_str+0xef>
+  b7:	36 5f                	ss pop rdi
+  b9:	36 34 2d             	ss xor al,0x2d
+  bc:	6c                   	ins    BYTE PTR es:[rdi],dx
+  bd:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
+  c4:	75 2f                	jne    f5 <.debug_line_str+0xf5>
+  c6:	31 33                	xor    DWORD PTR [rbx],esi
+  c8:	2f                   	(bad)
+  c9:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
+  d0:	00 2f                	add    BYTE PTR [rdi],ch
+  d2:	75 73                	jne    147 <.debug_line_str+0x147>
+  d4:	72 2f                	jb     105 <.debug_line_str+0x105>
+  d6:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
+  dd:	2f                   	(bad)
+  de:	78 38                	js     118 <.debug_line_str+0x118>
+  e0:	36 5f                	ss pop rdi
+  e2:	36 34 2d             	ss xor al,0x2d
+  e5:	6c                   	ins    BYTE PTR es:[rdi],dx
+  e6:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
+  ed:	75 2f                	jne    11e <.debug_line_str+0x11e>
+  ef:	62 69 74 73 00       	(bad)
+  f4:	2f                   	(bad)
+  f5:	75 73                	jne    16a <.debug_line_str+0x16a>
+  f7:	72 2f                	jb     128 <.debug_line_str+0x128>
+  f9:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
+ 100:	2f                   	(bad)
+ 101:	78 38                	js     13b <.debug_line_str+0x13b>
+ 103:	36 5f                	ss pop rdi
+ 105:	36 34 2d             	ss xor al,0x2d
+ 108:	6c                   	ins    BYTE PTR es:[rdi],dx
+ 109:	69 6e 75 78 2d 67 6e 	imul   ebp,DWORD PTR [rsi+0x75],0x6e672d78
+ 110:	75 2f                	jne    141 <.debug_line_str+0x141>
+ 112:	62 69 74 73 2f       	(bad)
+ 117:	74 79                	je     192 <.debug_line_str+0x192>
+ 119:	70 65                	jo     180 <.debug_line_str+0x180>
+ 11b:	73 00                	jae    11d <.debug_line_str+0x11d>
+ 11d:	2f                   	(bad)
+ 11e:	75 73                	jne    193 <.debug_line_str+0x193>
+ 120:	72 2f                	jb     151 <.debug_line_str+0x151>
+ 122:	69 6e 63 6c 75 64 65 	imul   ebp,DWORD PTR [rsi+0x63],0x6564756c
+ 129:	00 73 68             	add    BYTE PTR [rbx+0x68],dh
+ 12c:	61                   	(bad)
+ 12d:	72 65                	jb     194 <.debug_line_str+0x194>
+ 12f:	64 74 2f             	fs je  161 <.debug_line_str+0x161>
+ 132:	69 6e 63 00 74 6f 75 	imul   ebp,DWORD PTR [rsi+0x63],0x756f7400
+ 139:	70 2f                	jo     16a <.debug_line_str+0x16a>
+ 13b:	69 6e 63 00 72 65 61 	imul   ebp,DWORD PTR [rsi+0x63],0x61657200
+ 142:	64 76 65             	fs jbe 1aa <.debug_line_str+0x1aa>
+ 145:	72 2f                	jb     176 <.debug_line_str+0x176>
+ 147:	69 6e 63 00 75 70 76 	imul   ebp,DWORD PTR [rsi+0x63],0x76707500
+ 14e:	65 72 2e             	gs jb  17f <.debug_line_str+0x17f>
+ 151:	63 00                	movsxd eax,DWORD PTR [rax]
+ 153:	75 70                	jne    1c5 <main+0x1c5>
+ 155:	76 65                	jbe    1bc <main+0x1bc>
+ 157:	72 2e                	jb     187 <.debug_line_str+0x187>
+ 159:	63 00                	movsxd eax,DWORD PTR [rax]
+ 15b:	73 74                	jae    1d1 <main+0x1d1>
+ 15d:	64 64 65 66 2e 68 00 	fs fs gs cs pushw 0x7400
+ 164:	74 
+ 165:	79 70                	jns    1d7 <main+0x1d7>
+ 167:	65 73 2e             	gs jae 198 <.debug_line_str+0x198>
+ 16a:	68 00 73 74 72       	push   0x72747300
+ 16f:	75 63                	jne    1d4 <main+0x1d4>
+ 171:	74 5f                	je     1d2 <main+0x1d2>
+ 173:	46                   	rex.RX
+ 174:	49                   	rex.WB
+ 175:	4c                   	rex.WR
+ 176:	45                   	rex.RB
+ 177:	2e 68 00 46 49 4c    	cs push 0x4c494600
+ 17d:	45                   	rex.RB
+ 17e:	2e 68 00 73 74 64    	cs push 0x64747300
+ 184:	6c                   	ins    BYTE PTR es:[rdi],dx
+ 185:	69 62 2e 68 00 73 68 	imul   esp,DWORD PTR [rdx+0x2e],0x68730068
+ 18c:	61                   	(bad)
+ 18d:	72 65                	jb     1f4 <main+0x1f4>
+ 18f:	64 74 2e             	fs je  1c0 <main+0x1c0>
+ 192:	68 00 74 6f 75       	push   0x756f7400
+ 197:	70 2e                	jo     1c7 <main+0x1c7>
+ 199:	68 00 72 65 61       	push   0x61657200
+ 19e:	64 76 65             	fs jbe 206 <main+0x206>
+ 1a1:	72 2e                	jb     1d1 <main+0x1d1>
+ 1a3:	68 00 73 74 64       	push   0x64747300
+ 1a8:	69                   	.byte 0x69
+ 1a9:	6f                   	outs   dx,DWORD PTR ds:[rsi]
+ 1aa:	2e                   	cs
+ 1ab:	68                   	.byte 0x68
 	...
 
-Дизассемблирование раздела .comment:
+Disassembly of section .comment:
 
 0000000000000000 <.comment>:
    0:	00 47 43             	add    BYTE PTR [rdi+0x43],al
@@ -1092,7 +1100,7 @@ build/src/upver.o:     формат файла elf64-x86-64
   23:	32 2e                	xor    ch,BYTE PTR [rsi]
   25:	30 00                	xor    BYTE PTR [rax],al
 
-Дизассемблирование раздела .note.gnu.property:
+Disassembly of section .note.gnu.property:
 
 0000000000000000 <.note.gnu.property>:
    0:	04 00                	add    al,0x0
@@ -1110,7 +1118,7 @@ build/src/upver.o:     формат файла elf64-x86-64
   1d:	00 00                	add    BYTE PTR [rax],al
 	...
 
-Дизассемблирование раздела .eh_frame:
+Disassembly of section .eh_frame:
 
 0000000000000000 <.eh_frame>:
    0:	14 00                	adc    al,0x0

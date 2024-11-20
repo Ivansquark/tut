@@ -1,0 +1,3 @@
+valgrind --tool=callgrind build/sys.elf 
+callgrind_annotate callgrind.out.27076
+callgrind_annotate callgrind.out.27076
