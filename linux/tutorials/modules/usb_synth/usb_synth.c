@@ -2,6 +2,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+#include <linux/fs.h>
 #include <linux/usb.h>
 
 #define DRIVER_AUTHOR "opa"

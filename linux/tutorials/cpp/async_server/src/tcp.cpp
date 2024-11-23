@@ -1,7 +1,7 @@
 #include "tcp.h"
 
-Tcp *Tcp::pThis = nullptr;
-Tcp *Tcp::instance() {
+Tcp* Tcp::pThis = nullptr;
+Tcp* Tcp::instance() {
     if (Tcp::pThis == nullptr) {
         Tcp::pThis = new Tcp();
     }
@@ -15,17 +15,19 @@ Tcp::~Tcp() {
     delete saddr_connected;
 }
 
-int Tcp::sendToClient(int sock, const std::string &str) {
-    return send(sock, (const char *)str.data(), str.length(), 0);
+int Tcp::sendToClient(int sock, const std::string& str) {
+    return send(sock, (const char*)str.data(), str.length(), 0);
 }
 
 void Tcp::read() {
-    recvfrom(sockfd, &buff[0], sizeof(buff), 0, (sockaddr *)saddr_in, &sock_len);
+    recvfrom(sockfd, &buff[0], sizeof(buff), 0, (sockaddr*)saddr_in, &sock_len);
     for (int i = 0; i < 10; i++) {
         std::cout << buff[i] << " ";
     }
 }
+
 int Tcp::listenConnections() { return listen(sockfd, 3); }
+
 void Tcp::init_server(bool isHTTPS) {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     std::cout << "init_server " << std::endl;
@@ -42,7 +44,7 @@ void Tcp::init_server(bool isHTTPS) {
     }
     sock_len = sizeof(sockaddr_in);
     std::cout << "socklen=" << sock_len << std::endl;
-    int b = bind(sockfd, (const sockaddr *)saddr_in, sock_len);
+    int b = bind(sockfd, (const sockaddr*)saddr_in, sock_len);
     if (b == -1) {
         std::cout << "Error bind" << std::endl;
         perror("Eror In bind");
@@ -68,16 +70,19 @@ void Tcp::init_server(bool isHTTPS) {
                 printf("Problem accepting\n");
             }
             if (connectedSockFD > 0) {
-                // threads.emplace_back(new std::thread(Tcp::handleConnection, isHTTPS));
+                // threads.emplace_back(new std::thread(Tcp::handleConnection,
+                // isHTTPS));
                 pool.addTask(handleConnection, isHTTPS);
             }
         } else {
-            if ((connectedSockFD = accept(sockfd, (sockaddr *)saddr_connected, &saddr_connected_len)) < 0) {
+            if ((connectedSockFD = accept(sockfd, (sockaddr*)saddr_connected,
+                                          &saddr_connected_len)) < 0) {
                 perror("In accept");
                 exit(EXIT_FAILURE);
             }
             if (connectedSockFD > 0) {
-                // threads.emplace_back(new std::thread(Tcp::handleConnection, isHTTPS));
+                // threads.emplace_back(new std::thread(Tcp::handleConnection,
+                // isHTTPS));
                 pool.addTask(handleConnection, isHTTPS);
             }
         }
@@ -86,8 +91,10 @@ void Tcp::init_server(bool isHTTPS) {
 
 void Tcp::handleConnection(bool arg) {
     system("clear");
-    std::cout << "new c++ thread ID: " << std::this_thread::get_id() << std::endl;
-    std::cout << "connectedSockFDnew = " << Tcp::instance()->connectedSockFD << std::endl;
+    std::cout << "new c++ thread ID: " << std::this_thread::get_id()
+              << std::endl;
+    std::cout << "connectedSockFDnew = " << Tcp::instance()->connectedSockFD
+              << std::endl;
     char buff[8000];
     memset(buff, 0, 8000);
     bool isHTTPS = arg;
@@ -97,7 +104,8 @@ void Tcp::handleConnection(bool arg) {
     while (1) {
         // int client_sock = *(int *)arg;
         if (!isHTTPS) {
-            int size = recv(Tcp::instance()->connectedSockFD, buff, sizeof(buff), 0);
+            int size =
+                recv(Tcp::instance()->connectedSockFD, buff, sizeof(buff), 0);
             if (size > 0) {
                 std::cout << "size=" << size << std::endl;
                 for (int i = 0; i < size; i++) {

@@ -12,15 +12,18 @@ class Sum {
     }
     ~Sum() { delete omtx; }
     int sum = 0;
-    std::mutex *omtx;
+    std::mutex* omtx;
     void printSum(int x = 0, int y = 0) {
         std::mutex mtx;
         omtx->lock();
         // std::unique_lock<std::mutex> ul(*omtx);
         sum = x + y;
-        std::cout << "Sum = " << sum << " Thread_ID = " << std::this_thread::get_id() << std::endl;
+        std::cout << "Sum = " << sum
+                  << " Thread_ID = " << std::this_thread::get_id() << std::endl;
         for (int i = 0; i < sum; i++) {
-            std::cout << "--Sum = " << --sum << " Thread_ID = " << std::this_thread::get_id() << std::endl;
+            std::cout << "--Sum = " << --sum
+                      << " Thread_ID = " << std::this_thread::get_id()
+                      << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
         // ul.unlock();
@@ -31,11 +34,11 @@ class Sum {
 void one(int x, int y) { std::cout << " one " << std::endl; }
 void two() { std::cout << " two " << std::endl; }
 
-//обертка над методом объекта
-// decltype(auto) ass_fun(A &a, int arg) { return a.CFun(arg); }
-void ass_fun(A &a, int arg) { return a.CFun(arg); }
+// обертка над методом объекта
+//  decltype(auto) ass_fun(A &a, int arg) { return a.CFun(arg); }
+void ass_fun(A& a, int arg) { return a.CFun(arg); }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
     try {
         MyThreadPool executor{10};
@@ -47,22 +50,26 @@ int main(int argc, char *argv[]) {
         std::future<void> nom_cls_fun = executor.commit(ass_fun, a, 4);
         std::future<void> one_func = executor.commit(one, 2, 3);
 
-        std::cout << " main thread: " << std::this_thread::get_id() << std::endl;
+        std::cout << " main thread: " << std::this_thread::get_id()
+                  << std::endl;
         nom_fun.get();
-        std::cout << "Результат вычисления функции return ---> " << functor_fun.get() << " "
+        std::cout << "Результат вычисления функции return ---> "
+                  << functor_fun.get() << " "
                   << std::endl; // Ожидание получения результата
-        std::cout << "Результат вычисления функции return ---> " << s_cls_fun.get() << " "
+        std::cout << "Результат вычисления функции return ---> "
+                  << s_cls_fun.get() << " "
                   << std::endl; // Ожидание получения результата
-         nom_cls_fun.get();
-         one_func.get();
-              
+        nom_cls_fun.get();
+        one_func.get();
+
         // return 0;
-    } catch (std::exception &e) {
-        std::cout << e.what() << std::this_thread::get_id() << e.what() << std::endl;
+    } catch (std::exception& e) {
+        std::cout << e.what() << std::this_thread::get_id() << e.what()
+                  << std::endl;
     }
 
-    std::cout << "\nSTART"
-              << " Thread_ID = " << std::this_thread::get_id() << std::endl;
+    std::cout << "\nSTART" << " Thread_ID = " << std::this_thread::get_id()
+              << std::endl;
 
     Sum sum(1, 2);
 

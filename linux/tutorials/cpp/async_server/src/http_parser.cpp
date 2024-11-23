@@ -26,11 +26,12 @@ HttpParser::~HttpParser() {
     }
 }
 
-void HttpParser::parseData(const char *buff, int len) {
+void HttpParser::parseData(const char* buff, int len) {
     // parse first GET request
     int sockfd = 0;
     std::string str;
-    if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' && buff[3] == ' ' && buff[4] == '/' && buff[5] == ' ') {
+    if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' && buff[3] == ' ' &&
+        buff[4] == '/' && buff[5] == ' ') {
         std::string sendStr = "HTTP/1.1 200 OK\n"
                               "Content-Type: text/html; charset=UTF-8\n"
                               "Content-Length: ";
@@ -40,9 +41,10 @@ void HttpParser::parseData(const char *buff, int len) {
         std::cout << "\nlength = " << length;
         sendStr += std::to_string(length) + "\n";
         if (isHTTPS) {
-            ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+            ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
         } else {
-            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                          sendStr);
         }
         std::ifstream file;
         file.open("index.html");
@@ -57,14 +59,16 @@ void HttpParser::parseData(const char *buff, int len) {
                 sendStr += str + "\n";
             }
             if (isHTTPS) {
-                ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+                ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
             } else {
-                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                              sendStr);
             }
             file.close();
         }
-    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' && buff[3] == ' ' && buff[4] == '/' &&
-               buff[5] == 's' && buff[6] == 't') {
+    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' &&
+               buff[3] == ' ' && buff[4] == '/' && buff[5] == 's' &&
+               buff[6] == 't') {
         // parse GET style.css request
         std::string sendStr = "HTTP/1.1 200 OK\n"
                               "Content-Type: text/css; charset=UTF-8\n"
@@ -75,9 +79,10 @@ void HttpParser::parseData(const char *buff, int len) {
         std::cout << "\nlength = " << length;
         sendStr += std::to_string(length) + "\n";
         if (isHTTPS) {
-            ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+            ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
         } else {
-            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                          sendStr);
         }
         std::ifstream file;
         file.open("style.css");
@@ -91,14 +96,16 @@ void HttpParser::parseData(const char *buff, int len) {
                 sendStr += str + "\n";
             }
             if (isHTTPS) {
-                ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+                ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
             } else {
-                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                              sendStr);
             }
             file.close();
         }
-    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' && buff[3] == ' ' && buff[4] == '/' &&
-               buff[5] == 's' && buff[6] == 'c') {
+    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' &&
+               buff[3] == ' ' && buff[4] == '/' && buff[5] == 's' &&
+               buff[6] == 'c') {
         // parse GET script.js request
         std::string sendStr = "HTTP/1.1 200 OK\n"
                               "Content-Type: text/javascript; charset=UTF-8\n"
@@ -109,9 +116,10 @@ void HttpParser::parseData(const char *buff, int len) {
         std::cout << "\nlength = " << length;
         sendStr += std::to_string(length) + "\n";
         if (isHTTPS) {
-            ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+            ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
         } else {
-            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                          sendStr);
         }
         std::ifstream file;
         file.open("script.js");
@@ -125,14 +133,16 @@ void HttpParser::parseData(const char *buff, int len) {
                 sendStr += str + "\n";
             }
             if (isHTTPS) {
-                ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+                ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
             } else {
-                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                              sendStr);
             }
             file.close();
         }
-    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' && buff[3] == ' ' && buff[4] == '/' &&
-               buff[5] == 'f' && buff[6] == 'a') {
+    } else if (buff[0] == 'G' && buff[1] == 'E' && buff[2] == 'T' &&
+               buff[3] == ' ' && buff[4] == '/' && buff[5] == 'f' &&
+               buff[6] == 'a') {
         // parse GET favicon.ico request
         std::string sendStr = "HTTP/1.1 200 OK\n"
                               "Content-Type: image/png; charset=UTF-8\n"
@@ -143,9 +153,10 @@ void HttpParser::parseData(const char *buff, int len) {
         std::cout << "\nlength = " << length;
         sendStr += std::to_string(length) + "\n";
         if (isHTTPS) {
-            ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+            ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
         } else {
-            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+            Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                          sendStr);
         }
         std::ifstream file;
         file.open("icon.png");
@@ -159,15 +170,17 @@ void HttpParser::parseData(const char *buff, int len) {
                 sendStr += str + "\n";
             }
             if (isHTTPS) {
-                ssl_write(ssl, (char *)sendStr.data(), sendStr.size());
+                ssl_write(ssl, (char*)sendStr.data(), sendStr.size());
             } else {
-                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, sendStr);
+                Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD,
+                                              sendStr);
             }
             file.close();
         }
     }
 
-    if (buff[0] == 's' && buff[1] == 't' && buff[2] == 'a' && buff[3] == 'r' && buff[4] == 't') {
+    if (buff[0] == 's' && buff[1] == 't' && buff[2] == 'a' && buff[3] == 'r' &&
+        buff[4] == 't') {
         str = "start";
         Tcp::instance()->sendToClient(Tcp::instance()->connectedSockFD, str);
     }

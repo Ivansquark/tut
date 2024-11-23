@@ -8,7 +8,7 @@ int main() {
     if(!num) {
         _exit(0);
     } else if(num != -1){
-        execl("./script.sh", NULL);
+        execl("./script.sh", "script.sh", NULL);
     } else printf("ERROR");
     return 0;
 }
