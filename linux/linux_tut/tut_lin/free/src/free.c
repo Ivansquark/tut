@@ -15,6 +15,7 @@ int main() {
         // free
         if (!(fd = fork())) {
             dup2(pfd[1], STDOUT_FILENO);
+            close(pfd[1]);
             close(pfd[0]);
             execlp("free", "free", NULL);
             perror("free false");
