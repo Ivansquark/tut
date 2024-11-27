@@ -1,0 +1,5 @@
+http://www.xilinx.com/support/documentation/user_guides/ug821-zynq-7000-swdev.pdf
+
+https://habr.com/ru/articles/805171/
+
+
