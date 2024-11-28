@@ -1,0 +1,141 @@
+https://linux-sunxi.org/Bootable_SD_card#Bootloader
+https://linux-sunxi.org/U-Boot
+
+
+Split SD on partitions
+
+start 	sector 	size 	usage
+0KB 	0 	    8KB   	Unused, available for an MBR or (limited) GPT partition table
+8KB 	16 	    32KB 	Initial SPL loader
+40KB 	80 	    -     	U-Boot proper
+
+544KB 	1088 	128KB 	environment  (Legacy)
+
+
+First identify the device of the card and export it as ${card}. The commands
+cat /proc/partitions
+
+    If the SD card is connected via USB and is sdX (replace X for a correct letter)
+export card=/dev/sdX
+export p=""
+
+    If the SD card is connected via mmc and is mmcblk0
+export card=/dev/mmcblk0
+export p=p
+
+Cleaning
+
+To be on safe side erase the first part of your SD Card (also clears the partition table).
+dd if=/dev/zero of=${card} bs=1M count=1
+
+//If you wish to keep the partition table, run:
+//dd if=/dev/zero of=${card} bs=1k count=1023 seek=1
+
+
+
+
+Bootloader
+
+You will need to write the u-boot-sunxi-with-spl.bin to the sd-card. If you don't have this file yet, refer to the "compilation" section of mainline or legacy U-Boot.
+
+sudo dd if=u-boot-sunxi-with-spl.bin of=${card} bs=1024 seek=8
+
+////////////////////////////   SD   ///////////////////////////////////////////
+Partitioning
+
+With recent U-Boot it's fine to use ext2/ext4 as boot partition, and other filesystems in the root partition too.
+With separate boot partition
+
+Partition the card with a 16MB boot partition starting at 1MB, and the rest as root partition
+
+blockdev --rereadpt ${card}
+cat <<EOT | sudo sfdisk ${card}
+1M,168M,c
+,,L
+EOT
+
+You should now be able to create the actual filesystems:
+
+mkfs.vfat ${card}${p}1
+mkfs.ext4 ${card}${p}2
+
+cardroot=${card}${p}2
+
+
+//////////////// UBOOT ////////////////////////////////////////////////////////
+apt-get install swig
+apt-get install python3-dev
+apt-get install device-tree-compiler
+git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
+
+make CROSS_COMPILE=aarch64-linux-gnu- PLAT=<platform> DEBUG=1 bl31
+Change <platform> to your needs  sun50i_h616. sun50i_a64 for example is suitable for H5 and A64 devices.
+--- make CROSS_COMPILE=aarch64-linux-gnu- PLAT=sun50i_h616 DEBUG=1 bl31
+
+uboot:
+make CROSS_COMPILE=aarch64-linux-gnu- BL31=../trusted-firmware-a/build/sun50i_h616/debug/bl31.bin orangepi_zero2_defconfig
+make CROSS_COMPILE=aarch64-linux-gnu- BL31=../trusted-firmware-a/build/sun50i_h616/debug/bl31.bin
+
+Install U-Boot
+
+    Convert the boot.cmd to boot.scr using mkimage:
+
+armhf
+
+ mkimage -C none -A arm -T script -d boot.cmd boot.scr
+
+arm64
+
+ mkimage -C none -A arm64 -T script -d boot.cmd boot.scr
+
+    Copy the bootloader to the installation media
+
+ dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////   LINUX   ///////////////////////////////////////////////
+mkimage -A arm64 -O linux -T kernel -C none -a 0x42000000 -e 0x42000000 -n 'Linux' -d Image zImage
+https://github.com/Kononenko-K/Allwinner_H616_Devboard/
+
+# create boot.cmd
+setenv bootargs console=ttyS0,115200 console=tty0 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
+load mmc 0:1 0x42000000 Image.img
+load mmc 0:1 0x43000000 sun50i-h616-orangepi-zero2.dtb
+booti 0x42000000-0x43000000
+
+bootm - legacy kernel boot
+bootm 0x42000000 - 0x43000000
+
+mkimage -C none -A arm64 -T script -d boot.cmd boot.scr
+
+in sdb1 boot.scr, boot.cmd, Image.img, sun50i-h616-orangepi-zero2.dtb
+
+mount ${card}${p}1 /mnt/
+cp linux-sunxi/arch/arm/boot/uImage /mnt/
+cp sunxi-boards/sys_config/a10/script.bin /mnt/
+umount /mnt/
+
+// mount *.img
+sudo fdisk -lu *.img
+sudo mount -t auto -o loop,offset=$((8192*512)) Armbian_24.11.1_Orangepizero2_bookworm_current_6.6.62-homeassistant_minimal.img /mnt/ssh
+
+//uboot
+printenv
+load mmc 0:1 0x42000000 zImage
+load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+
+/////////////////////   TFTP   ///////////////////////////////////////////////
+Ubuntu:
+sudo apt install tftpd-hpa
+sudo systemctl status tftpd-hpa
+sudo mkdir /tftp
+sudo chown tftp:tftp /tftp
+sudo systemctl restart tftpd-hpa
+
+
+
+Uboot:
+setenv ipaddr 192.168.1.101
+setenv serverip 192.168.1.200
+tftp 0x42000000 Image  //load file to memory addr
+
