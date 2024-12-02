@@ -1,0 +1,165 @@
+https://linux-sunxi.org/Bootable_SD_card#Bootloader
+https://linux-sunxi.org/U-Boot
+
+Split SD on partitions
+
+start 	sector 	size 	usage
+0KB 	0 	    8KB   	Unused, available for an MBR or (limited) GPT partition table
+8KB 	16 	    32KB 	Initial SPL loader
+40KB 	80 	    -     	U-Boot proper
+
+544KB 	1088 	128KB 	environment  (Legacy)
+
+
+First identify the device of the card and export it as ${card}. The commands
+cat /proc/partitions
+
+    If the SD card is connected via USB and is sdX (replace X for a correct letter)
+export card=/dev/sdX
+export p=""
+
+    If the SD card is connected via mmc and is mmcblk0
+export card=/dev/mmcblk0
+export p=p
+
+Cleaning
+
+To be on safe side erase the first part of your SD Card (also clears the partition table).
+dd if=/dev/zero of=${card} bs=1M count=1
+
+//If you wish to keep the partition table, run:
+//dd if=/dev/zero of=${card} bs=1k count=1023 seek=1
+
+Bootloader
+
+You will need to write the u-boot-sunxi-with-spl.bin to the sd-card. If you don't have this file yet, refer to the "compilation" section of mainline or legacy U-Boot.
+
+sudo dd if=u-boot-sunxi-with-spl.bin of=${card} bs=1024 seek=8
+
+////////////////////////////   SD   ///////////////////////////////////////////
+Partitioning
+
+With recent U-Boot it's fine to use ext2/ext4 as boot partition, and other filesystems in the root partition too.
+With separate boot partition
+
+Partition the card with a 16MB boot partition starting at 1MB, and the rest as root partition
+
+cat <<EOT | sudo sfdisk ${card}
+1M,168M,c
+,,L
+EOT
+
+You should now be able to create the actual filesystems:
+
+mkfs.vfat ${card}${p}1
+mkfs.ext4 ${card}${p}2
+
+cardroot=${card}${p}2
+
+//////////////// UBOOT ////////////////////////////////////////////////////////
+sudo apt install uboot-tools
+apt-get install swig
+apt-get install python3-dev
+apt-get install device-tree-compiler
+git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
+
+
+uboot:
+make CROSS_COMPILE=arm-linux-gnueabi- mangopi_mq_r_defconfig
+
+//(uart0 CONS_INDEX=1 in arch/arm/mach-sunxi)
+make nconfig -> device drivers -> serial ->serial port to 1
+// device tree: arch/arm/dts/mangopi_mq_r.dtsi:
+delete uart3_pb_pinsa
+in aliases serial0 = &uart0
+in chosen stdout-path = "serial0:115200n8"
+
+//compile
+make CROSS_COMPILE=aarch64-linux-gnu-
+
+Install U-Boot
+
+    Convert the boot.cmd to boot.scr using mkimage:
+
+armhf:
+ mkimage -C none -A arm -T script -d boot.cmd boot.scr
+
+arm64:
+ mkimage -C none -A arm64 -T script -d boot.cmd boot.scr
+
+    Copy the bootloader to the installation media
+
+dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////   LINUX   ///////////////////////////////////////////////
+mkimage -A arm -O linux -T kernel -C none -a 0x42000000 -e 0x42000000 -n 'Linux' -d Image zImage
+mkimage -A arm -T ramdisk -d uInitrd initrd.img
+
+# create boot.cmd
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p5 rootwait panic=10 loglevel=8
+load mmc 0:4 0x41000000 zImage
+load mmc 0:4 0x41800000 sun8i-mangopi-mq-dual-linux.dtb
+bootz 0x41000000-0x41800000
+
+bootm - legacy kernel boot
+// mkimage -A arm -O linux -T kernel -C none -a 0x41000000 -e 0x41000000 -n 'Linux' -d zImage image
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p5 rootwait panic=10 loglevel=8
+load mmc 0:4 0x41000000 image  (after mkimage)
+load mmc 0:4 0x41800000 sun8i-mangopi-mq-dual-linux.dtb
+bootm 0x41000000 - 0x41800000
+
+mkimage -C none -A arm -T script -d boot.cmd boot.scr
+
+in sdb1 boot.scr, boot.cmd, Image.img, sun8i-mangopi-mq-dual-linux.dtb
+
+mount ${card}${p}1 /mnt/
+cp linux-sunxi/arch/arm/boot/uImage /mnt/
+cp sunxi-boards/sys_config/a10/script.bin /mnt/
+umount /mnt/
+
+// mount *.img
+sudo fdisk -lu *.img
+sudo mount -t auto -o loop,offset=$((8192*512)) Armbian_24.11.1_Orangepizero2_bookworm_current_6.6.62-homeassistant_minimal.img /mnt/ssh
+
+//uboot
+printenv
+load mmc 0:1 0x42000000 zImage
+load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+booti 42000000 - 4fa00000
+
+/////////////////////   TFTP   ///////////////////////////////////////////////
+Ubuntu:
+sudo apt install tftpd-hpa
+sudo systemctl status tftpd-hpa
+sudo mkdir /tftp
+sudo chown tftp:tftp /tftp
+sudo systemctl restart tftpd-hpa
+
+
+// Initrd initramfs boot
+Uboot:  (orang pi zero2)
+printenv   //check address of dtb and initrd and kernel
+setenv ipaddr 192.168.1.101
+setenv serverip 192.168.1.200
+tftp 0x42000000 vmlinuz
+tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+tftp 0x4FF00000 initrd.img
+setenv bootargs console=ttyS0
+booti 0x42000000 0x4FF00000 0x4fa00000
+
+// without initrd => in boot.cmd
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
+load mmc 0:1 0x42000000 vmlinuz
+load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+booti 0x42000000 - 0x4fa00000
+
+/////////////////////   NFS   ///////////////////////////////////////////////
+setenv ipaddr 192.168.1.101
+setenv serverip 192.168.1.200
+setenv npath /export
+tftp 0x42000000 vmlinuz
+tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+setenv bootargs console=ttyS0,115200 root=/dev/nfs rw nfsroot=${serverip}:${npath} ip=${ipaddr}
+booti 0x42000000 - 0x4fa00000
+

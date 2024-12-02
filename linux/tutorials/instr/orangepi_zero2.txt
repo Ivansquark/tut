@@ -1,7 +1,6 @@
 https://linux-sunxi.org/Bootable_SD_card#Bootloader
 https://linux-sunxi.org/U-Boot
 
-
 Split SD on partitions
 
 start 	sector 	size 	usage
@@ -31,9 +30,6 @@ dd if=/dev/zero of=${card} bs=1M count=1
 //If you wish to keep the partition table, run:
 //dd if=/dev/zero of=${card} bs=1k count=1023 seek=1
 
-
-
-
 Bootloader
 
 You will need to write the u-boot-sunxi-with-spl.bin to the sd-card. If you don't have this file yet, refer to the "compilation" section of mainline or legacy U-Boot.
@@ -48,7 +44,6 @@ With separate boot partition
 
 Partition the card with a 16MB boot partition starting at 1MB, and the rest as root partition
 
-blockdev --rereadpt ${card}
 cat <<EOT | sudo sfdisk ${card}
 1M,168M,c
 ,,L
@@ -61,8 +56,8 @@ mkfs.ext4 ${card}${p}2
 
 cardroot=${card}${p}2
 
-
 //////////////// UBOOT ////////////////////////////////////////////////////////
+sudo apt install uboot-tools
 apt-get install swig
 apt-get install python3-dev
 apt-get install device-tree-compiler
@@ -70,7 +65,7 @@ git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
 
 make CROSS_COMPILE=aarch64-linux-gnu- PLAT=<platform> DEBUG=1 bl31
 Change <platform> to your needs  sun50i_h616. sun50i_a64 for example is suitable for H5 and A64 devices.
---- make CROSS_COMPILE=aarch64-linux-gnu- PLAT=sun50i_h616 DEBUG=1 bl31
+make CROSS_COMPILE=aarch64-linux-gnu- PLAT=sun50i_h616 DEBUG=1 bl31
 
 uboot:
 make CROSS_COMPILE=aarch64-linux-gnu- BL31=../trusted-firmware-a/build/sun50i_h616/debug/bl31.bin orangepi_zero2_defconfig
@@ -80,12 +75,10 @@ Install U-Boot
 
     Convert the boot.cmd to boot.scr using mkimage:
 
-armhf
-
+armhf:
  mkimage -C none -A arm -T script -d boot.cmd boot.scr
 
-arm64
-
+arm64:
  mkimage -C none -A arm64 -T script -d boot.cmd boot.scr
 
     Copy the bootloader to the installation media
@@ -95,6 +88,9 @@ arm64
 
 /////////////////////   LINUX   ///////////////////////////////////////////////
 mkimage -A arm64 -O linux -T kernel -C none -a 0x42000000 -e 0x42000000 -n 'Linux' -d Image zImage
+mkimage -A arm64 -T ramdisk -d uInitrd initrd.img
+
+
 https://github.com/Kononenko-K/Allwinner_H616_Devboard/
 
 # create boot.cmd
@@ -123,6 +119,7 @@ sudo mount -t auto -o loop,offset=$((8192*512)) Armbian_24.11.1_Orangepizero2_bo
 printenv
 load mmc 0:1 0x42000000 zImage
 load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+booti 42000000 - 4fa00000
 
 /////////////////////   TFTP   ///////////////////////////////////////////////
 Ubuntu:
@@ -133,9 +130,28 @@ sudo chown tftp:tftp /tftp
 sudo systemctl restart tftpd-hpa
 
 
-
-Uboot:
+// Initrd initramfs boot
+Uboot:  (orang pi zero2)
+printenv   //check address of dtb and initrd and kernel
 setenv ipaddr 192.168.1.101
 setenv serverip 192.168.1.200
-tftp 0x42000000 Image  //load file to memory addr
+tftp 0x42000000 vmlinuz
+tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+tftp 0x4FF00000 initrd.img
+setenv bootargs console=ttyS0
+booti 0x42000000 0x4FF00000 0x4fa00000
 
+// without initrd => in boot.cmd
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
+load mmc 0:1 0x42000000 vmlinuz
+load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+booti 0x42000000 - 0x4fa00000
+
+/////////////////////   NFS   ///////////////////////////////////////////////
+setenv ipaddr 192.168.1.101
+setenv serverip 192.168.1.200
+setenv npath /export
+tftp 0x42000000 vmlinuz
+tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
+setenv bootargs console=ttyS0,115200 root=/dev/nfs rw nfsroot=${serverip}:${npath} ip=${ipaddr}
+booti 0x42000000 - 0x4fa00000
