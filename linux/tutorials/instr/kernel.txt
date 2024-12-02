@@ -1,0 +1,23 @@
+cp linux-sunxi64-current.config <LINUX-SRC>/kernel/configs
+
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-sunxi64-current.config
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- dtbs
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
+
+
+
+vmlinux
+vmlinux" is a file which is created in the process of building kernel file from
+the sources. It is saved in ELF format. Then it can be used for debugging purposes
+using some debugger (i.e. GDB). It is not used for booting the systems
+
+arch/arm64/boot
+Basing on this "vmlinux" ELF file there are created other files - like "Image".
+"Image" is a file which consists of some parts of vmlinux plus some boot code and
+this boot code is then used by bootloaders to start the kernel on the system.
+
+
+////////////////////////////////////////
+cp linux-sunxi64-current.config in buildroot
+set nconfig -> kernel->Kernel Configuration->Using custom def file; <- linux-sunxi64-current.config) Configuration file path
+make linux-nconfig - try change something

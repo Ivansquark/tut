@@ -1,5 +1,7 @@
 https://linux-sunxi.org/Bootable_SD_card#Bootloader
 https://linux-sunxi.org/U-Boot
+https://habr.com/ru/articles/574118/
+https://habr.com/ru/articles/585432/
 
 Split SD on partitions
 
@@ -105,6 +107,7 @@ bootz 0x41000000-0x41800000
 bootm - legacy kernel boot
 // mkimage -A arm -O linux -T kernel -C none -a 0x41000000 -e 0x41000000 -n 'Linux' -d zImage image
 setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p5 rootwait panic=10 loglevel=8
+// saveenv
 load mmc 0:4 0x41000000 image  (after mkimage)
 load mmc 0:4 0x41800000 sun8i-mangopi-mq-dual-linux.dtb
 bootm 0x41000000 - 0x41800000
