@@ -16,7 +16,8 @@ int create_listner(char* service) {
     struct addrinfo* res = NULL;
     int gai_err;
     struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,
+        .ai_family = AF_INET,
+        //.ai_family = AF_UNSPEC,
         .ai_socktype = SOCK_STREAM,
         .ai_flags = AI_PASSIVE,
     };
@@ -39,14 +40,21 @@ int create_listner(char* service) {
             sock = -1;
             continue;
         }
+        if (listen(sock, SOMAXCONN) < 0) {
+            perror("listen");
+            close(sock);
+            sock = -1;
+            continue;
+        }
         break;
     }
+    printf("res = %x\n", &res);
     freeaddrinfo(res);
+    printf("create_listner\n");
     return sock;
 }
 
 int main(int argc, char** argv) {
-    printf("epoll\n");
     if (argc != 2) {
         fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
         return 1;
@@ -66,27 +74,32 @@ int main(int argc, char** argv) {
     epoll_ctl(epollfd, EPOLL_CTL_ADD, sock, &evt);
 
     while (1) {
+        // int timeout = 10; // block indefinitly
         int timeout = -1; // block indefinitly
         errno = 0;
         if (epoll_wait(epollfd, &evt, 1, timeout) < 1) {
             if (errno == EINTR) {
+                printf("errno\n");
                 continue;
             }
             perror("select");
             return 1;
         }
         if (evt.data.fd == sock) {
+            // int connection = accept(sock, NULL, NULL);
             int connection = accept(sock, NULL, NULL);
-
-            struct epoll_event evt = {.events = EPOLLIN, .data.fd = connection};
+            printf("connection num = %d\n", connection);
+            struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT,
+                                      .data.fd = connection};
             epoll_ctl(epollfd, EPOLL_CTL_ADD, connection, &evt);
-
         } else {
             char buf[1024] = {0};
+            // not blocked here
             ssize_t res = read(evt.data.fd, buf, sizeof(buf) - 1);
             if (res == 0) {
                 close(evt.data.fd);
             } else {
+                // not blocked here
                 write(evt.data.fd, buf, res);
                 printf("fd %d: %s\n", evt.data.fd, buf);
             }
