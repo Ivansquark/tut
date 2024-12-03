@@ -52,8 +52,8 @@ EOT
 
 You should now be able to create the actual filesystems:
 
-mkfs.vfat ${card}${p}1
-mkfs.ext4 ${card}${p}2
+sudo mkfs.vfat ${card}${p}1
+sudo mkfs.ext4 ${card}${p}2
 
 cardroot=${card}${p}2
 
@@ -145,7 +145,7 @@ booti 0x42000000 0x4FF00000 0x4fa00000
 
 // without initrd => in boot.cmd
 setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
-load mmc 0:1 0x42000000 vmlinuz
+load mmc 0:1 0x42000000 Image
 load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
 booti 0x42000000 - 0x4fa00000
 
@@ -153,7 +153,7 @@ booti 0x42000000 - 0x4fa00000
 setenv ipaddr 192.168.1.101
 setenv serverip 192.168.1.200
 setenv npath /export
-tftp 0x42000000 vmlinuz
+tftp 0x42000000 Image
 tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
 setenv bootargs console=ttyS0,115200 root=/dev/nfs rw nfsroot=${serverip}:${npath} ip=${ipaddr}
 booti 0x42000000 - 0x4fa00000

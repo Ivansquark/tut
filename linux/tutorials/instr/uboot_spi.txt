@@ -1,0 +1,22 @@
+sudo apt install sunxi-tools
+sudo sunxi-fel uboot u-boot-sunxi-with-spl.bin
+
+NOR flash   env/flash.c
+SPI flash   env/sf.c
+MMC         env/mmc.c
+
+
+include/configs/sunxi-common.h
+
+/////////////////// CRUTCH ////////////////////////////////////////
+board/sunxi/board.c
+add return ENVL_SPI_FLASH => boot from mmc => env from spi flash sf
+///////////////////////////////////////////////////////////////////
+
+// boot with default => read from spi => import from ram
+
+
+some commands:
+md.b 50000000 1300
+
+sf read 50000000 0 2000
