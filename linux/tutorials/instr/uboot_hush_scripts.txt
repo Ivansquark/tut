@@ -1,0 +1,32 @@
+\K - man in vim
+
+0 - true
+1.. - false
+
+=> env set var 20000000
+=> env set q 150
+=> setexpr res $var / $q
+=> env print res
+
+//conditional
+=> env set i 6
+=> if test $i -lt 5 ; then echo "Less then 5" ; \
+   else echo "More than 5" ; fi
+
+//loop
+=> for i in a b c d ; do echo "$i" ; done
+
+=> env set blink "while true; do; gpio set PC13; sleep 0.1; gpio clear PC13; sleep 0.1; done;"
+
+
+=> gpio input 45
+gpio: pin 45 (gpio 45) value is 1
+=> echo $?
+1
+
+// script togle led in depending of input pin signal
+=> env set check 'gpio input PH5; env set var $?; if test $var -eq 1; then echo $var; gpio set PC13; else echo $var; gpio clear PC13; fi;'
+=> run check
+
+while true; do run check; done;
+
