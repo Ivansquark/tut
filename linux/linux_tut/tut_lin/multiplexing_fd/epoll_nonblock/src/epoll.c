@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define _GNU_SOURCE /* See feature_test_macros(7) */
+
 int create_listner(char* service) {
     struct addrinfo* res = NULL;
     int gai_err;
@@ -27,7 +29,7 @@ int create_listner(char* service) {
     }
     int sock = -1;
     for (struct addrinfo* ai = res; ai; ai = ai->ai_next) {
-        sock = socket(ai->ai_family, ai->ai_socktype, 0);
+        sock = socket(ai->ai_family, ai->ai_socktype | SOCK_NONBLOCK, 0);
         if (sock < 0) {
             perror("socket");
             continue;
@@ -69,40 +71,45 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    struct epoll_event evt = {.events = EPOLLIN, .data.fd = sock};
+    struct epoll_event evt = {.events = EPOLLIN | EPOLLET, .data.fd = sock};
     epoll_ctl(epollfd, EPOLL_CTL_ADD, sock, &evt);
 
     while (1) {
         // int timeout = 10; // block indefinitly
         int timeout = -1; // block indefinitly
         errno = 0;
-        if (epoll_wait(epollfd, &evt, 1, timeout) < 1) {
+        if (epoll_wait(epollfd, &evt, 1, timeout) < 0) {
             if (errno == EINTR) {
                 printf("errno\n");
                 continue;
             }
-            perror("select");
-            return 1;
         }
         if (evt.data.fd == sock) {
             // int connection = accept(sock, NULL, NULL);
-            int connection = accept(sock, NULL, NULL);
+            int connection = accept4(sock, NULL, NULL, SOCK_NONBLOCK);
             printf("connection num = %d\n", connection);
-            //struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT,
-            //                          .data.fd = connection};
-            evt.events = EPOLLIN | EPOLLOUT;
+            evt.events = EPOLLIN | EPOLLOUT | EPOLLET;
             evt.data.fd = connection;
             epoll_ctl(epollfd, EPOLL_CTL_ADD, connection, &evt);
         } else {
             char buf[1024] = {0};
             // not blocked here
-            ssize_t res = read(evt.data.fd, buf, sizeof(buf) - 1);
-            if (res == 0) {
-                close(evt.data.fd);
-            } else {
-                // not blocked here
-                write(evt.data.fd, buf, res);
-                printf("fd %d: %s\n", evt.data.fd, buf);
+            ssize_t res;
+            while ((res = read(evt.data.fd, buf, sizeof(buf) - 1)) >= 0) {
+                if (errno == EAGAIN) {
+                    printf("readall");
+                }
+                if (errno == EINTR) {
+                    printf("errno\n");
+                    continue;
+                }
+                if (res == 0) {
+                    close(evt.data.fd);
+                } else {
+                    // not blocked here
+                    write(evt.data.fd, buf, res);
+                    printf("fd %d: %s\n", evt.data.fd, buf);
+                }
             }
         }
     }

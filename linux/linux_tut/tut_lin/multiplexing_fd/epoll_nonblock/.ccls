@@ -3,6 +3,7 @@ gcc
 %cpp -std=c++23
 %h %hpp --include=Global.h
 -Iinc
+-I/usr/include/
 -isystem/usr/include/x86_64-linux-gnu/c++/13/
 -isystem/usr/include/x86_64-linux-gnu/
 -isystem/usr/include/c++/13/
