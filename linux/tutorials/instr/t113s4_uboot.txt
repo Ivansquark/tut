@@ -2,6 +2,9 @@ https://linux-sunxi.org/Bootable_SD_card#Bootloader
 https://linux-sunxi.org/U-Boot
 https://habr.com/ru/articles/574118/
 https://habr.com/ru/articles/585432/
+update instr:
+https://habr.com/ru/articles/470519/
+https://habr.com/ru/articles/400011/
 
 Split SD on partitions
 

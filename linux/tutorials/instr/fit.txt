@@ -1,0 +1,113 @@
+Flattened Image Tree:
+
+vi sign.its
+
+/dts-v1/;
+
+/ {
+    description = "OrangepiZero2";
+    #address-cells = <1>;
+
+    images {
+        kernel {
+            data = /incbin/("Image.gz");
+            type = "kernel";
+            arch = "arm64";
+            os = "linux";
+            compression = "gzip";
+            load = <0x40080000>;
+            entry = <0x40080000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        fdt-1 {
+            description = "OrangePi Zero2-2xunlong";
+            data = /incbin/("sun50i-h616-orangepi-zero2.dtb");
+            type = "flat_dt";
+            arch = "arm64";
+            compression = "none";
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+    configurations {
+        default = "conf-1";
+        conf-1 {
+            kernel = "kernel";
+            fdt = "fdt-1";
+            signature-1 {
+                algo = "sha256,rsa2048";
+                key-name-hint = "dev";
+                sign-images = "fdt", "kernel";
+            };
+        };
+    };
+};
+
+
+mkdir keys
+openssl genrsa -F4 -out keys/dev.key 2048
+openssl req -batch -new -x509 -key keys/dev.key -out keys/dev.crt
+cp sun50i-h616-orangepi-zero2.dtb sun50i-h616-orangepi-zero2-pubkey.dtb
+// main command
+mkimage -f sign.its -K sun50i-h616-orangepi-zero2-pubkey.dtb -k keys -r image.fit
+fdtget -l image.fit /
+
+//without keys
+
+/dts-v1/;
+
+/ {
+    description = "OrangepiZero2";
+    #address-cells = <1>;
+
+    images {
+        kernel {
+            data = /incbin/("Image");
+            type = "kernel";
+            arch = "arm64";                 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA not arm
+            os = "linux";
+            compression = "none";
+            load = <0x40080000>;
+            entry = <0x40080000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        fdt-1 {
+            description = "OrangePiZero2_dtb";
+            data = /incbin/("sun50i-h616-orangepi-zero2.dtb");
+            type = "flat_dt";
+            arch = "arm64";
+            compression = "none";
+            load = <0x4FA00000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+    configurations {
+        default = "conf-1";
+        conf-1 {
+            description = "Opa";
+            kernel = "kernel";
+            fdt = "fdt-1";
+            //signature-1 {
+            //    algo = "sha256,rsa2048";
+            //    key-name-hint = "dev";
+            //    sign-images = "fdt", "kernel";
+            //};
+        };
+    };
+};
+
+mkimage -E -f sign.its image.fit
+mkimage -f sign.its image.fit
+
+
+
+tftp 0x44000000 image.fit
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
+bootm 0x44000000
