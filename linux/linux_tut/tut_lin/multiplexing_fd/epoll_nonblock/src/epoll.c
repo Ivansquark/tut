@@ -12,16 +12,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define _GNU_SOURCE /* See feature_test_macros(7) */
 
 int create_listner(char* service) {
     struct addrinfo* res = NULL;
     int gai_err;
     struct addrinfo hint = {
-        .ai_family = AF_INET,
-        //.ai_family = AF_UNSPEC,
-        .ai_socktype = SOCK_STREAM,
-        .ai_flags = AI_PASSIVE,
+        .ai_family = AF_UNSPEC,     /* IP4 or IP6 */
+        .ai_socktype = SOCK_STREAM, /* TCP */
+        .ai_flags = AI_PASSIVE,     /* For wildcard IP adresses */
     };
     if ((gai_err = getaddrinfo(NULL, service, &hint, &res))) {
         fprintf(stderr, "gai_err %s\n", gai_strerror(gai_err));
