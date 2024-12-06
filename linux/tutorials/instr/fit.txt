@@ -54,6 +54,7 @@ cp sun50i-h616-orangepi-zero2.dtb sun50i-h616-orangepi-zero2-pubkey.dtb
 // main command
 mkimage -f sign.its -K sun50i-h616-orangepi-zero2-pubkey.dtb -k keys -r image.fit
 fdtget -l image.fit /
+make CROSS_COMPILE=aarch64-linux-gnu- BL31=../trusted-firmware-a/build/sun50i_h616/debug/bl31.bin EXT_DTB=../../fit/sun50i-h616-orangepi-zero2-pubkey.dtb
 
 //without keys
 
@@ -106,8 +107,103 @@ fdtget -l image.fit /
 mkimage -E -f sign.its image.fit
 mkimage -f sign.its image.fit
 
+cd $WORK
+export UDEV=/dev/sdd1   # Change thes two lines to the correct device
+export KDEV=/dev/sde2
+sudo mount $UDEV /mnt/tmp && sudo cp $UOUT/u-boot-dtb.img /mnt/tmp/u-boot.img  && sleep 1 && sudo umount $UDEV
+sudo mount $KDEV /mnt/tmp && sudo cp $WORK/image.fit /mnt/tmp/boot/image.fit && sleep 1 && sudo umount $KDEV
+
 
 
 tftp 0x44000000 image.fit
 setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
 bootm 0x44000000
+
+////////////// with init ramfs ///////////////////////////
+find . | cpio -H newc -ov --owner root:root > ../initramfs.cpio
+cd ..
+gzip initramfs.cpio
+mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamfs
+
+//fit
+/dts-v1/;
+
+/ {
+    description = "OrangepiZero2";
+    #address-cells = <1>;
+
+    images {
+        kernel {
+            description = "OrangepiZero2_6.7-kernel";
+            data = /incbin/("Image.gz");
+            type = "kernel";
+            arch = "arm64";
+            os = "linux";
+            compression = "gzip";
+            load = <0x40080000>;
+            entry = <0x40080000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        ramdisk-1 {
+            description = "OrangepiZero2_6.7-ramdisk";
+            data = /incbin/("./uRamfs");
+            type = "ramdisk";
+            arch = "arm64";
+            os = "linux";
+            load = <0x48000000>;
+            entry = <0x48000000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        fdt-1 {
+            description = "OrangePiZero2_dtb";
+            data = /incbin/("sun50i-h616-orangepi-zero2.dtb");
+            type = "flat_dt";
+            arch = "arm64";
+            compression = "none";
+            load = <0x4FA00000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+    configurations {
+        default = "conf-1";
+        conf-1 {
+            description = "Opa";
+            kernel = "kernel";
+            ramdisk = "ramdisk-1";
+            fdt = "fdt-1";
+            signature-1 {
+                algo = "sha256,rsa2048";
+                key-name-hint = "dev";
+                sign-images = "kernel", "ramdisk", "fdt";
+            };
+        };
+    };
+};
+
+
+mkimage -f signram.its -K sun50i-h616-orangepi-zero2-pubkey.dtb -k keys -r image.fit
+
+tftp 0x50000000 image.fit
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+bootm 0x50000000 //not work
+setenv bootargs console=ttyS0,115200 rdinit=/sbin/init
+//from iminfo
+bootm 0x50000000 0x509c19f0 0x5387d8a4
+
+
+iminfo
+bootm 0x50000000 0x509c4b2c 0x5388034c
+
+
+
+//mount nfs
+mount -o ro,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
+chroot mnt /sbin/init
+
+LD_TRACE_LOADED_OBJECTS=1
