@@ -69,7 +69,8 @@ int create_listner(char* service, char* p) {
     inet_pton(AF_INET, "127.0.0.1", &ip);
     unsigned short port = htons(55555);
     struct sockaddr_in addr = {
-        .sin_family = AF_INET, .sin_addr.s_addr = ip, .sin_port = port};
+        .sin_family = AF_INET, .sin_addr.s_addr = INADDR_ANY, .sin_port = port};
+    //.sin_family = AF_INET, .sin_addr.s_addr = ip, .sin_port = port};
 
     if (bind(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) < 0) {
         perror("bind");

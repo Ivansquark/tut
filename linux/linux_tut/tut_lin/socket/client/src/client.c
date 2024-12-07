@@ -1,5 +1,10 @@
 #include "client.h"
 
+#ifndef __USE_XOPEN2K
+    #define __USE_XOPEN2K
+#endif
+
+#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -12,7 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int create_listner(char* service) {
+int get_addr(char* service) {
     struct addrinfo* res = NULL;
     int gai_err;
     struct addrinfo hint = {
@@ -26,28 +31,8 @@ int create_listner(char* service) {
     }
     int sock = -1;
     for (struct addrinfo* ai = res; ai; ai = ai->ai_next) {
-        sock = socket(ai->ai_family, ai->ai_socktype, 0);
-        if (sock < 0) {
-            perror("socket");
-            continue;
-        }
-        int one = 1;
-        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
-        if (bind(sock, ai->ai_addr, ai->ai_addrlen) < 0) {
-            perror("bind");
-            close(sock);
-            sock = -1;
-            continue;
-        }
-        if (listen(sock, SOMAXCONN) < 0) {
-            perror("listen");
-            close(sock);
-            sock = -1;
-            continue;
-        }
-        break;
+        // TODO: return address IP
     }
-    printf("res = %x\n", &res);
     freeaddrinfo(res);
     printf("create_listner\n");
     return sock;
@@ -58,52 +43,26 @@ int main(int argc, char** argv) {
         fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
         return 1;
     }
-    int sock = create_listner(argv[1]);
-    if (sock < 0) {
+    int addr = get_addr(argv[1]);
+
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    int ip = 0;
+    inet_pton(AF_INET, "127.0.0.1", &ip);
+
+    struct sockaddr_in adr = {
+        .sin_family = AF_INET, .sin_addr.s_addr = ip, .sin_port = htons(55555)};
+
+    if(connect(sock, (struct sockaddr*)&adr, sizeof(struct sockaddr_in)) < 0) {
+        perror("no connection");
         return 1;
     }
-
-    int epollfd = epoll_create1(0);
-    if (epollfd < 0) {
-        perror("epoll");
-        return 1;
-    }
-
-    struct epoll_event evt = {.events = EPOLLIN, .data.fd = sock};
-    epoll_ctl(epollfd, EPOLL_CTL_ADD, sock, &evt);
-
-    while (1) {
-        // int timeout = 10; // block indefinitly
-        int timeout = -1; // block indefinitly
-        errno = 0;
-        if (epoll_wait(epollfd, &evt, 1, timeout) < 1) {
-            if (errno == EINTR) {
-                printf("errno\n");
-                continue;
-            }
-            perror("select");
-            return 1;
-        }
-        if (evt.data.fd == sock) {
-            // int connection = accept(sock, NULL, NULL);
-            int connection = accept(sock, NULL, NULL);
-            printf("connection num = %d\n", connection);
-            struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT,
-                                      .data.fd = connection};
-            epoll_ctl(epollfd, EPOLL_CTL_ADD, connection, &evt);
-        } else {
-            char buf[1024] = {0};
-            // not blocked here
-            ssize_t res = read(evt.data.fd, buf, sizeof(buf) - 1);
-            if (res == 0) {
-                close(evt.data.fd);
-            } else {
-                // not blocked here
-                write(evt.data.fd, buf, res);
-                printf("fd %d: %s\n", evt.data.fd, buf);
-            }
-        }
-    }
+    char buf[256] = {0};
+    write(sock, "opa\n", 4);
+    read(sock, buf, sizeof(buf));
+    printf("readed: \n%s", buf);
+    return 1;
+    while (1) {}
 
     return 0;
 }
