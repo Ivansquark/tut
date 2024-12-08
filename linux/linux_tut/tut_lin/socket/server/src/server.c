@@ -100,21 +100,41 @@ int main(int argc, char** argv) {
     }
     char buf[1024] = {0};
     while (1) {
+        // block
         int connection = accept(sock, NULL, NULL);
         if (connection < 0) {
             perror("connection");
+            continue;
         }
-        // TODO: forks
-        while (1) {
-            printf("connection num = %d\n", connection);
-            int res = 0;
-            if ((res = read(connection, buf, sizeof(buf))) < 0) {
-                perror("read");
-                continue;
+        printf("connection num = %d\n", connection);
+        pid_t pid = 0;
+        if (!(pid = fork())) {
+            // child
+            while (1) {
+                int res = 0;
+                if ((res = read(connection, buf, sizeof(buf))) < 0) {
+                    perror("read");
+                    continue;
+                }
+                if (!res) {
+                    // received EOF when connection closed on client side
+                    close(connection);
+                    return 0;
+                }
+                printf("readed on connection %d:\n%s\n", connection, buf);
+                write(connection, buf, res);
+                memset(buf, 0, sizeof(buf));
+                if (!connection) {
+                    return 1;
+                }
             }
-            printf("readed:\n%s\n", buf);
-            write(connection, buf, res);
         }
+        printf("pid = %d\n", pid);
+        //TODO: clear about wait
+        while (waitpid(pid, NULL, WNOHANG) > 0) {
+            close(connection);
+        }
+        // wait(NULL);
     }
 
     return 0;
