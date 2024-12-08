@@ -1,6 +1,8 @@
 #include "server.h"
 
-#ifndef __USE_XOPEN2K
+#ifndef __USE_POSIX
+    #define __USE_POSIX
+    #define __USE_XOPEN_EXTENDED
     #define __USE_XOPEN2K
 #endif
 
@@ -8,6 +10,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +19,16 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+static void grimReaper([[maybe_unused]] int sig) {
+    printf("%s%d\n", "delete zombie -", sig);
+    int savedErrno = 0;
+    savedErrno = errno;
+    while (waitpid(-1, NULL, WNOHANG) > 0) {
+        continue;
+    }
+    errno = savedErrno;
+}
 
 int create_listner(char* service, char* p) {
     struct addrinfo* res = NULL;
@@ -94,6 +107,16 @@ int main(int argc, char** argv) {
         fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
         return 1;
     }
+
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sa.sa_handler = grimReaper;
+    if (sigaction(SIGCHLD, &sa, NULL) == -1) {
+        perror("sig child");
+        exit(EXIT_FAILURE);
+    }
+
     int sock = create_listner(argv[1], argv[2]);
     if (sock < 0) {
         return 1;
@@ -110,6 +133,7 @@ int main(int argc, char** argv) {
         pid_t pid = 0;
         if (!(pid = fork())) {
             // child
+            close(sock); // no need listen socket
             while (1) {
                 int res = 0;
                 if ((res = read(connection, buf, sizeof(buf))) < 0) {
@@ -130,11 +154,7 @@ int main(int argc, char** argv) {
             }
         }
         printf("pid = %d\n", pid);
-        //TODO: clear about wait
-        while (waitpid(pid, NULL, WNOHANG) > 0) {
-            close(connection);
-        }
-        // wait(NULL);
+        close(connection);
     }
 
     return 0;
