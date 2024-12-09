@@ -203,7 +203,40 @@ bootm 0x50000000 0x509c4b2c 0x5388034c
 
 
 //mount nfs
-mount -o ro,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
-chroot mnt /sbin/init
+#mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+ifconfig eth0 192.168.1.103
+mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
+exec chroot mnt /sbin/init
 
 LD_TRACE_LOADED_OBJECTS=1
+
+
+
+#! /bin/sh
+
+echo "init from initramfs"
+
+# mount temporary filesystems
+mount -n -t devtmpfs devtmpfs /dev
+mount -n -t proc     proc     /proc
+mount -n -t sysfs    sysfs    /sys
+mount -n -t tmpfs    tmpfs    /run
+
+#mdev -s
+ifconfig eth0 192.168.1.103
+mkdir new_root
+# mount new root
+#mount -o ro,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
+mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
+
+# switch to new rootfs and exec init
+cd new_root
+exec chroot . /sbin/init
+exec chroot . /sbin/init
+
+// not work
+exec switch_root -c /dev/console . /sbin/init "$@"
+#exec switch_root -c /dev/console /new_root /bin/busybox init
+
+mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
