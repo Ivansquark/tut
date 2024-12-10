@@ -197,46 +197,43 @@ setenv bootargs console=ttyS0,115200 rdinit=/sbin/init
 bootm 0x50000000 0x509c19f0 0x5387d8a4
 
 
-iminfo
-bootm 0x50000000 0x509c4b2c 0x5388034c
-
-
-
 //mount nfs
-#mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
+tftp 0x50000000 image.fit
 setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+bootm 0x50000000 0x509c19f0 0x5387d8a4
 ifconfig eth0 192.168.1.103
+#mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
 mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt
 exec chroot mnt /sbin/init
+
+
+
+
+sshd -ddd //debug sshdaemon
+
 
 LD_TRACE_LOADED_OBJECTS=1
 
 
+//not work
+#!/bin/busybox sh
 
-#! /bin/sh
+# Mount the /proc and /sys filesystems.
+mount -t proc none /proc
+mount -t sysfs none /sys
 
-echo "init from initramfs"
+# Do your stuff here.
+echo "This script just mounts and boots the rootfs, nothing else!"
 
-# mount temporary filesystems
-mount -n -t devtmpfs devtmpfs /dev
-mount -n -t proc     proc     /proc
-mount -n -t sysfs    sysfs    /sys
-mount -n -t tmpfs    tmpfs    /run
-
-#mdev -s
+# Mount the root filesystem.
+#mount -o ro /dev/sda1 /mnt/root
 ifconfig eth0 192.168.1.103
-mkdir new_root
-# mount new root
-#mount -o ro,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
-mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
+mkdir /mnt/root
+mount -o ro,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt/root
 
-# switch to new rootfs and exec init
-cd new_root
-exec chroot . /sbin/init
-exec chroot . /sbin/init
+# Clean up.
+umount /proc
+umount /sys
 
-// not work
-exec switch_root -c /dev/console . /sbin/init "$@"
-#exec switch_root -c /dev/console /new_root /bin/busybox init
-
-mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /new_root
+# Boot the real thing.
+exec switch_root /mnt/root /sbin/init
