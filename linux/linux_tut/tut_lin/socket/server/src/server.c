@@ -21,10 +21,14 @@
 #include <unistd.h>
 
 static void grimReaper([[maybe_unused]] int sig) {
-    printf("%s%d\n", "delete zombie -", sig);
+    printf("%s%d\n", "delete zombie - ", sig);
     int savedErrno = 0;
     savedErrno = errno;
-    while (waitpid(-1, NULL, WNOHANG) > 0) {
+    int status = 0;
+    int pid = 0;
+    sleep(5);
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
+        printf("SIGCHILD pid = %d, exit status = %x\n", pid, status);
         continue;
     }
     errno = savedErrno;
@@ -138,6 +142,7 @@ int main(int argc, char** argv) {
                 int res = 0;
                 if ((res = read(connection, buf, sizeof(buf))) < 0) {
                     perror("read");
+                    return 1;
                     continue;
                 }
                 if (!res) {
