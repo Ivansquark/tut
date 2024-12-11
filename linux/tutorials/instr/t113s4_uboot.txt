@@ -30,7 +30,7 @@ export p=p
 Cleaning
 
 To be on safe side erase the first part of your SD Card (also clears the partition table).
-dd if=/dev/zero of=${card} bs=1M count=1
+sudo dd if=/dev/zero of=${card} bs=1M count=1
 
 //If you wish to keep the partition table, run:
 //dd if=/dev/zero of=${card} bs=1k count=1023 seek=1
@@ -54,10 +54,15 @@ cat <<EOT | sudo sfdisk ${card}
 ,,L
 EOT
 
+cat <<EOT | sudo sfdisk /dev/sdd
+1M,168M,c
+,,L
+EOT
+
 You should now be able to create the actual filesystems:
 
-mkfs.vfat ${card}${p}1
-mkfs.ext4 ${card}${p}2
+sudo mkfs.vfat ${card}${p}1
+sudo mkfs.ext4 ${card}${p}2
 
 cardroot=${card}${p}2
 
@@ -80,7 +85,7 @@ in aliases serial0 = &uart0
 in chosen stdout-path = "serial0:115200n8"
 
 //compile
-make CROSS_COMPILE=aarch64-linux-gnu-
+make CROSS_COMPILE=arm-linux-gnueabi-
 
 Install U-Boot
 
@@ -94,8 +99,14 @@ arm64:
 
     Copy the bootloader to the installation media
 
-dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
+sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
 ///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////  Device tree Uboot compile   ///////////////////////////
+copy from linux
+in file sunxi-u-boot.dtsi
+alias mmc0 to &sdc0
+alias mmc2 to &sdc2
 
 /////////////////////   LINUX   ///////////////////////////////////////////////
 mkimage -A arm -O linux -T kernel -C none -a 0x42000000 -e 0x42000000 -n 'Linux' -d Image zImage
