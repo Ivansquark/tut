@@ -31,6 +31,7 @@ Cleaning
 
 To be on safe side erase the first part of your SD Card (also clears the partition table).
 sudo dd if=/dev/zero of=${card} bs=1M count=1
+sudo dd if=/dev/zero of=/dev/sdd bs=1M count=1
 
 //If you wish to keep the partition table, run:
 //dd if=/dev/zero of=${card} bs=1k count=1023 seek=1
@@ -179,4 +180,6 @@ tftp 0x42000000 vmlinuz
 tftp 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
 setenv bootargs console=ttyS0,115200 root=/dev/nfs rw nfsroot=${serverip}:${npath} ip=${ipaddr}
 booti 0x42000000 - 0x4fa00000
+
+env set ethact eth1
 
