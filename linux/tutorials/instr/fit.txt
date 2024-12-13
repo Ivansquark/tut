@@ -199,7 +199,7 @@ bootm 0x50000000 0x509c19f0 0x5387d8a4
 
 //mount nfs
 tftp 0x50000000 image.fit
-setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+
 bootm 0x50000000 0x509c19f0 0x5387d8a4
 ifconfig eth0 192.168.1.103
 #mount -o rw,port=2049,nolock,proto=tcp -t nfs 192.168.1.200:/export /mnt

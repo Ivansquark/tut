@@ -41,6 +41,7 @@ Bootloader
 You will need to write the u-boot-sunxi-with-spl.bin to the sd-card. If you don't have this file yet, refer to the "compilation" section of mainline or legacy U-Boot.
 
 sudo dd if=u-boot-sunxi-with-spl.bin of=${card} bs=1024 seek=8
+sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
 
 ////////////////////////////   SD   ///////////////////////////////////////////
 Partitioning
@@ -74,13 +75,27 @@ apt-get install python3-dev
 apt-get install device-tree-compiler
 git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
 
+diff --git a/drivers/ram/sunxi/dram_sun20i_d1.c b/drivers/ram/sunxi/dram_sun20i_d1.c
+index 25005ceefb..258d854f7f 100644
+--- a/drivers/ram/sunxi/dram_sun20i_d1.c
++++ b/drivers/ram/sunxi/dram_sun20i_d1.c
+@@ -674,7 +674,7 @@ static void mctl_phy_ac_remapping(dram_para_t *para)
+ 			switch (fuse) {
+ 			case 8: cfg = ac_remapping_tables[2]; break;
+ 			case 9: cfg = ac_remapping_tables[3]; break;
+-			case 10: cfg = ac_remapping_tables[5]; break;
++			case 10: cfg = ac_remapping_tables[0]; break;
+ 			case 11: cfg = ac_remapping_tables[4]; break;
+ 			default:
+ 			case 12: cfg = ac_remapping_tables[1]; break;
+
 
 uboot:
 make CROSS_COMPILE=arm-linux-gnueabi- mangopi_mq_r_defconfig
 
 //(uart0 CONS_INDEX=1 in arch/arm/mach-sunxi)
 make nconfig -> device drivers -> serial ->serial port to 1
-// device tree: arch/arm/dts/mangopi_mq_r.dtsi:
+// device tree: arch/arm/dts/sunxi-d1s-t113-mangopi_mq_r.dtsi:
 delete uart3_pb_pinsa
 in aliases serial0 = &uart0
 in chosen stdout-path = "serial0:115200n8"
@@ -110,41 +125,38 @@ alias mmc0 to &sdc0
 alias mmc2 to &sdc2
 
 /////////////////////   LINUX   ///////////////////////////////////////////////
-mkimage -A arm -O linux -T kernel -C none -a 0x42000000 -e 0x42000000 -n 'Linux' -d Image zImage
+mkimage -A arm -O linux -T kernel -C none -a 0x41000000 -e 0x41000000 -n 'Linux' -d Image zImage
 mkimage -A arm -T ramdisk -d uInitrd initrd.img
 
 # create boot.cmd
 setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p5 rootwait panic=10 loglevel=8
 load mmc 0:4 0x41000000 zImage
-load mmc 0:4 0x41800000 sun8i-mangopi-mq-dual-linux.dtb
+load mmc 0:4 0x41800000 t113s4.dtb
 bootz 0x41000000-0x41800000
 
 bootm - legacy kernel boot
 // mkimage -A arm -O linux -T kernel -C none -a 0x41000000 -e 0x41000000 -n 'Linux' -d zImage image
-setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p5 rootwait panic=10 loglevel=8
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
 // saveenv
 load mmc 0:4 0x41000000 image  (after mkimage)
-load mmc 0:4 0x41800000 sun8i-mangopi-mq-dual-linux.dtb
+load mmc 0:4 0x41800000 t113s4.dtb
 bootm 0x41000000 - 0x41800000
 
 mkimage -C none -A arm -T script -d boot.cmd boot.scr
 
-in sdb1 boot.scr, boot.cmd, Image.img, sun8i-mangopi-mq-dual-linux.dtb
+in sdd1 boot.scr, boot.cmd, Image.img, t113s4.dtb
 
 mount ${card}${p}1 /mnt/
 cp linux-sunxi/arch/arm/boot/uImage /mnt/
 cp sunxi-boards/sys_config/a10/script.bin /mnt/
 umount /mnt/
 
-// mount *.img
-sudo fdisk -lu *.img
-sudo mount -t auto -o loop,offset=$((8192*512)) Armbian_24.11.1_Orangepizero2_bookworm_current_6.6.62-homeassistant_minimal.img /mnt/ssh
 
 //uboot
 printenv
-load mmc 0:1 0x42000000 zImage
-load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
-booti 42000000 - 4fa00000
+load mmc 0:1 0x41000000 zImage
+load mmc 0:1 0x41800000 t113s4.dtb
+booti 41000000 - 41800000
 
 /////////////////////   TFTP   ///////////////////////////////////////////////
 Ubuntu:
@@ -168,9 +180,9 @@ booti 0x42000000 0x4FF00000 0x4fa00000
 
 // without initrd => in boot.cmd
 setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
-load mmc 0:1 0x42000000 vmlinuz
-load mmc 0:1 0x4FA00000 sun50i-h616-orangepi-zero2.dtb
-booti 0x42000000 - 0x4fa00000
+load mmc 0:1 0x41000000 zImage
+load mmc 0:1 0x41800000 t113s4.dtb
+bootz 0x41000000 - 0x41800000
 
 /////////////////////   NFS   ///////////////////////////////////////////////
 setenv ipaddr 192.168.1.101
@@ -183,3 +195,47 @@ booti 0x42000000 - 0x4fa00000
 
 env set ethact eth1
 
+
+///////////////////  FIT  ///////////////////////////////////////
+////////////// with init ramfs ///////////////////////////
+find . | cpio -H newc -ov --owner root:root > ../initramfs.cpio
+cd ..
+gzip initramfs.cpio
+mkimage -A arm -O linux -T ramdisk -d initramfs.cpio.gz uRamfs
+
+mkimage -f signram.its -K sun50i-h616-orangepi-zero2-pubkey.dtb -k keys -r image.fit
+
+export UDEV=/dev/sdd1
+sudo mount $UDEV /mnt/boot && sudo cp image.fit /mnt/boot/image.fit && sleep 1 && sudo umount $UDEV
+
+mkimage -C none -A arm -T script -d boot.cmd boot.scr
+
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+load mmc 0:1 0x46000000 image.fit
+bootm 0x46000000
+bootm 0x46000000 0x464cd53c 0x464bffd4
+
+
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+load mmc 0:1 0x41000000 zImage
+load mmc 0:1 0x41000000 Image.gz // not
+load mmc 0:1 0x41800000 t113s4.dtb
+load mmc 0:1 0x41C00000 uRamfs
+bootz 0x41000000 0x41C00000 0x41800000
+bootz 0x41000000 - 0x41800000
+
+// expand ramdisk size in uboot !!!!!!!!!!!!!!!!!!!!
+env set bootm_low 0x42000000
+env set bootm_size 0x3e00000
+
+gzip -k Image  //save original
+setenv bootargs console=ttyS0,115200 rdinit=/sbin/init root=/dev/ram0 rw rootwait
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh initrd=0x42381000 root=/dev/ram0 rw
+setenv root /dev/ram0
+setenv rootfstype ext2
+
+increasing ramdisk-size fix it...
+setenv initrd_low 0x0x41c00000
+setenv initrd_high 0x42dff480
+
+RAMDISK: Couldn't find valid RAM disk image starting at 0
