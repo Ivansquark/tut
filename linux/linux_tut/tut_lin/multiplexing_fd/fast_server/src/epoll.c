@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <threadpool.h>
 #include <unistd.h>
 
 int create_listner(char* service) {
@@ -45,7 +46,29 @@ int create_listner(char* service) {
     return sock;
 }
 
+void threat_sock(int num) {
+    // after accept;
+    printf("threat_sock %d\n", num);
+}
+void threat_stdStream(int num) {
+    // after accept;
+    printf("threat_stream %d\n", num);
+}
+
 int main(int argc, char** argv) {
+    extern Queue* queue;
+    threadpool_create();
+    fptr f = {threat_sock, 5};
+    queue_push(queue, &f);
+    f.arg = 6;
+    queue_push(queue, &f);
+    fptr s = {threat_stdStream, 1};
+    queue_push(queue, &s);
+    while(1) {
+        //threadpool_handler(&pool, &queue);
+    }
+
+    return 0;
     if (argc != 2) {
         fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
         return 1;
