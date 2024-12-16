@@ -1,5 +1,8 @@
 #include "queue.h"
 
+#include <pthread.h>
+
+pthread_mutex_t mut_q = PTHREAD_MUTEX_INITIALIZER;
 Queue* newQueue(unsigned long int capacity) {
     char* mem = malloc(capacity * CHAR_SIZE * sizeof(fptr));
     if (mem == NULL) {
@@ -17,7 +20,6 @@ Queue* newQueue(unsigned long int capacity) {
     q->readptr = (fptr*)mem;
     q->writeptr = (fptr*)mem;
     q->full = 0;
-    q->empty = -1;
 
     return q;
 }
@@ -28,11 +30,12 @@ void deleteQueue(Queue* q) {
 }
 
 int queue_push(Queue* q, fptr* c) {
-    if (q == NULL) return QUEUE_ERR_NULL;
+    pthread_mutex_lock(&mut_q);
+    if (q == NULL) goto ret_queue_err_null;
 
-    if ((q->writeptr == q->readptr) && q->full) return QUEUE_ERR_FULL;
+    if ((q->writeptr == q->readptr) && q->full) goto ret_queue_err_full;
 
-    (q->writeptr) = c;
+    *(q->writeptr) = *c;
 
     fptr* tmp = (fptr*)((char*)q->writeptr + 1 * sizeof(fptr));
     if ((char*)tmp >= (char*)q->end) {
@@ -42,34 +45,49 @@ int queue_push(Queue* q, fptr* c) {
         q->full = -1;
     }
     q->writeptr = tmp;
-    q->empty = 0;
+    pthread_mutex_unlock(&mut_q);
 
     return QUEUE_OK;
+
+ret_queue_err_null:
+    pthread_mutex_unlock(&mut_q);
+    return QUEUE_ERR_NULL;
+
+ret_queue_err_full:
+    pthread_mutex_unlock(&mut_q);
+    return QUEUE_ERR_FULL;
 }
 
 int queue_pop(Queue* q, fptr* c) {
-    if(!c) {
-        return QUEUE_ERR_NULL;
-    }
-    if (q == NULL) return QUEUE_ERR_NULL;
+    pthread_mutex_lock(&mut_q);
+    if (!c) goto ret_queue_err_null;
+    if (q == NULL) goto ret_queue_err_null;
 
     if ((q->readptr == q->writeptr) && (!q->full)) {
         c = NULL;
-        q->empty = -1;
-        return QUEUE_ERR_EMPTY;
+        goto ret_queue_err_empty;
     }
 
-    c = q->readptr;
+    *c = *(q->readptr);
 
-    //char* tmp = rb->readptr + 1;
-    fptr* tmp = (fptr*)((char*)q->readptr + 1 * sizeof(fptr));
+    // char* tmp = rb->readptr + 1;
+    fptr* tmp = (fptr*)(q->readptr + 1);
     if ((char*)tmp >= (char*)q->end) {
         tmp = q->start;
     }
-    if (tmp == q->writeptr){
+    if (tmp == q->writeptr) {
         q->full = 0;
     }
     q->readptr = tmp;
+    pthread_mutex_unlock(&mut_q);
 
     return QUEUE_OK;
+
+ret_queue_err_null:
+    pthread_mutex_unlock(&mut_q);
+    return QUEUE_ERR_NULL;
+
+ret_queue_err_empty:
+    pthread_mutex_unlock(&mut_q);
+    return QUEUE_ERR_EMPTY;
 }

@@ -25,7 +25,6 @@ typedef struct {
 	volatile fptr* readptr;
 	volatile fptr* writeptr;
 	volatile int full;
-	volatile int empty;
 } Queue;
 
 Queue* newQueue(unsigned long int capacity);

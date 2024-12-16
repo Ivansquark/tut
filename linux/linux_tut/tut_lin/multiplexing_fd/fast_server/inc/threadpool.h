@@ -5,7 +5,7 @@
 
 #include <pthread.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h>
 
 typedef enum {
     THREAD_READY,
@@ -18,6 +18,6 @@ typedef struct {
 } Threadpool;
 
 void threadpool_create();
-void threadpool_add_task(fptr f);
-void threadpool_handler();
+int threadpool_add_task(fptr* f);
+int get_nproc();
 #endif // THREADPOOL_H

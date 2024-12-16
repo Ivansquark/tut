@@ -1,27 +1,41 @@
 #include "threadpool.h"
 
+#ifndef __USE_MISC
+    #define __USE_MISC
+#endif
+#ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+    #define gettid() syscall(SYS_gettid)
+#endif
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 Threadpool pool;
 Queue* queue;
 fptr fArr[16] = {{NULL, 0}};
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cv = PTHREAD_COND_INITIALIZER;
 
-void* func(void* arg) {
-    printf("thread num = %d\n", gettid());
+void* func([[maybe_unused]] void* arg) {
+    // printf("thread num = %ld\n", gettid());
+    printf("thread num = %ld\n", syscall(186));
+    // printf("thread num = %d\n", pthread_self());
 
     // get task from queue
+    sleep(5);
+    // unblock all first time
+    pthread_cond_broadcast(&cv);
     while (1) {
-        // threadpool_handler(&pool, &queue);
-        // cond var wait
-        pthread_mutex_lock(&mutex);
+        pthread_cond_wait(&cv, &mutex);
         fptr task;
-        if (!queue->empty) {
-            queue_pop(queue, &task);
+        printf("thread num = %ld Task:\n", gettid());
+        if (!queue_pop(queue, &task)) {
             task.foo(task.arg);
         }
-        pthread_mutex_unlock(&mutex);
-        // sock threat function
-        //
     }
 
     return 0;
@@ -30,7 +44,8 @@ void* func(void* arg) {
 void threadpool_create() {
     queue = newQueue(4096);
     // create nproc -1 threads array
-    pool.Num = 16;
+    pool.Num = get_nproc();
+    printf("Num of processors = %d\n", pool.Num);
     pthread_t threadsArr[pool.Num];
     for (int i = 0; i < pool.Num; ++i) {
         // TODO set array of functions
@@ -38,44 +53,26 @@ void threadpool_create() {
     }
 }
 
-static int threadpool_get_free_thread(Threadpool* pool) {
-    for (int i = 0; i < pool->Num; ++i) {
-        if (pool->threads_arr[i] == THREAD_READY) {
-            return i;
-        }
+int threadpool_add_task(fptr* f) {
+    if (!queue_push(queue, f)) {
+        // unblock one thread
+        pthread_cond_signal(&cv);
+        // unblock all threads
+        // pthread_cond_broadcast(&cv);
+    } else {
+        return -1;
     }
-    return -1;
+    return 0;
 }
 
-void threadpool_add_task(fptr f) {
-    for (int i = 0; i < pool.Num; ++i) {
-        if (pool.threads_arr[i] == THREAD_READY) {
-            pool.threads_arr[i] = THREAD_IN_WORK;
-        }
-
-        return;
-    }
-    // add task
-    // set bool
-    // set sock
-    //
-
-    // wakeup thread (cv notify one)
-}
-
-void threadpool_handler() {
-    // if queue not empty pop queue to thread
-    if (!queue->empty) {
-        int threadNum = -1;
-        if ((threadNum = threadpool_get_free_thread(&pool)) != -1) {
-            // add task to thread
-            fptr task = {NULL, 0};
-            if (!queue_pop(&queue, &task)) {
-                threadpool_add_task(task);
-            }
-            // notify one
-        } else {
-            // wait for cv wakeup
-        }
-    }
+int get_nproc() {
+    mkfifo("nproc.fif", 0644);
+    int fd = open("nproc.fif", O_RDWR, 0600);
+    system("nproc > nproc.fif");
+    char buf[10] = {0};
+    read(fd, buf, sizeof(buf));
+    close(fd);
+    int nproc = atoi(buf);
+    unlink("nproc.fif");
+    return nproc;
 }

@@ -48,6 +48,7 @@ int create_listner(char* service) {
 
 void threat_sock(int num) {
     // after accept;
+    // TODO: read write through epoll
     printf("threat_sock %d\n", num);
 }
 void threat_stdStream(int num) {
@@ -56,16 +57,20 @@ void threat_stdStream(int num) {
 }
 
 int main(int argc, char** argv) {
-    extern Queue* queue;
     threadpool_create();
     fptr f = {threat_sock, 5};
-    queue_push(queue, &f);
+    threadpool_add_task(&f);
     f.arg = 6;
-    queue_push(queue, &f);
+    threadpool_add_task(&f);
     fptr s = {threat_stdStream, 1};
-    queue_push(queue, &s);
+    threadpool_add_task(&s);
+    
+    int count = 0;
     while(1) {
-        //threadpool_handler(&pool, &queue);
+        s.arg = count;
+        threadpool_add_task(&s);
+        sleep(1);
+        count++;
     }
 
     return 0;
