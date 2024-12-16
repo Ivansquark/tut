@@ -216,11 +216,12 @@ bootm 0x46000000
 bootm 0x46000000 0x464cd53c 0x464bffd4
 
 
-setenv bootargs console=ttyS0,115200 rdinit=/bin/sh
+setenv bootargs console=ttyS0,115200 rdinit=/bin/sh init=/sbin/init
 load mmc 0:1 0x41000000 zImage
 load mmc 0:1 0x41000000 Image.gz // not
 load mmc 0:1 0x41800000 t113s4.dtb
 load mmc 0:1 0x41C00000 uRamfs
+load mmc 0:1 0x43000000 uRamfs
 bootz 0x41000000 0x41C00000 0x41800000
 bootz 0x41000000 - 0x41800000
 
@@ -229,7 +230,7 @@ env set bootm_low 0x42000000
 env set bootm_size 0x3e00000
 
 gzip -k Image  //save original
-setenv bootargs console=ttyS0,115200 rdinit=/sbin/init root=/dev/ram0 rw rootwait
+setenv bootargs console=ttyS0,115200 rdinit=/sbin/init root=/dev/ram0  init=/sbin/init rw rootwait
 setenv bootargs console=ttyS0,115200 rdinit=/bin/sh initrd=0x42381000 root=/dev/ram0 rw
 setenv root /dev/ram0
 setenv rootfstype ext2
