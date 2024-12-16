@@ -12,7 +12,7 @@
 #define QUEUE_ERR_EMPTY (-2)
 #define QUEUE_ERR_FULL (-3)
 
-typedef void (*f_ptr)(int);
+typedef int (*f_ptr)(int);
 
 typedef struct {
     f_ptr foo;

@@ -28,7 +28,7 @@ int create_listner(char* service) {
     struct sockaddr_in addr = {
         .sin_family = AF_INET, .sin_addr.s_addr = ip, .sin_port = htons(port)};
 
-    sock = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         perror("socket\n");
     }
@@ -46,35 +46,54 @@ int create_listner(char* service) {
     return sock;
 }
 
-void threat_sock(int num) {
+int threat_sock(int num) {
     // after accept;
     // TODO: read write through epoll
     printf("threat_sock %d\n", num);
+    while (1) {}
+
+    int epfd = epoll_create1(EPOLL_CLOEXEC);
+    if (epfd < 0) {
+        perror("epoll\n");
+        return -1;
+    }
+    struct epoll_event evt = {.events = EPOLLIN, .data.fd = 0};
+    epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
+    evt.events = EPOLLOUT;
+    evt.data.fd = 1;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
+    char buf[4096] = {0};
+    while (1) {
+        epoll_wait(epfd, &evt, 1, -1);
+        if (evt.data.fd == STDIN_FILENO) {
+            int res = 0;
+            if ((res = read(num, buf, sizeof(buf))) < 0) {
+                perror("read");
+                close(num);
+                return -1;
+            } else if (!res) {
+                printf("Disconnect %d\n", num);
+                break;
+            }
+            // int res = parse(buf);
+            write(num, buf, res); // echo make nonblock
+        } else if (evt.data.fd == STDOUT_FILENO) {
+            printf("writed: %s", buf);
+            memset(buf, 0, sizeof(buf));
+            // timer to close connection
+        }
+    }
+    close(num);
+    return 0;
 }
-void threat_stdStream(int num) {
-    // after accept;
-    printf("threat_stream %d\n", num);
-}
+void threat_stdStream(int num) { printf("threat_stream %d\n", num); }
 
 int main(int argc, char** argv) {
     threadpool_create();
-    fptr f = {threat_sock, 5};
-    threadpool_add_task(&f);
-    f.arg = 6;
-    threadpool_add_task(&f);
-    fptr s = {threat_stdStream, 1};
-    threadpool_add_task(&s);
-    
-    int count = 0;
-    while(1) {
-        s.arg = count;
-        threadpool_add_task(&s);
-        sleep(1);
-        count++;
-    }
+    // fptr f = {threat_sock, 5};
+    // threadpool_add_task(&f);
 
-    return 0;
-    if (argc != 2) {
+    if (argc < 2) {
         fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
         return 1;
     }
@@ -84,60 +103,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int ep = epoll_create1(EPOLL_CLOEXEC);
-    if (ep < 0) {
-        perror("epoll\n");
-        return 1;
-    }
-
-    struct epoll_event evt = {.events = EPOLLIN | EPOLLET, .data.fd = sock};
-    epoll_ctl(ep, EPOLL_CTL_ADD, sock, &evt);
-
     while (1) {
-        int timeout = -1; // forever
-        errno = 0;
-        if (epoll_wait(ep, &evt, 1, timeout) < 0) {
-            if (errno == EINTR) {
-                perror("signal");
-                continue;
-            }
+        int connection = accept(sock, NULL, NULL);
+        printf("Connection %d\n", connection);
+        if (connection < 0) {
+            perror("accept error");
+            return 2;
         }
-        // epoll triggered
-        int connection = 0;
-        if (evt.data.fd == sock) {
-            // was connection
-            connection = accept4(sock, NULL, NULL, SOCK_NONBLOCK);
-            if (connection < 0) {
-                perror("connection");
-                continue;
-            }
-            printf("con num = %d\n", connection);
-            evt.events = EPOLLIN | EPOLLOUT | EPOLLET;
-            evt.data.fd = connection;
-            epoll_ctl(ep, EPOLL_CTL_ADD, connection, &evt);
-
-        } else {
-            // epoll on connection read or write descriptors
-            char buf[1024] = {0};
-            int res = 0;
-
-            while ((res = read(evt.data.fd, buf, sizeof(buf)) >= 0)) {
-                if (errno == EAGAIN) {
-                    printf("readall");
-                    break;
-                }
-                if (errno == EINTR) {
-                    printf("errno\n");
-                    continue;
-                }
-                if (!res) {
-                    close(evt.data.fd);
-                } else {
-                    write(evt.data.fd, buf, res);
-                    printf("received on %d - %s\n", evt.data.fd, buf);
-                }
-            }
-        }
+        fptr f = {threat_sock, connection};
+        threadpool_add_task(&f);
     }
 
     return 0;
