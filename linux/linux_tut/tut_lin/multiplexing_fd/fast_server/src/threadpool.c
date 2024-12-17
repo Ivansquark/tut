@@ -30,18 +30,18 @@ void* func([[maybe_unused]] void* arg) {
     // sleep(5);
     // unblock all first time
     // pthread_cond_broadcast(&cv);
+    fptr task;
     while (1) {
-        while (!StartQueue) {
-            pthread_mutex_lock(&mutex);
-            pthread_cond_wait(&cv, &mutex);
-            pthread_mutex_unlock(&mutex);
-        }
-        fptr task;
+        // while (!StartQueue) {
+        //     pthread_mutex_lock(&mutex);
+        //     pthread_cond_wait(&cv, &mutex);
+        //     pthread_mutex_unlock(&mutex);
+        // }
         printf("thread num = %ld Task:\n", gettid());
         if (!queue_pop(queue, &task)) {
             task.foo(task.arg);
         } else {
-            StartQueue = 0;
+            // StartQueue = 0;
             printf("Queue NULL\n");
         }
     }
@@ -64,8 +64,8 @@ void threadpool_create() {
 int threadpool_add_task(fptr* f) {
     if (!queue_push(queue, f)) {
         // unblock one thread
-        StartQueue = 1;
-        pthread_cond_signal(&cv);
+        //StartQueue = 1;
+        //pthread_cond_signal(&cv);
         // unblock all threads
         // pthread_cond_broadcast(&cv);
     } else {

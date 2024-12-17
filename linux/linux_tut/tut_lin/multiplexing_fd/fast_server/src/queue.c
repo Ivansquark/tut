@@ -3,6 +3,9 @@
 #include <pthread.h>
 
 pthread_mutex_t mut_q = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t notEmpty = PTHREAD_COND_INITIALIZER;
+int NoEmpty = 0;
+
 Queue* newQueue(unsigned long int capacity) {
     char* mem = malloc(capacity * CHAR_SIZE * sizeof(fptr));
     if (mem == NULL) {
@@ -46,6 +49,8 @@ int queue_push(Queue* q, fptr* c) {
     }
     q->writeptr = tmp;
     pthread_mutex_unlock(&mut_q);
+    NoEmpty = 1;
+    pthread_cond_signal(&notEmpty);
 
     return QUEUE_OK;
 
@@ -55,11 +60,17 @@ ret_queue_err_null:
 
 ret_queue_err_full:
     pthread_mutex_unlock(&mut_q);
+    NoEmpty = 1;
+    pthread_cond_signal(&notEmpty);
     return QUEUE_ERR_FULL;
 }
 
 int queue_pop(Queue* q, fptr* c) {
     pthread_mutex_lock(&mut_q);
+    while(!NoEmpty) {
+        pthread_cond_wait(&notEmpty, &mut_q);
+    }
+    NoEmpty = 0;
     if (!c) goto ret_queue_err_null;
     if (q == NULL) goto ret_queue_err_null;
 
