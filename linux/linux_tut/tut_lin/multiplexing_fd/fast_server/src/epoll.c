@@ -31,12 +31,20 @@ int create_listner(char* service) {
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         perror("socket\n");
+        return 1;
+    }
+    int reuse = 1;
+    int result = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse,
+                            sizeof(reuse));
+    if (result < 0) {
+        perror("setsockopt\n");
+        return 1;
     }
 
     if (bind(sock, (const struct sockaddr*)&addr, sizeof(struct sockaddr_in)) <
         0) {
         perror("bind\n");
-        return -1;
+        return 1;
     }
 
     if (listen(sock, SOMAXCONN) < 0) {
@@ -48,42 +56,38 @@ int create_listner(char* service) {
 
 int threat_sock(int num) {
     // after accept;
-    // TODO: read write through epoll
     printf("threat_sock %d\n", num);
-    while (1) {}
 
     int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd < 0) {
         perror("epoll\n");
         return -1;
     }
-    struct epoll_event evt = {.events = EPOLLIN, .data.fd = 0};
+    struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT | EPOLLET,
+                              .data.fd = 0};
     epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
-    evt.events = EPOLLOUT;
-    evt.data.fd = 1;
-    epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
+    // evt.events = EPOLLOUT;
+    // evt.data.fd = 1;
+    // epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
     char buf[4096] = {0};
-    while (1) {
-        epoll_wait(epfd, &evt, 1, -1);
-        if (evt.data.fd == STDIN_FILENO) {
-            int res = 0;
-            if ((res = read(num, buf, sizeof(buf))) < 0) {
-                perror("read");
-                close(num);
-                return -1;
-            } else if (!res) {
+    epoll_wait(epfd, &evt, 1, -1);
+    if (evt.data.fd == STDIN_FILENO) {
+        int res = 0;
+        while ((res = read(num, buf, sizeof(buf))) >= 0) {
+            if (errno == EAGAIN) {
+                perror("readall");
+            }
+            if (!res) {
                 printf("Disconnect %d\n", num);
                 break;
+            } else {
+                // int res = parse(buf);
+                write(num, buf, res); // echo make nonblock
             }
-            // int res = parse(buf);
-            write(num, buf, res); // echo make nonblock
-        } else if (evt.data.fd == STDOUT_FILENO) {
-            printf("writed: %s", buf);
-            memset(buf, 0, sizeof(buf));
-            // timer to close connection
         }
     }
     close(num);
+    close(epfd);
     return 0;
 }
 void threat_stdStream(int num) { printf("threat_stream %d\n", num); }
@@ -102,8 +106,9 @@ int main(int argc, char** argv) {
     if (sock < 0) {
         return 1;
     }
-
+    // int count = 0;
     while (1) {
+
         int connection = accept(sock, NULL, NULL);
         printf("Connection %d\n", connection);
         if (connection < 0) {
@@ -111,6 +116,7 @@ int main(int argc, char** argv) {
             return 2;
         }
         fptr f = {threat_sock, connection};
+        // fptr f = {threat_sock, count++};
         threadpool_add_task(&f);
     }
 
