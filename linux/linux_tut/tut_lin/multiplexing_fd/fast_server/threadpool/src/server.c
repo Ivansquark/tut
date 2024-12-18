@@ -1,25 +1,8 @@
 #include "server.h"
 
-#ifndef __USE_GNU
-    #define __USE_GNU
-    #define _GNU_SOURCE /* See feature_test_macros(7) */
-#endif
 
-#include <arpa/inet.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <threadpool.h>
-#include <unistd.h>
 
-int create_listner(char* service) {
+int server_create_listner(char* service) {
     int port = atoi(service);
     int sock = 0;
     int ip = 0;
@@ -56,11 +39,11 @@ int create_listner(char* service) {
 
 int server_threat_sock(int num) {
     // after accept;
-    printf("threat_sock %d\n", num);
-    for(int i = 0; i < 1000000; ++i) {
-        __asm("nop");
-    }
-    return 0;
+    //printf("threat_sock %d\n", num);
+    //for(int i = 0; i < 1000000; ++i) {
+    //    __asm("nop");
+    //}
+    //return 0;
 
     int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd < 0) {
@@ -83,7 +66,12 @@ int server_threat_sock(int num) {
                 break;
             } else {
                 // int res = parse(buf);
-                write(num, buf, res); // echo make nonblock
+                printf("buf = %s", buf);
+                char head[4096] = {0};
+                char data[4096*16] = {0};
+                http_parse(buf, res, head, data);
+                write(num, head, strlen(head)); // echo make nonblock
+                write(num, data, strlen(data)); // echo make nonblock
             }
         }
     }
