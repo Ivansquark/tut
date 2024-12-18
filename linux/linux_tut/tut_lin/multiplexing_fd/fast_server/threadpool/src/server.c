@@ -1,4 +1,4 @@
-#include "epoll.h"
+#include "server.h"
 
 #ifndef __USE_GNU
     #define __USE_GNU
@@ -54,21 +54,22 @@ int create_listner(char* service) {
     return sock;
 }
 
-int threat_sock(int num) {
+int server_threat_sock(int num) {
     // after accept;
     printf("threat_sock %d\n", num);
+    for(int i = 0; i < 1000000; ++i) {
+        __asm("nop");
+    }
+    return 0;
 
     int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd < 0) {
         perror("epoll\n");
         return -1;
     }
-    struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT | EPOLLET,
+    struct epoll_event evt = {.events = EPOLLIN | EPOLLET,
                               .data.fd = 0};
     epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
-    // evt.events = EPOLLOUT;
-    // evt.data.fd = 1;
-    // epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
     char buf[4096] = {0};
     epoll_wait(epfd, &evt, 1, -1);
     if (evt.data.fd == STDIN_FILENO) {
@@ -90,35 +91,7 @@ int threat_sock(int num) {
     close(epfd);
     return 0;
 }
+
 void threat_stdStream(int num) { printf("threat_stream %d\n", num); }
 
-int main(int argc, char** argv) {
-    threadpool_create();
-    // fptr f = {threat_sock, 5};
-    // threadpool_add_task(&f);
 
-    if (argc < 2) {
-        fprintf(stderr, "USAGE %s SERVICE\n", argv[0]);
-        return 1;
-    }
-
-    int sock = create_listner(argv[1]);
-    if (sock < 0) {
-        return 1;
-    }
-    // int count = 0;
-    while (1) {
-
-        int connection = accept(sock, NULL, NULL);
-        printf("Connection %d\n", connection);
-        if (connection < 0) {
-            perror("accept error");
-            return 2;
-        }
-        fptr f = {threat_sock, connection};
-        // fptr f = {threat_sock, count++};
-        threadpool_add_task(&f);
-    }
-
-    return 0;
-}

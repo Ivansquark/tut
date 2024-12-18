@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-//@ queue with tasks
+//@ queue with tasks (thread safe for threadpool)
 
 #include <stdlib.h>
 
