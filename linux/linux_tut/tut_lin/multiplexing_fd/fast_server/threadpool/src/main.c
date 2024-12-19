@@ -10,18 +10,18 @@ void sig_handler(int sig) {
 
 int main(int argc, char** argv) {
     signal(SIGPIPE, SIG_IGN);
-    struct sigaction act;
-    sigset_t wait_set;
-    int sig;
-    sigemptyset(&wait_set);
-    act.sa_handler = &sig_handler;
-    act.sa_flags = SA_RESTART;
-    //sigaddset(&wait_set, SIGPIPE);
-    //sigprocmask(SIG_BLOCK, &wait_set, NULL);
-    if (sigaction(SIGPIPE, &act, NULL) == -1) {
-        perror("sig failure");
-        exit(EXIT_FAILURE);
-    }
+    //struct sigaction act;
+    //sigset_t wait_set;
+    //int sig;
+    //sigemptyset(&wait_set);
+    //act.sa_handler = &sig_handler;
+    //act.sa_flags = SA_RESTART;
+    ////sigaddset(&wait_set, SIGPIPE);
+    ////sigprocmask(SIG_BLOCK, &wait_set, NULL);
+    //if (sigaction(SIGPIPE, &act, NULL) == -1) {
+    //    perror("sig failure");
+    //    exit(EXIT_FAILURE);
+    //}
 
     http_prepare_read_file_bufs();
     threadpool_create();

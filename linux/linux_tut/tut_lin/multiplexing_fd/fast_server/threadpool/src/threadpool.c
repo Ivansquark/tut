@@ -34,16 +34,16 @@ void* func([[maybe_unused]] void* arg) {
         while (!StartQueue) {
             pthread_cond_wait(&cv, &mutex);
         }
-        StartQueue = 0;
         if (!queue_pop(queue, &task)) {
+            StartQueue = 0;
+            pthread_mutex_unlock(&mutex);
+            //printf("thread num = %ld Task: %d\n", gettid(), task.arg);
             task.foo(task.arg);
-            printf("thread num = %ld Task: %d\n", gettid(), task.arg);
         } else {
             StartQueue = 0;
+            pthread_mutex_unlock(&mutex);
             printf("Queue NULL\n");
         }
-
-        pthread_mutex_unlock(&mutex);
     }
 
     return 0;
@@ -52,7 +52,7 @@ void* func([[maybe_unused]] void* arg) {
 void threadpool_create() {
     queue = newQueue(4096);
     pool.Num = get_nproc() - 1;
-    if(pool.Num < 2) pool.Num = 1;
+    if (pool.Num < 2) pool.Num = 1;
     printf("Num of processors = %d\n", pool.Num);
     pthread_t threadsArr[pool.Num];
     for (int i = 0; i < pool.Num; ++i) {
@@ -66,11 +66,12 @@ int threadpool_add_task(fptr* f) {
     if (!queue_push(queue, f)) {
         // unblock one thread
         StartQueue = 1;
-        pthread_cond_signal(&cv);
+        //pthread_cond_signal(&cv);
         // unblock all threads
-        // pthread_cond_broadcast(&cv);
+        pthread_cond_broadcast(&cv);
     } else {
         printf("Queue FULL\n");
+        pthread_cond_broadcast(&cv);
         pthread_mutex_unlock(&mutex);
         return -1;
     }
@@ -87,6 +88,6 @@ int get_nproc() {
     close(fd);
     int nproc = atoi(buf);
     unlink("nproc.fif");
-    //TODO remake through fork exec
+    // TODO remake through fork exec
     return nproc;
 }
