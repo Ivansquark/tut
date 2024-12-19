@@ -1,0 +1,3 @@
+sudo perf record -e intel_pt/mtc,mtc_period=0/u build/aserverd.elf 55555
+
+perf script -F comm,tid,time,cpu,ip,sym,symoff,srccode,srcline --itrace=c --ns > dump.txt

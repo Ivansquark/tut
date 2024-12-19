@@ -87,5 +87,6 @@ int get_nproc() {
     close(fd);
     int nproc = atoi(buf);
     unlink("nproc.fif");
+    //TODO remake through fork exec
     return nproc;
 }

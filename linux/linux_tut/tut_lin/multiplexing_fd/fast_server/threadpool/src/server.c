@@ -1,7 +1,5 @@
 #include "server.h"
 
-
-
 int server_create_listner(char* service) {
     int port = atoi(service);
     int sock = 0;
@@ -39,18 +37,19 @@ int server_create_listner(char* service) {
 
 int server_threat_sock(int num) {
     // after accept;
-    //printf("threat_sock %d\n", num);
-    //for(int i = 0; i < 1000000; ++i) {
+    // printf("threat_sock %d\n", num);
+    // for(int i = 0; i < 1000000; ++i) {
     //    __asm("nop");
     //}
-    //return 0;
+    // return 0;
 
     int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd < 0) {
         perror("epoll\n");
         return -1;
     }
-    struct epoll_event evt = {.events = EPOLLIN | EPOLLET,
+#ifdef SERVERNONBLOCK
+    struct epoll_event evt = {.events = EPOLLIN | EPOLLOUT | EPOLLET,
                               .data.fd = 0};
     epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
     char buf[4096] = {0};
@@ -61,25 +60,85 @@ int server_threat_sock(int num) {
             if (errno == EAGAIN) {
                 perror("readall");
             }
+            if (errno == EINTR) {
+                perror("EINTR");
+                continue;
+            }
             if (!res) {
                 printf("Disconnect %d\n", num);
                 break;
             } else {
                 // int res = parse(buf);
-                printf("buf = %s", buf);
+                // printf("buf = %s", buf);
                 char head[4096] = {0};
-                char data[4096*16] = {0};
-                http_parse(buf, res, head, data);
+                // char data[4096*16] = {0};
+                char* data = NULL;
+                size_t size = 0;
+                http_parse(buf, head, &data, &size);
                 write(num, head, strlen(head)); // echo make nonblock
-                write(num, data, strlen(data)); // echo make nonblock
+                write(num, data, size);         // echo make nonblock
+                // TODO: check if need to close connection
+                break;
             }
         }
     }
-    close(num);
-    close(epfd);
+    if (evt.data.fd == STDOUT_FILENO) {
+        printf("EPOLL STD_OUT \n");
+    }
+#else
+    char buf[4096 * 16] = {0};
+    //struct epoll_event evt = {.events = EPOLLIN, .data.fd = 0};
+    //epoll_ctl(epfd, EPOLL_CTL_ADD, num, &evt);
+    //epoll_wait(epfd, &evt, 1, -1);
+    //while (1) {
+    //    if (evt.data.fd == STDIN_FILENO) {
+    //        int res = 0;
+    //        if ((res = read(num, buf, sizeof(buf))) < 0) {
+    //            perror("read");
+    //        }
+    //        if (!res) {
+    //            break;
+    //        } else {
+    //            // int res = parse(buf);
+    //            // printf("buf = %s", buf);
+    //            char head[4096 * 16] = {0};
+    //            // char data[4096*16] = {0};
+    //            char* data = NULL;
+    //            size_t size = 0;
+    //            http_parse(buf, head, &data, &size);
+    //            write(num, head, strlen(head)); // echo make nonblock
+    //            write(num, data, size);         // echo make nonblock
+    //            // TODO: check if need to close connection
+    //            break;
+    //        }
+    //    }
+    //}
+    int res;
+    if ((res = read(num, buf, sizeof(buf))) < 0) {
+        perror("read");
+        close(num);
+        return 1;
+    }
+    if (!res) {
+        close(num);
+    } else {
+        // int res = parse(buf);
+        // printf("buf = %s", buf);
+        char head[4096 * 16] = {0};
+        // char data[4096*16] = {0};
+        char* data = NULL;
+        size_t size = 0;
+        http_parse(buf, head, &data, &size);
+        write(num, head, strlen(head)); // echo make nonblock
+        write(num, data, size);         // echo make nonblock
+        // TODO: check if need to close connection
+        close(num);
+    }
+#endif
+
+    //close(num);
+    //close(epfd);
     return 0;
 }
 
 void threat_stdStream(int num) { printf("threat_stream %d\n", num); }
-
-

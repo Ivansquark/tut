@@ -6,89 +6,131 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-int http_prepare_read_file_bufs(File_Buf_Addr* addr) {
-    // TODO mmap r/o files to buffers
-    int fd_index = open("index.html", O_RDONLY, 0400);
+File_Buf_Addr files_addr;
+
+//@ fill global structure of mmaped files addresses and sizes
+static int fill_addr_struct(char* name, char** addr, int* size) {
+    int fd_index = open(name, O_RDONLY, 0400);
     if (fd_index < 0) {
         perror("read index.html");
-        return 1;
+        return -1;
     }
     struct stat info;
-    if (stat("index.html", &info) < 0) {
-        perror("index stat");
-        return 1;
+    if (stat(name, &info) < 0) {
+        perror("icon stat");
+        return -1;
     }
     int len = info.st_size;
     int len_off = len % 4096;
     len_off = 4096 - len_off;
-    printf("index len = %d; len+off = %d\n", len, len + len_off);
-    char* buf_index =
+    printf("%s len = %d; len + off = %d\n", name, len, len + len_off);
+    char* buf_ret =
         mmap(NULL, len + len_off, PROT_READ, MAP_PRIVATE, fd_index, 0);
-    if (buf_index == (void*)-1) {
+    if (buf_ret == (void*)-1) {
         perror("index mmap");
-        return 1;
+        return -1;
     }
-    addr->index_html = buf_index;
-    addr->index_size = len;
-    close(fd_index);
-
-    fd_index = open("icon.png", O_RDONLY, 0400);
-    if (fd_index < 0) {
-        perror("read index.html");
-        return 1;
-    }
-    if (stat("icon.png", &info) < 0) {
-        perror("icon stat");
-        return 1;
-    }
-    len = info.st_size;
-    len_off = len % 4096;
-    len_off = 4096 - len_off;
-    printf("icon len = %d; len+off = %d\n", len, len + len_off);
-    char* buf_icon =
-        mmap(NULL, len + len_off, PROT_READ, MAP_PRIVATE, fd_index, 0);
-    if (buf_index == (void*)-1) {
-        perror("index mmap");
-        return 1;
-    }
-    addr->icon_png = buf_icon;
-    addr->icon_size = len;
+    *addr = buf_ret;
+    *size = len;
     close(fd_index);
     return 0;
 }
 
-int http_return_file_bus_addr(File_Buf_Addr* addr) { return 0; }
+int http_prepare_read_file_bufs() {
+    // TODO mmap r/o files to buffers
 
-int http_parse(char* buf, size_t buf_size, char* head, char* data) {
+    if ((fill_addr_struct((char*)"index.html", &files_addr.index_html,
+                          &files_addr.index_size)) < 0) {
+        return -1;
+    }
+    if ((fill_addr_struct((char*)"icon.png", &files_addr.icon_png,
+                          &files_addr.icon_size)) < 0) {
+        return -1;
+    }
+    if ((fill_addr_struct((char*)"style.css", &files_addr.style_css,
+                          &files_addr.style_size)) < 0) {
+        return -1;
+    }
+    if ((fill_addr_struct((char*)"script.js", &files_addr.script_js,
+                          &files_addr.script_size)) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+int http_parse(char* arr, char* head, char** data, size_t* data_sz) {
     // strtok
     char method[1024] = {0};
     char* ptr_method = NULL;
-    ptr_method = strtok(buf, " ");
-    printf("buf = %s \nptr_method = %x\n", buf, ptr_method - buf);
-    memcpy(method, buf, ptr_method - buf);
-    printf("method = %s\n", method);
+    char* ptr_r1 = NULL;
+    ptr_method = strtok_r(arr, " \t\r\n", &ptr_r1);
+    int sz = strlen(ptr_method);
+    memcpy(method, ptr_method, sz);
+    //printf("method = %s\n", method);
 
     char uri[1024] = {0};
     char* ptr_uri = NULL;
-    ptr_uri = strtok(NULL, " ");
-    memcpy(method, ptr_method, ptr_uri - ptr_method);
-    printf("uri = %s\n", uri);
+    ptr_uri = strtok_r(NULL, " ", &ptr_r1);
+    memcpy(uri, ptr_uri, strlen(ptr_uri));
+    //printf("uri = %s\n", uri);
 
     if (!strcmp(method, "GET")) {
-        if (!strcmp(uri, "/index_html")) {
+        if (!strcmp(uri, "/index.html")) {
             const char ret_head[] = "HTTP/1.1 200 OK\n"
                                     "Content-Type: text/html; charset=UTF-8\n"
-                                    "Content-Length: 0";
+                                    "Content-Length: ";
             memcpy(head, ret_head, sizeof(ret_head));
+            char size[10] = {0};
+            sprintf(size, "%d\r\n\r\n", files_addr.index_size);
+            strcat(head, size);
+            *data = files_addr.index_html;
+            *data_sz = files_addr.index_size;
+        } else if (!strcmp(uri, "/favicon.ico")) {
+            const char ret_head[] = "HTTP/1.1 200 OK\n"
+                                    "Content-Type: image/png; charset=UTF-8\n"
+                                    "Content-Length: ";
+            memcpy(head, ret_head, sizeof(ret_head));
+            char size[10] = {0};
+            sprintf(size, "%d\r\n\r\n", files_addr.icon_size);
+            strcat(head, size);
+            *data = files_addr.icon_png;
+            *data_sz = files_addr.icon_size;
+        } else if (!strcmp(uri, "/style.css")) {
+            const char ret_head[] = "HTTP/1.1 200 OK\n"
+                                    "Content-Type: text/css; charset=UTF-8\n"
+                                    "Content-Length: ";
+            memcpy(head, ret_head, sizeof(ret_head));
+            char size[10] = {0};
+            sprintf(size, "%d\r\n\r\n", files_addr.style_size);
+            strcat(head, size);
+            *data = files_addr.style_css;
+            *data_sz = files_addr.style_size;
+        } else if (!strcmp(uri, "/script.js")) {
+            const char ret_head[] =
+                "HTTP/1.1 200 OK\n"
+                "Content-Type: text/javascript; charset=UTF-8\n"
+                "Content-Length: ";
+            memcpy(head, ret_head, sizeof(ret_head));
+            char size[10] = {0};
+            sprintf(size, "%d\r\n\r\n", files_addr.script_size);
+            strcat(head, size);
+            *data = files_addr.script_js;
+            *data_sz = files_addr.script_size;
         } else {
-            printf("uri not parsed: \n%s\n", buf);
+            // 404
+            printf("uri not parsed: \n%s\n", arr);
             head = NULL;
             data = NULL;
         }
     } else {
-        printf("method not parsed: \n%s\n", buf);
+        printf("method not parsed: \n%s\n", arr);
         head = NULL;
         data = NULL;
     }
+    return 0;
+}
+
+int http_return_file_bus_addr(File_Buf_Addr* addr) {
+    addr = &files_addr;
     return 0;
 }

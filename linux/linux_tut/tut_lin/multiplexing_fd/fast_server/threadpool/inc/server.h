@@ -22,6 +22,8 @@
 #include <threadpool.h>
 #include <unistd.h>
 
+//#define SERVERNONBLOCK
+
 int server_create_listner(char* service);
 int server_threat_sock(int num);
 
