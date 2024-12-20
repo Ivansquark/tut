@@ -70,12 +70,12 @@ int http_parse(char* arr, char* head, char** data, size_t* data_sz) {
 
     char uri[1024] = {0};
     char* ptr_uri = NULL;
-    ptr_uri = strtok_r(NULL, " ", &ptr_r1);
+    ptr_uri = strtok_r(NULL, " ?", &ptr_r1);
     memcpy(uri, ptr_uri, strlen(ptr_uri));
     //printf("uri = %s\n", uri);
 
     if (!strcmp(method, "GET")) {
-        if (!strcmp(uri, "/index.html")) {
+        if (!strcmp(uri, "/index.html") || !(strcmp(uri, "/"))) {
             const char ret_head[] = "HTTP/1.1 200 OK\n"
                                     "Content-Type: text/html; charset=UTF-8\n"
                                     "Content-Length: ";
@@ -116,10 +116,31 @@ int http_parse(char* arr, char* head, char** data, size_t* data_sz) {
             strcat(head, size);
             *data = files_addr.script_js;
             *data_sz = files_addr.script_size;
+        } else if (!strcmp(uri, "/content.bin")) {
+            const char ret_head[] =
+                "HTTP/1.1 200 OK\n"
+                "Content-Type: application/octet-stream;\n"
+                "Content-Length: ";
+            memcpy(head, ret_head, sizeof(ret_head));
+            char size[10] = {0};
+            sprintf(size, "%d\r\n\r\n", 4);
+            strcat(head, size);
+            static int val = 0;
+            //static __thread int val = 0; //thread local
+            //int val = 4;
+            *data = (char*)&val;
+            *data_sz = 4;
+            val++;
         } else {
             // 404
+            const char ret_head[] = "HTTP/1.0 404 Not Found\r\n"
+                                "Date: 12 1212 2020 GMT\r\n"
+                                "Server: FastServer\r\n"
+                                "Content-Length: 0\r\n"
+                                "Connection: close\r\n"
+                                "Content-Type: text/html\r\n";
+            memcpy(head, ret_head, sizeof(ret_head));
             printf("uri not parsed: \n%s\n", arr);
-            head = NULL;
             data = NULL;
         }
     } else {
@@ -130,7 +151,7 @@ int http_parse(char* arr, char* head, char** data, size_t* data_sz) {
     return 0;
 }
 
-int http_return_file_bus_addr(File_Buf_Addr* addr) {
+int http_return_file_bus_addr([[maybe_unused]] File_Buf_Addr* addr) {
     addr = &files_addr;
     return 0;
 }

@@ -18,8 +18,13 @@ SRC = src/
 inc = -I$(INC)
 
 OPTIMIZATION := 0
-CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fpic -pthread -fsanitize=thread
-LFLAGS := -fpie -lpthread -fsanitize=thread
+CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fpic -pthread
+LFLAGS := -fpie -lpthread
+# LFLAGS += -fsanitize=thread
+# CFLAGS += -fsanitize=thread
+# LFLAGS += -fsanitize=memory -fno-omit-frame-pointer
+# CFLAGS += -fsanitize=memory -fno-omit-frame-pointer
+# CFLAGS += -DNDEBUG
 #___________________ OBJECTS & DEPENDENCIES ____________________________
 CXXSRC = $(wildcard $(SRC)*.cpp)
 CXXOBJ := $(addprefix $(BLD),$(CXXSRC:.cpp=.o))

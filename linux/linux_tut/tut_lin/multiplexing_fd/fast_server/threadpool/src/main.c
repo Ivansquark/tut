@@ -1,7 +1,14 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include "http_parse.h"
 #include "server.h"
 #include "threadpool.h"
 
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/signal.h>
 
 void sig_handler(int sig) {
@@ -43,6 +50,11 @@ int main(int argc, char** argv) {
 #else
         int connection = accept(sock, NULL, NULL);
 #endif
+        //if(connection > 0) {
+        //    int yes = 0;
+        //    setsockopt(connection, SOL_TCP, TCP_NODELAY, &yes, sizeof(yes));
+        //    setsockopt(connection, SOL_TCP, TCP_QUICKACK, &yes, sizeof(yes));
+        //}
         // extern pthread_mutex_t mutex;
         // pthread_mutex_lock(&mutex);
         // printf("Connection %d\n", connection);

@@ -34,15 +34,17 @@ void* func([[maybe_unused]] void* arg) {
         while (!StartQueue) {
             pthread_cond_wait(&cv, &mutex);
         }
+        //StartQueue = 0;
+        StartQueue--;
         if (!queue_pop(queue, &task)) {
-            StartQueue = 0;
             pthread_mutex_unlock(&mutex);
             //printf("thread num = %ld Task: %d\n", gettid(), task.arg);
             task.foo(task.arg);
+            close(task.arg);
         } else {
             StartQueue = 0;
-            pthread_mutex_unlock(&mutex);
             printf("Queue NULL\n");
+            pthread_mutex_unlock(&mutex);
         }
     }
 
@@ -50,8 +52,11 @@ void* func([[maybe_unused]] void* arg) {
 }
 
 void threadpool_create() {
-    queue = newQueue(4096);
+    queue = newQueue(2048);
     pool.Num = get_nproc() - 1;
+    ////////////////////////////
+    //pool.Num = 2;
+    ////////////////////////////
     if (pool.Num < 2) pool.Num = 1;
     printf("Num of processors = %d\n", pool.Num);
     pthread_t threadsArr[pool.Num];
@@ -63,14 +68,18 @@ void threadpool_create() {
 
 int threadpool_add_task(fptr* f) {
     pthread_mutex_lock(&mutex);
+    //StartQueue = 1;
+    StartQueue++;
     if (!queue_push(queue, f)) {
         // unblock one thread
         StartQueue = 1;
-        //pthread_cond_signal(&cv);
+        pthread_cond_signal(&cv);
         // unblock all threads
-        pthread_cond_broadcast(&cv);
+        //pthread_cond_broadcast(&cv);
     } else {
-        printf("Queue FULL\n");
+        //printf("Queue FULL\n");
+        close(f->arg);
+        StartQueue = 1;
         pthread_cond_broadcast(&cv);
         pthread_mutex_unlock(&mutex);
         return -1;
