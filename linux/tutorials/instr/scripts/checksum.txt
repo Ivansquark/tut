@@ -11,3 +11,5 @@ getfattr --name=user.checksum image_xattr.fit
 sudo apt install xattr
 xattr -l image_xattr.fit
 
+diff <(stat ./image_xattr.fit) <(stat ./image.fit)
+
