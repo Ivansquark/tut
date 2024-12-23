@@ -1,0 +1,13 @@
+set
+sha1sum image_xattr.fit > image_xattr_sha1.txt
+check
+sha1sum -c image_xattr_sha1.txt
+
+sudo apt install attr
+
+setfattr --name=user.checksum --value='fecc670b1d89a18dfecab378a8c02993fa512c85' image_xattr.fit
+getfattr --name=user.checksum image_xattr.fit
+
+sudo apt install xattr
+xattr -l image_xattr.fit
+
