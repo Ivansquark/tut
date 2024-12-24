@@ -1,0 +1,272 @@
+LD_TRACE_LOADED_OBJECTS=1
+
+sudo apt-get install bison build-essential flex gperf libasound2-dev libatkmm-1.6-dev libbz2-dev libcap-dev libcups2-dev libdrm-dev libegl1-mesa-dev libfontconfig1-dev libfreetype6-dev libglu1-mesa-dev libicu-dev libnss3-dev libpci-dev libpulse-dev libssl-dev libudev-dev libx11-dev libx11-xcb-dev libxcb-composite0 libxcb-composite0-dev libxcb-cursor-dev libxcb-cursor0 libxcb-damage0 libxcb-damage0-dev libxcb-dpms0 libxcb-dpms0-dev libxcb-dri2-0 libxcb-dri2-0-dev libxcb-dri3-0 libxcb-dri3-dev libxcb-ewmh-dev libxcb-ewmh2 libxcb-glx0 libxcb-glx0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-image0 libxcb-image0-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-present-dev libxcb-present0 libxcb-randr0 libxcb-randr0-dev libxcb-record0 libxcb-record0-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-render0 libxcb-render0-dev libxcb-res0 libxcb-res0-dev libxcb-screensaver0 libxcb-screensaver0-dev libxcb-shape0 libxcb-shape0-dev libxcb-shm0 libxcb-shm0-dev libxcb-sync-dev libxcb-sync0-dev libxcb-sync1 libxcb-util-dev libxcb-util0-dev libxcb-util1 libxcb-xf86dri0 libxcb-xf86dri0-dev libxcb-xfixes0 libxcb-xfixes0-dev libxcb-xinerama0 libxcb-xinerama0-dev libxcb-xkb-dev libxcb-xkb1 libxcb-xtest0 libxcb-xtest0-dev libxcb-xv0 libxcb-xv0-dev libxcb-xvmc0 libxcb-xvmc0-dev libxcb1 libxcb1-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxext-dev libxfixes-dev libxi-dev libxrandr-dev libxrender-dev libxslt-dev libxss-dev libxtst-dev perl python ruby 
+
+./configure -prefix /opt/Qt5.9
+
+./configure -prefix         $QT5PREFIX \
+            -sysconfdir     /etc/xdg   \
+            -confirm-license           \
+            -opensource                \
+            -static  #added this line  \
+            -dbus-linked               \
+            -openssl-linked            \
+            -system-harfbuzz           \
+            -system-sqlite             \
+            -nomake examples           \
+            -no-rpath                  \
+            -skip qtwebengine          &&
+make
+
+
+./configure -opensource -confirm-license -prefix /home/debian/qt/Qt5.15 -debug -no-webkit -nomake demos -nomake examples
+
+
+ ./configure -platform linux-g++
+-release \ # собираем только релиз, без дебага
+-static \ # сам ключ статики
+-fontconfig \ # без этого ключа могут криво отображаться шрифты
+-opensource \ # задаем тип лицензии
+-confirm-license \ # соглашаемся с ним
+-gtkstyle \
+# остальные ключи не обязательны, но ускорят сборку
+-no-webkit \ # отключаем вебкит   (долго собирается, обычно не используется)
+-nomake demos \ # отключаем демки (долго собираются, не нужны)
+-nomake examples \ # отключаем примеры (не нужны)
+-no-libjpeg \
+-no-cups \
+-no-openvg \
+-no-libmng \
+-no-gif \
+-qt-libpng \
+-no-libtiff \
+-no-accessibility \
+-no-phonon \
+-no-script \
+-no-declarative \
+-no-declarative-debug \
+-no-openssl \
+-no-qt3support \ # отключаем поддержку Qt3
+-no-scripttools \
+-no-exceptions 
+
+
+sudo apt install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcd-xinerama-dev libxkbcommon-dev libxkbcommon-x11-dev
+
+///////////////////////////////    qt6.0    riscv64     /////////////////////////////////////
+
+../configure \
+-release \
+-static \
+-fontconfig \
+-opensource \
+-confirm-license \
+-no-xcb \
+-prefix /home/debian/qt/Qt6/ \
+-platform linux-g++-64 \
+-device-option CROSS_COMPILE=/home/debian/embedded/linux/buildroot/output/host/bin/riscv64-linux- \
+-sysroot /home/debian/embedded/linux/buildroot/output/host/riscv64-buildroot-linux-gnu/sysroot/ \
+-nomake examples \
+-nomake tests \
+-skip qt3d \
+-skip qt5compat \
+-skip qtactiveqt \
+-skip qtcoap \
+-skip qtdatavis3d \
+-skip qtquick3d \
+-skip qtquick3d \
+-skip qtquick3dphysics \
+-skip qtquicktimeline \
+-skip qttranslations \
+-skip qtwayland \
+-skip qtwebchannel \
+-skip qtwebengine \
+-skip qtwebsockets \
+-skip qtwebview
+
+
+///////////////////////////////    qt5.15.2    riscv64     /////////////////////////////////////
+
+../configure \
+-release \
+-fontconfig \
+-opensource \
+-confirm-license \
+-prefix /home/debian/qt/Qt6/ \
+-platform linux-g++-64 \
+-device linux_riscv \
+-device-option CROSS_COMPILE=/home/debian/embedded/linux/buildroot/output/host/bin/riscv64-linux- \
+-sysroot /home/debian/embedded/linux/buildroot/output/host/riscv64-buildroot-linux-gnu/sysroot \
+-directfb \
+-linuxfb \
+-no-opengl \
+-nomake examples \
+-nomake tests \
+-skip qt3d \
+-skip qtactiveqt \
+-skip qtandroidextras \
+-skip qtcharts \
+-skip qtconnectivity \
+-skip qtdatavis3d \
+-skip qtdeclarative \
+-skip qtdoc \
+-skip qtgamepad \
+-skip qtgraphicaleffects \
+-skip qtimageformats \
+-skip qtlocation \
+-skip qtlottie \
+-skip qtmacextras \
+-skip qtmultimedia \
+-skip qtnetworkauth \
+-skip qtpurchasing \
+-skip qtquick3d \
+-skip qtquickcontrols \
+-skip qtquickcontrols2 \
+-skip qtquicktimeline \
+-skip qtremoteobjects \
+-skip qtscript \
+-skip qtscxml \
+-skip qtsensors \
+-skip qtserialbus \
+-skip qtserialport \
+-skip qtspeech \
+-skip qtsvg \
+-skip qttools \
+-skip qttranslations \
+-skip qtvirtualkeyboard \
+-skip qtwayland \
+-skip qtwebchannel \
+-skip qtwebengine \
+-skip qtwebglplugin \
+-skip qtwebsockets \
+-skip qtwebview \
+-skip qtwinextras \
+-skip qtx11extras \
+-skip qtxmlpatterns \
+-no-gif \
+-no-libjpeg \
+-no-mtdev \
+-no-sql-db2 \
+-no-sql-ibase \
+-no-sql-mysql \
+-no-xcb \
+-no-harfbuzz \
+-no-xcb-xlib \
+-no-cups \
+-no-iconv \
+-no-icu \
+-no-eglfs
+
+system=fbdev
+fbdev=/dev/fb1
+mode=320x240
+scaled=320x240
+depth=16
+pixelformat=RGB16
+
+
+///////////////////////////////    qt5.15.2    raspi3_64     /////////////////////////////////////
+
+../configure \
+-opensource \
+-confirm-license \
+-platform linux-g++-64 \
+-device linux-rasp-pi3-vc4-g++ \
+-device-option CROSS_COMPILE=/home/mrt/qt/src/arm_compiler/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf \
+-sysroot /home/mrt/qt/src/sysroot/ \
+-opengl es2 \
+-xcb \
+-linuxfb \
+-nomake examples \
+-nomake tests \
+-no-gif \
+-no-libjpeg \
+-no-mtdev \
+-no-sql-db2 \
+-no-sql-ibase \
+-no-sql-mysql \
+-no-directfb \
+-no-harfbuzz \
+-no-cups \
+-no-icu \
+-skip qtactiveqt \
+-skip qtandroidextras \
+-skip qtcharts \
+-skip qtconnectivity \
+-skip qtdatavis3d \
+-skip qtdeclarative \
+-skip qtdoc \
+-skip qtgamepad \
+-skip qtgraphicaleffects \
+-skip qtimageformats \
+-skip qtlocation \
+-skip qtlottie \
+-skip qtmacextras \
+-skip qtmultimedia \
+-skip qtnetworkauth \
+-skip qtpurchasing \
+-skip qtquick3d \
+-skip qtquickcontrols \
+-skip qtquickcontrols2 \
+-skip qtquicktimeline \
+-skip qtremoteobjects \
+-skip qtscript \
+-skip qtscxml \
+-skip qtsensors \
+-skip qtserialbus \
+-skip qtserialport \
+-skip qtspeech \
+-skip qtsvg \
+-skip qttools \
+-skip qttranslations \
+-skip qtvirtualkeyboard \
+-skip qtwayland \
+-skip qtwebchannel \
+-skip qtwebengine \
+-skip qtwebglplugin \
+-skip qtwebsockets \
+-skip qtwebview \
+-skip qtwinextras \
+-skip qtx11extras \
+-skip qtxmlpatterns \
+-skip qt3d \
+-skip qtmqtt \
+-skip qtopcua \
+-skip qtquick3dphysics
+
+
+-no-iconv \
+
+
+-device-option CROSS_COMPILE=/home/mrt/embedded/linux/buildroot/rpi3/buildroot/output/host/bin/aarch64-linux- \
+
+
+///////////////////////////////////////////////////
+./configure -release -opengl es2 \
+-eglfs \
+-device linux-rasp-pi3-vc4-g++ \
+-device-option CROSS_COMPILE=/home/mrt/qt/src/arm_compiler/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- \
+-sysroot /home/mrt/qt/src/sysroot \
+-prefix /usr/local/qt \
+-extprefix ~/qt/src \
+-hostprefix ~/qt/src/host-qt \
+-opensource -confirm-license -skip qtscript -skip qtwayland -skip qtwebengine \
+-nomake tests -make libs -pkg-config -no-use-gold-linker -v -recheck
+
+
+./configure -release -opengl es2 \
+-eglfs \
+-device linux-rasp-pi3-vc4-g++ \
+-device-option CROSS_COMPILE=/home/mrt/qt/src/arm_compiler/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- \
+-sysroot /home/mrt/qt/src/sysroot \
+-prefix /usr/local/qt \
+-extprefix ~/qt/src \
+-hostprefix ~/qt/src/host-qt \
+-opensource -confirm-license -skip qtscript -skip qtwayland -skip qtwebengine \
+-nomake tests -make libs -pkg-config -no-use-gold-linker -v -recheck
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fbterm -s 18 --font-width=9 --font-names="Mono"
+::respawn:/usr/bin/fbterm -s 18 --font-width=9 --font-names="Mono" < /dev/tty1
