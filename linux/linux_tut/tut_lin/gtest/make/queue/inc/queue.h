@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 
+#define SAFE
+
 #define CHAR_SIZE (sizeof(char))
 
 #define QUEUE_OK (0)

@@ -15,8 +15,11 @@ GTEST_SRC = /usr/src/gtest/src
 GTEST_DIR = /usr/src/gtest
 
 OPTIMIZATION := 0
-CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fpic -pthread
-LFLAGS := -fpie -lpthread
+CFLAGS = -O$(OPTIMIZATION) -g -Wall -Wextra -fpic -pthread \
+		-fsanitize=thread
+LFLAGS := -fpie -lpthread \
+		  -fsanitize=thread
+#sudo sysctl vm.mmap_rnd_bits=30
 
 #    $@ — target name
 #    $< — first dependancy name
@@ -37,6 +40,12 @@ all: ${BLD}${PROJ}.elf
 
 ${BLD}${PROJ}.elf: ${COBJ} $(CXXOBJ) $(BLD)gtest_main.a $(BLD)gtest.a
 	$(CXX) $^ -o $@ ${LFLAGS}
+#-------------------------------------- SIZE ----------------------------------	
+	@echo "************************************************************"
+	@echo "*******************   SIZE   *******************************"
+	@echo "************************************************************"
+	$(GCC_PATH)size $(BLD)${PROJ}.elf
+	@echo "************************************************************"
 
 #___________________ BUILD __________________________________	
 $(COBJ) : $(BLD)%.o : %.c 
@@ -77,7 +86,7 @@ endif
 
 clean:
 	rm -R build/src
-	rm ${PROJECT}.elf
+	rm ${BLD}${PROJ}.elf
 
 rebuild:
 	rm -R build

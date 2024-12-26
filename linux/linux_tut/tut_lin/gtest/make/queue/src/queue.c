@@ -32,14 +32,31 @@ void deleteQueue(Queue* q) {
     free(q);
 }
 
-int queue_push(Queue* q, fptr* c) {
-    if (q == NULL) return QUEUE_ERR_NULL;
+#include <stdio.h>
 
-    if ((q->writeptr == q->readptr) && q->full) return QUEUE_ERR_FULL;
+int queue_push(Queue* q, fptr* c) {
+#ifdef SAFE
+    pthread_mutex_lock(&mut_q);
+#endif
+    if (q == NULL) {
+#ifdef SAFE
+        pthread_mutex_unlock(&mut_q);
+        printf("ERR_NULL\n");
+#endif
+        return QUEUE_ERR_NULL;
+    }
+
+    if ((q->writeptr == q->readptr) && q->full) {
+#ifdef SAFE
+        pthread_mutex_unlock(&mut_q);
+        printf("ERR_FULL\n");
+#endif
+        return QUEUE_ERR_FULL;
+    }
 
     *(q->writeptr) = *c;
 
-    fptr* tmp = (fptr*)((char*)q->writeptr + 1 * sizeof(fptr));
+    fptr* tmp = (fptr*)(q->writeptr + 1);
     if ((char*)tmp >= (char*)q->end) {
         tmp = q->start;
     }
@@ -48,19 +65,38 @@ int queue_push(Queue* q, fptr* c) {
     }
     q->writeptr = tmp;
 
+#ifdef SAFE
+    pthread_mutex_unlock(&mut_q);
+#endif
     return QUEUE_OK;
 }
 
 int queue_pop(Queue* q, fptr* c) {
-    if (!c) return QUEUE_ERR_NULL;
-    if (q == NULL) return QUEUE_ERR_EMPTY;
-
-    if ((q->readptr == q->writeptr) && (!q->full)) {
-        c = NULL;
+#ifdef SAFE
+    pthread_mutex_lock(&mut_q);
+#endif
+    if (!c) {
+#ifdef SAFE
+        pthread_mutex_unlock(&mut_q);
+#endif
+        return QUEUE_ERR_NULL;
+    }
+    if (q == NULL) {
+#ifdef SAFE
+        pthread_mutex_unlock(&mut_q);
+#endif
         return QUEUE_ERR_EMPTY;
     }
 
-    *c = *(q->readptr);
+    if ((q->readptr == q->writeptr) && (!q->full)) {
+        c = NULL;
+#ifdef SAFE
+        pthread_mutex_unlock(&mut_q);
+#endif
+        return QUEUE_ERR_EMPTY;
+    }
+
+    *c = *q->readptr;
 
     // char* tmp = rb->readptr + 1;
     fptr* tmp = (fptr*)(q->readptr + 1);
@@ -72,5 +108,8 @@ int queue_pop(Queue* q, fptr* c) {
     }
     q->readptr = tmp;
 
+#ifdef SAFE
+    pthread_mutex_unlock(&mut_q);
+#endif
     return QUEUE_OK;
 }
