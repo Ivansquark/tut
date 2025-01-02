@@ -1,0 +1,12 @@
+https://habr.com/ru/articles/565368/
+
+https://habr.com/ru/articles/658487/ // emio
+
+
+export CROSS_COMPILE=arm-linux-gnueabihf-
+export ARCH=arm
+make distclean
+make xilinx_zynq_virt_defconfig
+export DEVICE_TREE="zynq-qmtech"  // device tree from Vitis
+
+https://adaptivesupport.amd.com/s/question/0D54U00006ArhQpSAJ/20222-how-to-generate-device-tree-using-xsa?language=en_US
