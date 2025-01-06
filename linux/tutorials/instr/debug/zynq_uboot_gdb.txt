@@ -1,0 +1,40 @@
+https://wiki.st.com/stm32mpu/wiki/U-Boot_-_How_to_debug
+
+uboot build
+
+export CROSS_COMPILE=arm-linux-gnueabihf-; export ARCH=arm;
+export DEVICE_TREE="ebaz"
+CONFIG_CC_OPTIMIZE_FOR_DEBUG=y make -j99
+
+
+in Vivado -> connect to jtag
+
+in uboot dir:
+gdb-multiarch u-boot.elf
+
+target remote localhost:3000
+
+
+With U-Boot relocation, symbols are more difficult to load, see doc/README.arm-relocation for details.
+
+If you connect GDB on running target, you can load the debug symbols:
+
+    Before relocation with "symbol-file" command:
+
+ symbol-file u-boot
+
+    After relocation with "add-symbol-file" command to relocate the symbol with the code offset = gd->relocaddr:
+
+        for STM32MP1 series (AARCH32)
+
+ symbol-file u-boot                            --> only for "gd_t" definition
+ set $offset = ((gd_t *)$r9)->relocaddr        --> get relocation offset, gd in r9 register
+ symbol-file                                   --> clear previous symbol
+ add-symbol-file u-boot $offset
+
+        for STM32MP2 series (AARCH64)
+
+ symbol-file u-boot                            --> only for "gd_t" definition
+ set $offset = ((gd_t *)$x18)->relocaddr       --> get relocation offset, gd in x18 register
+ symbol-file                                   --> clear previous symbol
+ add-symbol-file u-boot $offset

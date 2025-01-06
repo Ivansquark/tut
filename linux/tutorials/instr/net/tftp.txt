@@ -1,0 +1,17 @@
+/////////////////////   TFTP   ///////////////////////////////////////////////
+Ubuntu:
+sudo apt install tftpd-hpa
+sudo systemctl status tftpd-hpa
+sudo mkdir -p proj/tftp
+sudo chown tftp:tftp proj/tftp
+
+sudo vi /etc/default/tftpd-hpa
+TFTP_DIRECTORY="...proj/tftp"
+
+sudo systemctl restart tftpd-hpa
+
+
+// Initrd initramfs boot
+printenv   //check address of dtb and initrd and kernel
+setenv ipaddr 192.168.1.101
+setenv serverip 192.168.1.66

@@ -20,3 +20,6 @@ some commands:
 md.b 50000000 1300
 
 sf read 50000000 0 2000
+
+
+https://stackoverflow.com/questions/20525704/how-u-boot-bootloader-reads-saves-its-environment-variables
