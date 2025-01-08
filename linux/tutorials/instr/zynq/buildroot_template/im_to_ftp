@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export $(grep -v '^#' .env | xargs -d '\n')
+
+mkimage -f ebaz.its ebaz.itb
+
+cp ebaz.itb $TFTP/ebaz.itb

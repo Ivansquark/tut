@@ -1,0 +1,2 @@
+#!/bin/sh
+mkimage -f ebaz.its ebaz.itb

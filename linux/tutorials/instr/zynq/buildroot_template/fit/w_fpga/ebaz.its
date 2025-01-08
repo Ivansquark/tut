@@ -1,0 +1,71 @@
+/dts-v1/;
+
+/ {
+    description = "Ebaz";
+    #address-cells = <1>;
+    images {
+        kernel-1 {
+            data = /incbin/("buildroot/images/zImage");
+            type = "kernel";
+            arch = "arm";               
+            os = "linux";
+            compression = "none";
+            load = <0x2000000>;
+            entry = <0x2000000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        fpga-1 {
+            description = "PL Bitstream";
+            data = /incbin/("xsa/eth_try.bit");
+            type = "fpga";
+            arch = "arm";
+            compression = "none";
+            load = <0x00100000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        fdt-1 {
+            description = "FDT";
+            data = /incbin/("ebaz.dtb");
+            type = "flat_dt";
+            arch = "arm";
+            os = "linux";
+            compression = "none";
+            load = <0x1F00000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+        ramdisk-1 {
+            description = "RAM fs";
+            data = /incbin/("buildroot/images/rootfs.cpio.lzma");
+            type = "ramdisk";
+            arch = "arm";               
+            os = "linux";
+            compression = "lzma";
+            load = <0x5000000>;
+            entry = <0x5000000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+    configurations {
+        default = "conf-1";
+        conf-1 {
+            description = "DEfault config";
+            kernel = "kernel-1";
+            fpga = "fpga-1";
+            fdt = "fdt-1";
+            ramdisk = "ramdisk-1";
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+};
+
+

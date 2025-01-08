@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export $(grep -v '^#' .env | xargs -d '\n')
+
+echo Preprocessing
+rm -f ebaz.dtb
+cpp -nostdinc \
+        -I$KERNEL/include \
+        -IKERNEL/arch/arm/boot/dts \
+        -undef -x assembler-with-cpp ebaz.dts ebaz_o.dts
+echo Compiling
+dtc -I dts -O dtb \
+        -i$KERNEL/arch/arm/boot/dts \
+        -o ebaz.dtb ebaz_o.dts
+rm ebaz_o.dts

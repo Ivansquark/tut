@@ -1,0 +1,21 @@
+#!/bin/sh
+
+export $(grep -v '^#' .env | xargs -d '\n')
+#read and set path enviroments
+#grep -v '^#' .env
+
+mkdir -p buildroot
+mkdir -p apps
+
+mkdir -p $BUILDROOT/buildroot
+echo $BUILDROOT
+make -C $BUILDROOT \
+        O=$PWD/buildroot \
+        ARCH=arm \
+        BR2_EXTERNAL=$PWD/apps \
+        nconfig
+#make -C $BUILDROOT \
+#         O=$PWD/buildroot \
+#         ARCH=arm \
+#         BR2_EXTERNAL=$PWD/apps \
+#         busybox-menuconfig

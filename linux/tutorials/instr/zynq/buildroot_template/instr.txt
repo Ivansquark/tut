@@ -1,0 +1,323 @@
+///////////////////////  Links  ///////////////////////////////////////////////
+
+https://github.com/Xilinx - Xilinx sowtware
+https://github.com/Xilinx/linux-xlnx - Linux kernel fork
+https://github.com/Xilinx/u-boot-xlnx - U-Boot fork
+https://github.com/Xilinx/device-tree-xlnx - create dt soft (git branch must equals Vivado ver)
+https://github.com/Xilinx/arm-trusted-firmware
+
+git://git.buildroot.net/buildroot - Buildroot Repo
+https://buildroot.org/downloads/manual/manual.html - Buildroot Docs
+
+
+/////////////  Bitstream   ////////////////////////////////////////////////////
+create from Vivado .xsa .bit .bin (cp to project dir)
+https://github.com/railnova/zynq-bit2bin
+
+
+/////////////  Device Tree Generate Commands  /////////////////////////////////
+/opt/vivado/Vitis/2021.2/bin/xsct
+source gendt.tcl
+exit
+
+gendt.tcl:
+hsi::open_hw_design opa.xsa
+hsi::set_repo_path /home/opa/embedded/vivado/dt_git/device-tree-xlnx
+hsi::create_sw_design device-tree -os device_tree -proc ps7_cortexa9_0
+hsi::generate_target -dir dt/
+
+///////////////  Path ENV in .env  ////////////////////////////////////////////
+export $(grep -v '^#' .env | xargs -d '\n')
+
+https://habr.com/ru/articles/449348/
+//////////////  Buildroot rebuild script  /////////////////////////////////////
+br-config:
+#!/bin/sh
+make -C $HOME/embedded/linux/buildroot/zynq/buildroot \
+         O=$PWD/buildroot \
+         ARCH=arm \
+         BR2_EXTERNAL=$PWD/apps \
+         nconfig
+make -C $HOME/embedded/linux/buildroot/zynq/buildroot \
+         O=$PWD/buildroot \
+         ARCH=arm \
+         BR2_EXTERNAL=$PWD/apps \
+         busybox-menuconfig
+
+
+//////////////////  Buildroot config //////////////////////////////////////////
+### local toolchain not worked
+#Toolchain - set arm-linux-gnueabi:
+#Toolchain type -> External
+#Toolchain -> custom toolchain
+#Toolchain Orig -> Preinstalled toolchain
+#$(ARCH)-linux-gnueabihf
+#External toolchain version -> (arm-linux-gnueabi-gcc -v)
+#External toolchain kernel headers series -> (uname -r)
+#External Toolchain Lib -> glibc
+++ C++ support
+
+
+Toolchain -> Kernel Headers - Custom Git repo
+file://$HOME/embedded/linux/zynq/linux-xlnx
+git show-ref | grep master - hashcode
+kernel num from kernel dir - make nconfig
+
+# rootfs_overlay to set config on host and auto write it to rootfs on br-build
+System configuration -> 
+/home/opa/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay
+
+System Drivers -> Miscellaneous -> haveged (random num init)
+System Drivers -> Network -> dropbear (ssh)
+
+Filesystem images -> 
+cpio the root filesystem (Ram Filesystem)
+    Compression Method (lzma)
+
+
+//////////////////  Buildroot build  //////////////////////////////////////////
+br-build:
+#!/bin/sh
+make -C $HOME/embedded/linux/buildroot/zynq/buildroot \
+         O=$PWD/buildroot \
+         ARCH=arm \
+         BR2_EXTERNAL=$PWD/apps \
+         BR2_JLEVEL="$(($(nproc) - 2))"
+
+find . -name "gcc" -print
+
+///////////////////  Uboot build  /////////////////////////////////////////////
+ub-build:
+#!/bin/sh
+#make -C $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot
+#        O=$PWD/u-boot \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        xilinx_zynq_virt_defconfig
+make -C $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot
+        O=$PWD/u-boot \
+        ARCH=arm \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        nconfig
+gcc -I my_dts -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o \
+        ebaz.dts dt/system-top.dts
+dtc -I dts -O dtb \
+        -i $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot/arch/arm/dts \
+        -o $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot/arch/arm/dts/ebaz.dtb \
+        ./ebaz.dts
+make -j8 -C $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot \
+        O=$PWD/u-boot \
+        ARCH=arm \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        DEVICE_TREE=ebaz \
+        all
+         
+
+//////////////  JTAG PROGRAMMING //////////////////////////////////////////////
+/opt/vivado/Vitis/2021.2/bin/xsct
+targets
+target 1
+rst -system
+target 2
+rst -prcessor
+source ps7_init.tcl
+ps7_init
+ps7_post_config
+dow uboot.elf
+
+
+///////////////////  Kernel build  ////////////////////////////////////////////
+kernel-build:
+#!/bin/sh
+#
+mkdir -p kernel
+#make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+#        O=$PWD/kernel \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        xilinx_zynq_defconfig
+make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+        O=$PWD/kernel \
+        ARCH=arm \
+        LOCALVERSION= \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        nconfig
+make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+        O=$PWD/kernel \
+        ARCH=arm \
+        LOCALVERSION= \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        zImage modules
+make -j8 -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx \
+        O=$PWD/kernel \
+        ARCH=arm \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        INSTALL_MOD_PATH=$HOME/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay
+        modules_install
+
+
+///////////////////  Kernel dt build  /////////////////////////////////////////
+dt-build:
+#!/bin/sh
+echo Preprocessing
+rm -f ebaz.dtb
+cpp -nostdinc \
+        -I/home/opa/embedded/fpga/xilinx/zynq/linux-xlnx/include \
+        -I/home/opa/embedded/fpga/xilinx/zynq/linux-xlnx/arch/arm/boot/dts \
+        -undef -x assembler-with-cpp ebaz.dts ebaz_o.dts
+echo Compiling
+dtc -I dts -O dtb \
+        -i/home/opa/embedded/fpga/xilinx/zynq/linux-xlnx/arch/arm/boot/dts \
+        -o ebaz.dtb ebaz_o.dts
+rm ebaz_o.dts
+
+
+////////////////////  Fit image   ////////////////////////////////////////////
+ebaz.its:
+/dts-v1/;
+
+/ {
+    description = "Ebaz";
+    #address-cells = <1>;
+    images {
+        kernel@1 {
+            data = /incbin/("../../linux-xlnx/arch/arm/boot/zImage");
+            type = "kernel";
+            arch = "arm";               
+            os = "linux";
+            compression = "none";
+            load = <0x20000000>;
+            entry = <0x20000000>;
+            hash@1 {
+                algo = "sha256";
+            };
+        };
+        fpga@1 {
+            description = "PL Bitstream";
+            data = /incbin/("./ebaz.bin");
+            type = "fpga";
+            arch = "arm";
+            compression = "none";
+            load = <0x00100000>;
+            hash@1 {
+                algo = "sha256";
+            };
+        }
+        fdt@1 {
+            description = "FDT";
+            data = /incbin/("ebaz.dtb");
+            type = "flat_dt";
+            arch = "arm";
+            os = "linux";
+            compression = "none";
+            load = <0x1F000000>;
+            hash@1 {
+                algo = "sha256";
+            };
+        };
+        ramdisk@1 {
+            description = "RAM fs";
+            data = /incbin/("../../buildroot/images/rootfs.cpio.lzma");
+            type = "ramdisk";
+            arch = "arm";               
+            os = "linux";
+            compression = "lzma";
+            load = <0x10000000>;
+            entry = <0x10000000>;
+            hash@1 {
+                algo = "sha256";
+            };
+        }
+    };
+    configurations {
+        default = "conf@1";
+        conf@1 {
+            description = "DEfault config";
+            kernel = "kernel@1";
+            fpga = "fpga@1";
+            fdt = "fdt@1";
+            ramdisk = "ramdisk@1";
+            hash@1 {
+                algo = "sha256";
+            };
+        };
+    };
+};
+
+
+////////////////////   Fit build   ////////////////////////////////////////////
+im-build:
+#!/bin/sh
+mkimage -f ebaz.its ebaz.itb
+
+//copy to tftp server
+
+
+
+env set bootargs console=ttyS0,115200 rdinit=/bin/sh init=/sbin/init
+
+
+bootz 5000000 - 7000000
+
+ext4load mmc 0:2 0x1f00000 /boot/zynq-ebaz4205.dtb
+setenv bootargs "root=/dev/mmcblk0p2 rootwait"
+bootz 0x2000000 - 0x1f00000
+
+
+//ebaz working 
+bootm 4000000
+
+/////////////////  boot Linux on Ebaz4205  ////////////////////////////////////
+setenv bootargs "root=/dev/ram0 rootwait"  
+or not to disable PCLK1:
+setenv bootargs "clk_ignore_unused root=/dev/ram0"
+saveenv
+env set booot "tftpboot 4000000 ebaz.itb; bootm 4000000;"
+run booot
+
+
+https://github.com/ikwzm/fclkcfg  -- clock config from Linux
+
+
+
+////////////////////  Buildroot Application  /////////////////////////////////
+#apps - directory used in br-config script in BR2_EXTERNAL=$PWD/apps
+
+cd apps
+
+echo 'source "$BR2_EXTERNAL_Z_APPS_PATH/package/app1/Config.in"' > Config.in
+
+echo 'name: Z_APPS
+desc: Additional board specific applications' > external.desc
+or
+echo 'name: Z_APPS'"\r\n"'desc: Additional board specific applications' \
+         > external.desc
+
+echo 'include $(sort $(wildcard $(BR2_EXTERNAL_Z_APPS_PATH)/package/*/*.mk))' \
+> external.mk
+
+mkdir -p package/app1
+cd package/app1
+
+### if makefile
+echo 'APP1_VERSION=0.1
+#app source
+APP1_SITE=/home/opa/embedded/fpga/xilinx/zynq/proj/template/apps/package/app1 
+APP1_SITE_METHOD=local
+#
+define APP1_BUILD_CMDS
+        $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) all
+endef
+
+define APP1_INSTALL_TARGET_CMDS
+        $(INSTALL) -D -m 0755 $(@D)/build/app1.elf $(TARGET_DIR)/usr/bin
+endef
+
+$(eval $(generic-package))
+' > app1.mk
+
+echo 'config BR2_PACKAGE_APP1
+    bool "Test Application 1"
+    help
+        Test application
+' > Config.in

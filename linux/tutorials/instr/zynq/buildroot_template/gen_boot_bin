@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# cp fsbl.elf from vitis
+#
+export $(grep -v '^#' .env | xargs -d '\n')
+$XSCT/bootgen -image boot.bif -o BOOT.bin

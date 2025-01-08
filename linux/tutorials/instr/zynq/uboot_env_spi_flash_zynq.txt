@@ -1,0 +1,55 @@
+//////////  Uboot make nconfig  ///////////////////
+
+Enviroment
+    Enviroment in spi flash
+    Enviroment address (%sector_size == 0) -> 0, 0x8000 to proper erase
+    Enviroment offset -> 0
+Device Drivers:
+    MTD Support:
+        Spi Flash Support
+            XMC SPI FLASH Support
+    SPI Support:
+        Zynq spi driver
+
+
+//////////  Uboot sources  ///////////////////
+
+
+to proper load env from spi:
+
+board/xilinx/zynq/board.c:
+    in enum env_location env_get_location(enum env_operation op, int prio) ->
+
+    	switch (bootmode) {
+        // if boot from sd
+        case ZYNQ_BM_SD:
+            if (IS_ENABLED(CONFIG_ENV_IS_IN_SPI_FLASH))
+                return ENVL_SPI_FLASH;
+            if (IS_ENABLED(CONFIG_ENV_IS_IN_NAND))
+                return ENVL_NAND;
+            if (IS_ENABLED(CONFIG_ENV_IS_IN_FAT))
+                return ENVL_FAT;
+
+
+env/sf.c:
+    in setup_flash_device(struct spi_flash **env_flash) ->
+    	//ret = spi_flash_probe_bus_cs(dev, CONFIG_ENV_SPI_CS,
+        //			     &new);
+        //if (ret) {
+        //	env_set_default("spi_flash_probe_bus_cs() failed", 0);
+        //	return ret;
+        //}
+
+        //*env_flash = dev_get_uclass_priv(new);
+
+        *env_flash = spi_flash_probe(CONFIG_ENV_SPI_BUS, CONFIG_ENV_SPI_CS,
+                        CONFIG_ENV_SPI_MAX_HZ, CONFIG_ENV_SPI_MODE);
+
+
+
+to get proper EDID ID need to add ID in:
+drivers/mtd/spi/spi-nor-ids.c
+    #ifdef CONFIG_SPI_FLASH_XMC
+	/* XMC (Wuhan Xinxin Semiconductor Manufacturing Corp.) */
+	EDID 20 40 16
+	{ INFO("XM25QH32C", 0x204016, 0, 32 * 1024, 128, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },

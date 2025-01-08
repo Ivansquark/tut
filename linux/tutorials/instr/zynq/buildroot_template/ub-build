@@ -1,0 +1,17 @@
+#!/bin/sh
+export $(grep -v '^#' .env | xargs -d '\n')
+
+#make -C $UBOOT \
+#        O=$PWD/u-boot \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        DEVICE_TREE=ebaz \
+#        all
+cd $UBOOT
+export CROSS_COMPILE=arm-linux-gnueabihf-
+export ARCH=arm
+export DEVICE_TREE=ebaz
+make -j8
+cd -
+cp $UBOOT/u-boot.elf ./u-boot.elf
+

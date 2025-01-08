@@ -1,0 +1,28 @@
+#!/bin/sh
+export $(grep -v '^#' .env | xargs -d '\n')
+
+mkdir -p u-boot
+
+#make -C $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot
+#        O=$PWD/u-boot \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        xilinx_zynq_virt_defconfig
+#make -C $UBOOT \
+#        O=$PWD/u-boot \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        nconfig
+#
+cd $UBOOT
+export CROSS_COMPILE=arm-linux-gnueabihf-
+export ARCH=arm
+make nconfig
+cd -
+
+gcc -I my_dts -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o \
+        ebaz.dts dt/system-top.dts
+dtc -I dts -O dtb \
+        -i $UBOOT/arch/arm/dts \
+        -o $UBOOT/arch/arm/dts/ebaz.dtb \
+        ./ebaz.dts

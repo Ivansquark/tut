@@ -11,3 +11,15 @@ make xilinx_zynq_virt_defconfig
 export DEVICE_TREE="ebaz_eth_spi"  // device tree from Vitis
 
 https://adaptivesupport.amd.com/s/question/0D54U00006ArhQpSAJ/20222-how-to-generate-device-tree-using-xsa?language=en_US
+
+
+
+
+env set bootargs console=ttyS0,115200 rdinit=/bin/sh init=/sbin/init
+
+setenv bootargs console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait panic=10 loglevel=8
+
+
+bootz 5000000 - 9000000
+
+sudo mount -t auto -o loop,offset=$((8192*512)) sdcard.img sd/

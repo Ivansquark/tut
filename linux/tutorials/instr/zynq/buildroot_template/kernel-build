@@ -1,0 +1,27 @@
+#!/bin/sh
+export $(grep -v '^#' .env | xargs -d '\n')
+#
+mkdir -p kernel
+#make -C $KERNEL \
+#        O=$PWD/kernel \
+#        ARCH=arm \
+#        CROSS_COMPILE=arm-linux-gnueabihf- \
+#        xilinx_zynq_defconfig
+make -C $KERNEL \
+        O=$PWD/kernel \
+        ARCH=arm \
+        LOCALVERSION= \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        nconfig
+make -C $KERNEL \
+        O=$PWD/kernel \
+        ARCH=arm \
+        LOCALVERSION= \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        zImage modules
+make -j8 -C $KERNEL \
+        O=$PWD/kernel \
+        ARCH=arm \
+        CROSS_COMPILE=arm-linux-gnueabihf- \
+        INSTALL_MOD_PATH=$PWD/rootfs_overlay
+        modules_install
