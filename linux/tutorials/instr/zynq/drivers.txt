@@ -1,0 +1,12 @@
+https://lauri.võsandi.com/hdl/zynq/xilinx-dma.html
+
+https://xilinx.github.io/Embedded-Design-Tutorials/docs/2021.2/build/html/docs/Introduction/Zynq7000-EDT/8-custom-ip-driver-linux.html
+
+https://www.avnet.com/wps/portal/us/products/avnet-boards/support/faq/microzed-chronicles/?srsltid=AfmBOopvhhDQOmFGRFR02Y3oh8TgQHBoA_262WjOnBg-r6kNwIm3uIzA
+
+https://embetronicx.com/tutorials/linux/device-drivers/using-kernel-timer-in-linux-device-driver/
+
+https://habr.com/ru/companies/yadro/articles/845714/
+
+
+Emio gpio starts from 54

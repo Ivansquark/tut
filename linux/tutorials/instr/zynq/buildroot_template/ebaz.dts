@@ -1,7 +1,7 @@
-# 0 "dt/system-top.dts"
+# 0 "system-top.dts"
 # 0 "<built-in>"
 # 0 "<command-line>"
-# 1 "dt/system-top.dts"
+# 1 "system-top.dts"
 
 
 
@@ -10,8 +10,8 @@
 
 
 /dts-v1/;
-# 1 "dt/zynq-7000.dtsi" 1
-# 15 "dt/zynq-7000.dtsi"
+# 1 "zynq-7000.dtsi" 1
+# 15 "zynq-7000.dtsi"
 / {
  #address-cells = <1>;
  #size-cells = <1>;
@@ -564,8 +564,8 @@
   };
  };
 };
-# 10 "dt/system-top.dts" 2
-# 1 "dt/pl.dtsi" 1
+# 10 "system-top.dts" 2
+# 1 "pl.dtsi" 1
 
 
 
@@ -583,7 +583,7 @@
    #gpio-cells = <2>;
    clock-names = "s_axi_aclk";
    clocks = <&clkc 15>;
-   compatible = "xlnx,axi-gpio-2.0", "xlnx,xps-gpio-1.00.a";
+   compatible = "ebuz,buzz-1.00.a";
    gpio-controller ;
    reg = <0x41200000 0x10000>;
    xlnx,all-inputs = <0x0>;
@@ -601,8 +601,8 @@
   };
  };
 };
-# 11 "dt/system-top.dts" 2
-# 1 "dt/pcw.dtsi" 1
+# 11 "system-top.dts" 2
+# 1 "pcw.dtsi" 1
 
 
 
@@ -618,24 +618,25 @@
  };
 };
 &clkc {
- fclk-enable = <0x1>;
- ps-clk-frequency = <33333333>;
- clocks = <&ephy0_clk>;
- clock-names = "gem0_emio_clk";
+    fclk-enable = <0x1>;
+    ps-clk-frequency = <33333333>;
+    clocks = <&ephy0_clk>;
+    clock-names = "gem0_emio_clk";
 };
 &gem0 {
- status = "okay";
- phy-mode = "rgmii-id";
- phy-handle = <&ethernet_phy>;
- local-mac-address = [44 8F 17 36 1B A0];
+    status = "okay";
+    phy-mode = "rgmii-id";
+    phy-handle = <&ethernet_phy>;
+    local-mac-address = [44 8F 17 36 1B A0];
 
- ethernet_phy: ethernet-phy@0 {
-  reg = <0>;
-  max-speed = <100>;
- };
+    ethernet_phy: ethernet-phy@0 {
+        reg = <0>;
+        max-speed = <100>;
+    };
 };
+
 &gpio0 {
- emio-gpio-width = <2>;
+ emio-gpio-width = <10>;
  gpio-mask-high = <0x0>;
  gpio-mask-low = <0x5600>;
 };
@@ -657,6 +658,11 @@
  num-cs = <3>;
  status = "okay";
 };
+&spi1 {
+ is-decoded-cs = <0>;
+ num-cs = <3>;
+ status = "okay";
+};
 &uart1 {
  cts-override ;
  device_type = "serial";
@@ -665,16 +671,12 @@
 };
 &nfc0 {
  status = "okay";
- bootph-all;
- #address-cells = <1>;
- #size-cells = <0>;
 
  nand@0 {
   reg = <0>;
-# 88 "dt/pcw.dtsi"
  };
 };
-# 12 "dt/system-top.dts" 2
+# 12 "system-top.dts" 2
 / {
  chosen {
   bootargs = "earlycon";
@@ -684,15 +686,16 @@
   ethernet0 = &gem0;
   serial0 = &uart1;
   spi0 = &spi0;
+  spi1 = &spi1;
  };
  memory {
   device_type = "memory";
   reg = <0x0 0x10000000>;
  };
- ephy0_clk: ephy0-clk {
-  #clock-cells = <0>;
-  compatible = "fixed-clock";
-  clock-frequency = <25000000>;
-  clock-output-names = "ephy0_clk";
- };
+    ephy0_clk: ephy0-clk {
+        #clock-cells = <0>;
+        compatible = "fixed-clock";
+        clock-frequency = <25000000>;
+        clock-output-names = "ephy0_clk";
+    };
 };

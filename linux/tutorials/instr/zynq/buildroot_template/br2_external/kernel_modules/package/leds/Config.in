@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KERNEL_MODULE_LEDS
+	bool "kernel_module_leds"
+	depends on BR2_LINUX_KERNEL
+	help
+		See README

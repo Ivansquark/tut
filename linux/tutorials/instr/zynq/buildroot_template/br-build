@@ -5,5 +5,5 @@ export $(grep -v '^#' .env | xargs -d '\n')
 make -C $BUILDROOT \
          O=$PWD/buildroot \
          ARCH=arm \
-         BR2_EXTERNAL=$PWD/apps \
+         BR2_EXTERNAL=$PWD/br2_external/apps:$PWD/br2_external/kernel_modules \
          BR2_JLEVEL="$(($(nproc) - 2))"

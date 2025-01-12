@@ -1,0 +1,17 @@
+https://habr.com/ru/articles/828530/
+
+ST7789V
+
+lcd_pin
+CS - T20
+DC - R18
+SCL - R19
+SDA - P20
+RES - N17
+
+HDMI_PIN:
+DAT0 - D19
+DAT1 - C20
+DAT2 - B19
+CLK - F19
+

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KERNEL_MODULE_BUZZ
+	bool "kernel_module_BUZZ"
+	depends on BR2_LINUX_KERNEL
+	help
+		See README

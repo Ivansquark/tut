@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KERNEL_MODULE_HI
+	bool "kernel_module_HI"
+	depends on BR2_LINUX_KERNEL
+	help
+		See README

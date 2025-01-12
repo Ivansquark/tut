@@ -12,8 +12,10 @@ echo $BUILDROOT
 make -C $BUILDROOT \
         O=$PWD/buildroot \
         ARCH=arm \
-        BR2_EXTERNAL=$PWD/apps \
+        BR2_EXTERNAL=$PWD/br2_external/apps:$PWD/br2_external/kernel_modules \
         nconfig
+        #BR2_EXTERNAL=$PWD/apps \
+        #BR2_EXTERNAL_KERNEL_MODULE=$PWD/kernel_modules \
 #make -C $BUILDROOT \
 #         O=$PWD/buildroot \
 #         ARCH=arm \

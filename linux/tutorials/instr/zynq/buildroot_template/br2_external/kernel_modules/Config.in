@@ -1,0 +1,4 @@
+source "$BR2_EXTERNAL_KERNEL_MODULES_PATH/package/hi/Config.in"
+source "$BR2_EXTERNAL_KERNEL_MODULES_PATH/package/buzz/Config.in"
+#source "$BR2_EXTERNAL_KERNEL_MODULES_PATH/package/leds/Config.in"
+#source "$BR2_EXTERNAL_KERNEL_MODULES_PATH/package/buts/Config.in"

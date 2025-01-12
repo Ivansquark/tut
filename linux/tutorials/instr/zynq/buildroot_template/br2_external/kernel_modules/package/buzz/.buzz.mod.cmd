@@ -1,0 +1,1 @@
+savedcmd_/home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/buzz/buzz.mod := printf '%s\n'   buzz.o | awk '!x[$$0]++ { print("/home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/buzz/"$$0) }' > /home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/buzz/buzz.mod

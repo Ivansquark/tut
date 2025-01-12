@@ -87,6 +87,7 @@ make -C $HOME/embedded/linux/buildroot/zynq/buildroot \
 find . -name "gcc" -print
 
 ///////////////////  Uboot build  /////////////////////////////////////////////
+#make mrproper
 ub-build:
 #!/bin/sh
 #make -C $HOME/embedded/fpga/xilinx/zynq/uboot/u-boot
@@ -186,8 +187,8 @@ ebaz.its:
             arch = "arm";               
             os = "linux";
             compression = "none";
-            load = <0x20000000>;
-            entry = <0x20000000>;
+            load = <0x2000000>;
+            entry = <0x2000000>;
             hash@1 {
                 algo = "sha256";
             };
@@ -210,7 +211,7 @@ ebaz.its:
             arch = "arm";
             os = "linux";
             compression = "none";
-            load = <0x1F000000>;
+            load = <0x1F00000>;
             hash@1 {
                 algo = "sha256";
             };
@@ -222,8 +223,8 @@ ebaz.its:
             arch = "arm";               
             os = "linux";
             compression = "lzma";
-            load = <0x10000000>;
-            entry = <0x10000000>;
+            load = <0x1000000>;
+            entry = <0x1000000>;
             hash@1 {
                 algo = "sha256";
             };
@@ -321,3 +322,50 @@ echo 'config BR2_PACKAGE_APP1
     help
         Test application
 ' > Config.in
+
+///////////////// add kernel modules //////////////////////////////////////////
+buildroot/: Buildroot 2017.02, ideally as a git submodule
+kernel_module/: external package with some modules, ideally tracked in the git repository
+    Config.in
+    external.mk
+    external.desc
+    Makefile
+    usb_fb.c: hello world module
+    
+vi kernel_module/Config.in
+config BR2_PACKAGE_KERNEL_MODULES
+	bool "kernel_modules"
+	depends on BR2_LINUX_KERNEL
+	help
+		See README.adoc
+
+vi kernel_module/external.desc:
+name: KERNEL_MODULES
+
+vi kernel_module/external.mk:
+################################################################################
+#
+# kernel_modules
+#
+################################################################################
+
+KERNEL_MODULES_VERSION = 1.0
+KERNEL_MODULES_SITE = $(BR2_EXTERNAL_KERNEL_MODULES_PATH)
+KERNEL_MODULES_SITE_METHOD = local
+
+$(eval $(kernel-module))
+$(eval $(generic-package))
+    
+vi kernel_module/Makefile:
+obj-m += $(addsuffix .o, $(notdir $(basename $(filter-out %.mod.c, $(wildcard $(BR2_EXTERNAL_KERNEL_MODULES_PATH)/*.c)))))
+ccflags-y := -DDEBUG -g -std=gnu99 -Werror -Wno-declaration-after-statement -Wframe-larger-than=1000000000
+
+.PHONY: all clean
+
+CFLAGS_MODULE=-fno-pic
+
+all:
+	$(MAKE) -C -fno-pic '/lib/modules/$(shell uname -r)/build' M='$(PWD)' modules
+
+clean:
+	$(MAKE) -C '$(LINUX_DIR)' M='$(PWD)' clean

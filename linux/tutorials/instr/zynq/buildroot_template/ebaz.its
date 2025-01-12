@@ -16,6 +16,17 @@
                 algo = "sha256";
             };
         };
+        fpga-1 {
+            description = "PL Bitstream";
+            data = /incbin/("xsa/driver.bit");
+            type = "fpga";
+            arch = "arm";
+            compression = "none";
+            load = <0x00100000>;
+            hash-1 {
+                algo = "sha256";
+            };
+        };
         fdt-1 {
             description = "FDT";
             data = /incbin/("ebaz.dtb");
@@ -47,6 +58,7 @@
         conf-1 {
             description = "DEfault config";
             kernel = "kernel-1";
+            fpga = "fpga-1";
             fdt = "fdt-1";
             ramdisk = "ramdisk-1";
             hash-1 {

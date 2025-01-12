@@ -1,0 +1,2 @@
+source "$BR2_EXTERNAL_Z_APPS_PATH/package/app1/Config.in"
+source "$BR2_EXTERNAL_Z_APPS_PATH/package/app2/Config.in"

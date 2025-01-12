@@ -1,0 +1,4 @@
+config BR2_PACKAGE_APP2
+    bool "Test Application 2"
+    help
+        Test application
