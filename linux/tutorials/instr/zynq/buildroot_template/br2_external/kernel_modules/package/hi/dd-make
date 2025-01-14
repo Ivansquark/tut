@@ -1,16 +1,15 @@
 #!/bin/sh
-make -C $PWD/../../../../kernel \
+make -C /home/opa/embedded/fpga/xilinx/zynq/proj/template/kernel \
          ARCH=arm \
          LOCALVERSION= \
          M=$PWD \
          CROSS_COMPILE=arm-linux-gnueabihf- \
          modules
-#make -C $PWD/../../../../kernel \
-#         ARCH=arm \
-#         LOCALVERSION= \
-#         M=$PWD \
-#         CROSS_COMPILE=arm-linux-gnueabihf- \
-#         INSTALL_MOD_PATH=$PWD \
-#         modules_install
-         #INSTALL_MOD_PATH=$PWD/../../../../rootfs_overlay \
+make -C /home/opa/embedded/fpga/xilinx/zynq/proj/template/kernel \
+         ARCH=arm \
+         LOCALVERSION= \
+         M=$PWD \
+         CROSS_COMPILE=arm-linux-gnueabihf- \
+         INSTALL_MOD_PATH=/home/opa/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay \
+         modules_install
 

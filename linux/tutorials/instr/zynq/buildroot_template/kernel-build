@@ -12,8 +12,8 @@ make -C $KERNEL \
         ARCH=arm \
         LOCALVERSION= \
         CROSS_COMPILE=arm-linux-gnueabihf- \
-        nconfig
-make -C $KERNEL \
+        menuconfig
+make -j12 -C $KERNEL \
         O=$PWD/kernel \
         ARCH=arm \
         LOCALVERSION= \
@@ -22,6 +22,7 @@ make -C $KERNEL \
 make -j8 -C $KERNEL \
         O=$PWD/kernel \
         ARCH=arm \
+        LOCALVERSION= \
         CROSS_COMPILE=arm-linux-gnueabihf- \
-        INSTALL_MOD_PATH=$PWD/rootfs_overlay
+        INSTALL_MOD_PATH=$PWD/rootfs_overlay \
         modules_install

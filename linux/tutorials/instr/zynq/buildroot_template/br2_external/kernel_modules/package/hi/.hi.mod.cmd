@@ -1,0 +1,1 @@
+savedcmd_/home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/hi.mod := printf '%s\n'   hi.o | awk '!x[$$0]++ { print("/home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/"$$0) }' > /home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/hi.mod

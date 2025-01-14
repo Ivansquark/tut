@@ -1,0 +1,1 @@
+savedcmd_/home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/modules.order := {   echo /home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/hi.o; :; } > /home/opa/embedded/fpga/xilinx/zynq/proj/template/br2_external/kernel_modules/package/hi/modules.order

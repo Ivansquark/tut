@@ -96,6 +96,7 @@ static int buzz_remove(struct platform_device *pdev) {
  * and register file operations for that entry.
  */
 static int buzz_probe(struct platform_device *pdev) {
+    printk("[[ BUZZ ]] probe started");
     struct proc_dir_entry* buzz_proc_entry;
     int ret = 0;
 

@@ -60,7 +60,7 @@ make -C $HOME/embedded/linux/buildroot/zynq/buildroot \
 
 Toolchain -> Kernel Headers - Custom Git repo
 file://$HOME/embedded/linux/zynq/linux-xlnx
-git show-ref | grep master - hashcode
+git show-ref | grep master - hashcode     // or git log
 kernel num from kernel dir - make nconfig
 
 # rootfs_overlay to set config on host and auto write it to rootfs on br-build
@@ -130,30 +130,32 @@ dow uboot.elf
 ///////////////////  Kernel build  ////////////////////////////////////////////
 kernel-build:
 #!/bin/sh
+export $(grep -v '^#' .env | xargs -d '\n')
 #
 mkdir -p kernel
-#make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+#make -C $KERNEL \
 #        O=$PWD/kernel \
 #        ARCH=arm \
 #        CROSS_COMPILE=arm-linux-gnueabihf- \
 #        xilinx_zynq_defconfig
-make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+make -C $KERNEL \
         O=$PWD/kernel \
         ARCH=arm \
         LOCALVERSION= \
         CROSS_COMPILE=arm-linux-gnueabihf- \
-        nconfig
-make -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx
+        menuconfig
+make -j12 -C $KERNEL \
         O=$PWD/kernel \
         ARCH=arm \
         LOCALVERSION= \
         CROSS_COMPILE=arm-linux-gnueabihf- \
         zImage modules
-make -j8 -C $HOME/embedded/fpga/xilinx/zynq/linux-xlnx \
+make -j8 -C $KERNEL \
         O=$PWD/kernel \
         ARCH=arm \
+        LOCALVERSION= \
         CROSS_COMPILE=arm-linux-gnueabihf- \
-        INSTALL_MOD_PATH=$HOME/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay
+        INSTALL_MOD_PATH=$PWD/rootfs_overlay \
         modules_install
 
 
@@ -324,40 +326,56 @@ echo 'config BR2_PACKAGE_APP1
 ' > Config.in
 
 ///////////////// add kernel modules //////////////////////////////////////////
-buildroot/: Buildroot 2017.02, ideally as a git submodule
-kernel_module/: external package with some modules, ideally tracked in the git repository
-    Config.in
-    external.mk
-    external.desc
-    Makefile
-    usb_fb.c: hello world module
-    
-vi kernel_module/Config.in
-config BR2_PACKAGE_KERNEL_MODULES
-	bool "kernel_modules"
-	depends on BR2_LINUX_KERNEL
-	help
-		See README.adoc
+Kernel modules best to build and set to rootfs (with same kernel version)
+(through buildroot cant set module version same as kernel version)
 
-vi kernel_module/external.desc:
-name: KERNEL_MODULES
+dd-make:
+#!/bin/sh
+make -C /home/opa/embedded/fpga/xilinx/zynq/proj/template/kernel \
+         ARCH=arm \
+         LOCALVERSION= \
+         M=$PWD \
+         CROSS_COMPILE=arm-linux-gnueabihf- \
+         modules
+make -C /home/opa/embedded/fpga/xilinx/zynq/proj/template/kernel \
+         ARCH=arm \
+         LOCALVERSION= \
+         M=$PWD \
+         CROSS_COMPILE=arm-linux-gnueabihf- \
+         INSTALL_MOD_PATH=/home/opa/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay \
+         modules_install
 
-vi kernel_module/external.mk:
-################################################################################
-#
-# kernel_modules
-#
-################################################################################
+Makefile:
+ifneq ($(KERNELRELEASE),)
+obj-m := buzz.o
+else
+KDIR := /home/opa/embedded/fpga/xilinx/zynq/proj/template/kernel
+all:
+        $(MAKE) -C $(KDIR) \
+        M=$$PWD \
+    LOCALVERSION= \
+        ARCH=arm \
+    CROSS_COMPILE=arm-linux-gnueabihf- \
+        modules
 
-KERNEL_MODULES_VERSION = 1.0
-KERNEL_MODULES_SITE = $(BR2_EXTERNAL_KERNEL_MODULES_PATH)
-KERNEL_MODULES_SITE_METHOD = local
+install:
+        $(MAKE) -C $(KDIR) \
+        M=$$PWD \
+    LOCALVERSION= \
+        ARCH=arm \
+    CROSS_COMPILE=arm-linux-gnueabihf- \
+        INSTALL_MOD_PATH=\
+        /home/opa/embedded/fpga/xilinx/zynq/proj/template/rootfs_overlay \
+        modules_install
 
-$(eval $(kernel-module))
-$(eval $(generic-package))
-    
-vi kernel_module/Makefile:
-obj-m += $(addsuffix .o, $(notdir $(basename $(filter-out %.mod.c, $(wildcard $(BR2_EXTERNAL_KERNEL_MODULES_PATH)/*.c)))))
+clean:
+        rm *.ko *.o *.mod.c .*.cmd *.mod *.order *.symvers
+
+endif
+
+
+Makefile for buildroot:
+obj-m += $(addsuffix .o, $(notdir $(basename $(filter-out %.mod.c, $(wildcard $(BR2_EXTERNAL_KERNEL_MODULES_PATH)/*/*.c)))))
 ccflags-y := -DDEBUG -g -std=gnu99 -Werror -Wno-declaration-after-statement -Wframe-larger-than=1000000000
 
 .PHONY: all clean
@@ -365,7 +383,10 @@ ccflags-y := -DDEBUG -g -std=gnu99 -Werror -Wno-declaration-after-statement -Wfr
 CFLAGS_MODULE=-fno-pic
 
 all:
-	$(MAKE) -C -fno-pic '/lib/modules/$(shell uname -r)/build' M='$(PWD)' modules
+        $(MAKE) -C -fno-pic '/lib/modules/$(shell uname -r)/build' M='$(PWD)' modules
 
 clean:
-	$(MAKE) -C '$(LINUX_DIR)' M='$(PWD)' clean
+        $(MAKE) -C '$(LINUX_DIR)' M='$(PWD)' clean
+
+
+

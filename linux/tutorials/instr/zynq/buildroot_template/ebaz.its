@@ -5,7 +5,7 @@
     #address-cells = <1>;
     images {
         kernel-1 {
-            data = /incbin/("buildroot/images/zImage");
+            data = /incbin/("kernel/arch/arm/boot/zImage");
             type = "kernel";
             arch = "arm";               
             os = "linux";
@@ -46,8 +46,8 @@
             arch = "arm";               
             os = "linux";
             compression = "lzma";
-            load = <0x5000000>;
-            entry = <0x5000000>;
+            load = <0x6000000>;
+            entry = <0x6000000>;
             hash-1 {
                 algo = "sha256";
             };
