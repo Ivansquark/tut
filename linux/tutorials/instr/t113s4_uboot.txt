@@ -42,6 +42,7 @@ You will need to write the u-boot-sunxi-with-spl.bin to the sd-card. If you don'
 
 sudo dd if=u-boot-sunxi-with-spl.bin of=${card} bs=1024 seek=8
 sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdd bs=1024 seek=8
+sudo dd if=spl.bin of=/dev/sdd bs=1024 seek=8
 
 ////////////////////////////   SD   ///////////////////////////////////////////
 Partitioning
@@ -65,6 +66,9 @@ You should now be able to create the actual filesystems:
 
 sudo mkfs.vfat ${card}${p}1
 sudo mkfs.ext4 ${card}${p}2
+
+sudo mkfs.vfat /dev/sdd1
+sudo mkfs.ext4 /dev/sdd2
 
 cardroot=${card}${p}2
 
@@ -102,6 +106,7 @@ in chosen stdout-path = "serial0:115200n8"
 
 //compile
 make CROSS_COMPILE=arm-linux-gnueabi-
+make CROSS_COMPILE=arm-linux-gnueabihf-
 
 Install U-Boot
 
@@ -240,3 +245,5 @@ setenv initrd_low 0x0x41c00000
 setenv initrd_high 0x42dff480
 
 RAMDISK: Couldn't find valid RAM disk image starting at 0
+
+bootm 42000000 - 43000000

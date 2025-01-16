@@ -1,0 +1,5 @@
+diff -Naur Makefile_old Makefile > Makefile-patch1.diff
+
+# PKGBUILD
+cd "${srcdir}/${pkgname}-${pkgver}"
+patch -uN -i Makefile-patch1.diff || return 1
