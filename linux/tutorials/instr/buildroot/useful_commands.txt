@@ -1,0 +1,4 @@
+make ncurses-dirclean
+make ncurses-build
+make util-linux-dirclean
+make util-linux-build
