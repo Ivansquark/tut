@@ -1,1 +1,0 @@
-cmd_/home/debian/embedded/desktop/vim/linux/module/opa_printk.mod := { echo  /home/debian/embedded/desktop/vim/linux/module/opa_printk.o;  echo; } > /home/debian/embedded/desktop/vim/linux/module/opa_printk.mod
