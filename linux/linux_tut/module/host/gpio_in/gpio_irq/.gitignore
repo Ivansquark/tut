@@ -1,0 +1,4 @@
+*.o *.ko *.mod .*.cmd .*.flags *.mod.c *.order
+.*.*.cmd *.symvers *~ *.*~ TODO.*
+.tmp*
+.tmp_versions
