@@ -1,0 +1,10 @@
+clang
+%c -std=c99
+%h %hpp --include=Global.h
+-I/usr/include/
+#-I/usr/lib/modules/`uname -r`/build/include/
+-I/usr/lib/modules/6.8.0-51-generic/build/include/
+-Wall
+-Wextra
+-Wpedantic
+-Werror

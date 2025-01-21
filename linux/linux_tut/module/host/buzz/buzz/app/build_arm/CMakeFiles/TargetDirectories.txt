@@ -1,0 +1,4 @@
+/home/mrt/embedded/desktop/linux/tut/linux/linux_tut/module/host/buzz/buzz/app/build_arm/CMakeFiles/buzz_test.dir
+/home/mrt/embedded/desktop/linux/tut/linux/linux_tut/module/host/buzz/buzz/app/build_arm/CMakeFiles/test.dir
+/home/mrt/embedded/desktop/linux/tut/linux/linux_tut/module/host/buzz/buzz/app/build_arm/CMakeFiles/edit_cache.dir
+/home/mrt/embedded/desktop/linux/tut/linux/linux_tut/module/host/buzz/buzz/app/build_arm/CMakeFiles/rebuild_cache.dir

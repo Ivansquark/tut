@@ -1,0 +1,37 @@
+Building the Project for ARM
+
+    Create a Build Directory: Create a new build directory for the ARM cross-compilation process.
+
+mkdir build_arm
+cd build_arm
+
+    Run CMake with the Toolchain File: Point CMake to your toolchain file and specify your build environment.
+
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain-arm-linux-gnueabi.cmake ..
+
+    Build the Project: Run the build process to cross-compile the application and tests.
+
+make
+
+5. Running the Tests on ARM Device
+
+Since the tests are cross-compiled for ARM, you will need to copy the generated binaries (buzz_test) to your ARM device and run the tests there.
+
+To copy the files to your ARM device:
+
+scp buzz_test user@arm_device:/path/to/test/directory
+
+Then, on the ARM device:
+
+cd /path/to/test/directory
+./buzz_test
+
+6. Notes on the Cross-Compilation Process:
+
+    Sysroot: Make sure that the cross-compilation environment has access to the proper libraries and headers required for the target system. This includes any specific libraries, like gtest, that your application links against.
+
+    ARM Toolchain: The arm-linux-gnueabi-* toolchain is typically used for 32-bit ARM architectures. If you're targeting a 64-bit ARM architecture (e.g., ARMv8-A), you would need to use the aarch64-linux-gnu-* toolchain instead.
+
+    Dependencies on Target System: Make sure your ARM device has the necessary shared libraries installed (e.g., libgtest, libpthread), or statically link them into the application. If running tests on the device, you might need to install dependencies (like gtest or others) on the ARM target or link statically during compilation.
+
+This setup should help you cross-compile and test your buzz kernel module interaction on an ARM-based device using the arm-linux-gnueabi toolchain.

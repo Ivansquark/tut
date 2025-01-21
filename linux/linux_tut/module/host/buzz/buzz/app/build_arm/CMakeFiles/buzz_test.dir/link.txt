@@ -1,0 +1,1 @@
+/usr/bin/arm-linux-gnueabihf-g++ --sysroot=/usr/bin/ CMakeFiles/buzz_test.dir/buzz_test.cpp.o -o buzz_test  /usr/lib/libgtest.a -lpthread 
